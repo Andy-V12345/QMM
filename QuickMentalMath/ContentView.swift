@@ -10,84 +10,99 @@ import SwiftUI
 struct ContentView: View {
     
     @State var pulsingAmount = 0.95
-        
+            
     var body: some View {
-        VStack(alignment: .center, spacing: 30) {
-            HStack {
-                Text("Welcome!")
-                    .font(.largeTitle)
-                    .bold()
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .foregroundColor(Color("textColor"))
-                    .padding(.horizontal, 10)
-                Spacer()
-                Image(systemName: "person.circle.fill")
-                    .foregroundColor(Color("textColor"))
-                    .padding(.horizontal, 10)
-                    .font(.title)
-                }
-            
-//            Spacer()
-                        
-            OptionsGroup(title: "Mode", items: ["Addition", "Subtraction", "Multiplication", "Division"])
-            
-            OptionsGroup(title: "Difficulty", items: ["Easy", "Medium", "Hard"])
-            
-            
-            Spacer()
-            
-            ZStack {
-                Circle()
-                    .fill(Color("textColor"))
-                    .frame(width: 200)
-                    .scaleEffect(pulsingAmount)
-                    .opacity(2 - pulsingAmount)
-                    .animation(
-                        .easeInOut(duration: 0.95)
-                            .repeatForever(autoreverses: true),
-                        value: pulsingAmount
-                    )
-                    .onAppear{self.pulsingAmount = 1.2}
-                Circle()
-                    .fill(Color("bgColor"))
-                    .frame(width: 200)
-                    .shadow(radius: 15)
+        NavigationStack {
+            GeometryReader { screen in
+                ZStack {
                     
-                Text("Go!")
-                    .font(.system(size: 45, weight: .bold))
-                    .foregroundColor(.white)
+                    VStack {
+                        Color.white.ignoresSafeArea()
+                        Color("orange").ignoresSafeArea()
+                            .frame(height: screen.size.height * 0.3)
+                    }
+                    
+                    VStack(alignment: .center, spacing: 30) {
+                        HStack {
+                            Text("Welcome!")
+                                .font(.largeTitle)
+                                .bold()
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .foregroundColor(Color("textColor"))
+                            Spacer()
+                            
+                            Button {
+                                
+                            } label: {
+                                Image(systemName: "person.circle.fill")
+                                    .foregroundColor(Color("textColor"))
+                                    .font(.title)
+                            }
+                    
+                            
+                            Spacer()
+                            
+                        } // HStack
+                        .padding(.horizontal, 20)
+                        .padding(.top, 10)
+                        
+                                    
+                        OptionsGroup(title: "Mode", items: ["Addition", "Subtraction", "Multiplication", "Division"])
+                            .padding(.horizontal, 10)
+                        
+                        OptionsGroup(title: "Difficulty", items: ["Easy", "Medium", "Hard"])
+                            .padding(.horizontal, 10)
+                        
+                        Spacer()
+                        
+                        GeometryReader { metrics in
+                            ZStack {
+                                
+                                Color("startContainerColor")
+                                    .frame(maxWidth: metrics.size.width * 0.85, maxHeight: .infinity)
+                                    .clipShape(RoundedRectangle(cornerRadius: 20))
+                                    .shadow(radius: 10)
+                                
+                                Circle()
+                                    .fill(.white)
+                                    .frame(width: metrics.size.height * 0.6)
+                                    .scaleEffect(pulsingAmount)
+                                    .animation(
+                                        .easeInOut(duration: 0.95)
+                                            .repeatForever(autoreverses: true),
+                                        value: pulsingAmount
+                                    )
+                                    .onAppear{self.pulsingAmount = 1.1}
+                                
+                                NavigationLink {
+                                    ExtraOptionsView()
+                                } label: {
+                                    ZStack {
+                                        Circle()
+                                            .fill(Color("goColor"))
+                                            .frame(width: metrics.size.height * 0.6)
+                                            .shadow(radius: 15)
+                                            
+                                        Image(systemName: "arrow.right")
+                                            .font(.system(size: 55, weight: .bold))
+                                            .foregroundColor(.white)
+                                    } // ZStack
+                                    
+                                }
+                                
+                                
+                            } // ZStack
+                            .frame(maxWidth: .infinity)
+                            .ignoresSafeArea()
+                        }
+                        
+                        
+                    }
+                    // VStack
+                }
             }
-                
-            Spacer()
-            
-//            VStack {
-//                Text("Difficulty")
-//                    .font(.headline)
-//                    .bold()
-//                    .foregroundColor(Color("textColor"))
-//                    .frame(maxWidth: .infinity, alignment: .leading)
-//                RoundedRectangle(cornerSize: CGSize(width: 10, height: 10))
-//                    .fill(Color("bgColor"))
-//            }
-//
-//            VStack {
-//                Text("Time Limit")
-//                    .font(.headline)
-//                    .bold()
-//                    .foregroundColor(Color("textColor"))
-//                    .frame(maxWidth: .infinity, alignment: .leading)
-//                RoundedRectangle(cornerSize: CGSize(width: 10, height: 10))
-//                    .fill(Color("bgColor"))
-//            }
-//
-            
-            
-            
-//            Spacer()
-            
-            
         }
-        .padding()
+        .navigationBarBackButtonHidden(true)
     }
 }
 
