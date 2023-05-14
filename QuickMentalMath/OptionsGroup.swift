@@ -20,6 +20,7 @@ struct OptionsGroup: View {
                 .foregroundColor(Color("textColor"))
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.horizontal, 10)
+            
             OptionSlider(items: items)
         }
     }
