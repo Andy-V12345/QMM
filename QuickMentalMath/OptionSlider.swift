@@ -10,18 +10,36 @@ import SwiftUI
 struct OptionSlider: View {
     
     let items: [String]
+    @State var color: Color?
     
     var body: some View {
         TabView {
             ForEach(items, id: \.self) { item in
                 ZStack {
                     RoundedRectangle(cornerRadius: 10)
-                        .fill(Color("bgColor"))
+                        .fill(color ?? Color("bgColor"))
                         .frame(maxWidth: .infinity)
                     Text(item)
                         .foregroundColor(.white)
-                        .font(.title2)
+                        .font(.title)
                         .bold()
+                    if self.items.firstIndex(of: item)! < items.count-1 {
+                        Image(systemName: "chevron.right")
+                            .frame(maxWidth: .infinity, alignment: .trailing)
+                            .padding(.horizontal)
+                            .foregroundColor(.white)
+                            .font(.title2)
+                            .bold()
+                    }
+                    
+                    if self.items.firstIndex(of: item)! > 0 {
+                        Image(systemName: "chevron.left")
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.horizontal)
+                            .foregroundColor(.white)
+                            .font(.title2)
+                            .bold()
+                    }
                 }
                 .padding(.horizontal, 10)
             }
@@ -32,13 +50,14 @@ struct OptionSlider: View {
 //
 //        }
         .tabViewStyle(PageTabViewStyle())
-        .frame(maxWidth: .infinity, maxHeight: 150)
+        .frame(maxWidth: .infinity)
     }
 }
 
 struct OptionSlider_Previews: PreviewProvider {
     static var previews: some View {
         OptionSlider(items: ["Addition", "Subtraction", "Multiplication", "Division"])
+            .frame(height: 200)
     }
 }
 

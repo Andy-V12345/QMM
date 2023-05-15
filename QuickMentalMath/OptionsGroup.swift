@@ -13,9 +13,9 @@ struct OptionsGroup: View {
     var items: [String]
     
     var body: some View {
-        VStack(spacing: 10) {
+        VStack(spacing: 5) {
             Text(title)
-                .font(.headline)
+                .font(.title3)
                 .bold()
                 .foregroundColor(Color("textColor"))
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -29,5 +29,6 @@ struct OptionsGroup: View {
 struct OptionsGroup_Previews: PreviewProvider {
     static var previews: some View {
         OptionsGroup(title: "Mode", items: ["Addition", "Subtraction", "Multiplication", "Division"])
+            .frame(height: 300)
     }
 }

@@ -7,102 +7,176 @@
 
 import SwiftUI
 
+struct RoundedCorner: Shape {
+    var radius: CGFloat = .infinity
+    var corners: UIRectCorner = .allCorners
+    
+    func path(in rect: CGRect) -> Path {
+        let path = UIBezierPath(roundedRect: rect, byRoundingCorners: corners, cornerRadii: CGSize(width: radius, height: radius))
+        return Path(path.cgPath)
+    }
+}
+
+extension View {
+    func roundedCorner(_ radius: CGFloat, corners: UIRectCorner) -> some View {
+        clipShape(RoundedCorner(radius: radius, corners: corners) )
+    }
+}
+
 struct ContentView: View {
     
     @State var pulsingAmount = 0.95
-            
+    @State var showOptions = false
+    
+    @State var extendedHeight: CGFloat = 0
+    
+    let hapticFeedback = UIImpactFeedbackGenerator(style: .medium)
+    
+    @State var maxExtend = false
+        
     var body: some View {
-        NavigationStack {
-            GeometryReader { screen in
-                ZStack {
-                    
-                    VStack {
-                        Color.white.ignoresSafeArea()
-                        Color("orange").ignoresSafeArea()
-                            .frame(height: screen.size.height * 0.3)
-                    }
-                    
-                    VStack(alignment: .center, spacing: 30) {
-                        HStack {
-                            Text("Welcome!")
-                                .font(.largeTitle)
-                                .bold()
-                                .frame(maxWidth: .infinity, alignment: .leading)
+        GeometryReader { screen in
+            ZStack {
+                
+                VStack(spacing: 0) {
+                    Color.white.ignoresSafeArea()
+                    Color("textColor").ignoresSafeArea()
+                        .frame(height: screen.size.height * 0.3)
+                }
+                
+                VStack(alignment: .center, spacing: 20) {
+                    HStack {
+                        Text("Welcome!")
+                            .font(.largeTitle)
+                            .bold()
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .foregroundColor(Color("textColor"))
+                        Spacer()
+                        
+                        Button {
+                            
+                        } label: {
+                            Image(systemName: "person.circle.fill")
                                 .foregroundColor(Color("textColor"))
-                            Spacer()
-                            
-                            Button {
-                                
-                            } label: {
-                                Image(systemName: "person.circle.fill")
-                                    .foregroundColor(Color("textColor"))
-                                    .font(.title)
-                            }
-                    
-                            
-                            Spacer()
-                            
-                        } // HStack
-                        .padding(.horizontal, 20)
-                        .padding(.top, 10)
+                                .font(.title)
+                        }
                         
-                                    
-                        OptionsGroup(title: "Mode", items: ["Addition", "Subtraction", "Multiplication", "Division"])
-                            .padding(.horizontal, 10)
-                        
-                        OptionsGroup(title: "Difficulty", items: ["Easy", "Medium", "Hard"])
-                            .padding(.horizontal, 10)
                         
                         Spacer()
                         
-                        GeometryReader { metrics in
+                    } // HStack
+                    .padding(.horizontal, 20)
+                    .padding(.top, 10)
+                    
+                    
+                    OptionsGroup(title: "Mode", items: ["Addition", "Subtraction", "Multiplication", "Division"])
+                        .padding(.horizontal, 10)
+                        .frame(maxHeight: screen.size.height * 0.23)
+                    
+                    OptionsGroup(title: "Difficulty", items: ["Easy", "Medium", "Hard"])
+                        .padding(.horizontal, 10)
+                        .frame(maxHeight: screen.size.height * 0.23)
+                    
+                    Spacer()
+                    
+                    
+                    
+                } // VStack
+                
+                VStack {
+                    Spacer()
+                    ZStack {
+                        Color("orange")
+                            .roundedCorner(25, corners: [.topLeft, .topRight])
+                            .ignoresSafeArea()
+                            .frame(maxWidth: screen.size.width*0.9, maxHeight: screen.size.height * 0.35 + extendedHeight)
+                            .shadow(radius: 7)
+                        
+                        VStack(spacing: 30) {
+                            
+                            Text("Next")
+                                .font(.largeTitle)
+                                .bold()
+                                .foregroundColor(.white)
+                            
+                            
                             ZStack {
-                                
-                                Color("startContainerColor")
-                                    .frame(maxWidth: metrics.size.width * 0.85, maxHeight: .infinity)
-                                    .clipShape(RoundedRectangle(cornerRadius: 20))
-                                    .shadow(radius: 10)
-                                
                                 Circle()
-                                    .fill(.white)
-                                    .frame(width: metrics.size.height * 0.6)
+                                    .fill(Color("textColor"))
+                                    .frame(maxWidth: screen.size.height * 0.2)
                                     .scaleEffect(pulsingAmount)
                                     .animation(
                                         .easeInOut(duration: 0.95)
-                                            .repeatForever(autoreverses: true),
+                                        .repeatForever(autoreverses: true),
                                         value: pulsingAmount
                                     )
                                     .onAppear{self.pulsingAmount = 1.1}
                                 
-                                NavigationLink {
-                                    ExtraOptionsView()
+                                Button {
+                                    showOptions = true
                                 } label: {
                                     ZStack {
                                         Circle()
                                             .fill(Color("goColor"))
-                                            .frame(width: metrics.size.height * 0.6)
+                                            .frame(maxWidth: screen.size.height * 0.2)
                                             .shadow(radius: 15)
-                                            
-                                        Image(systemName: "arrow.right")
+                                        
+                                        Image(systemName: "arrow.up")
                                             .font(.system(size: 55, weight: .bold))
                                             .foregroundColor(.white)
                                     } // ZStack
                                     
                                 }
-                                
-                                
-                            } // ZStack
-                            .frame(maxWidth: .infinity)
-                            .ignoresSafeArea()
+                                .sheet(isPresented: $showOptions, content: {
+                                    ExtraOptionsView()
+                                })
+                            }
                         }
                         
                         
-                    }
-                    // VStack
+                        
+                        
+                    } // ZStack
+                    .gesture(
+                        DragGesture(minimumDistance: 30)
+                            .onEnded{_ in
+                                extendedHeight = 0
+                                
+                                if maxExtend {
+                                    hapticFeedback.impactOccurred()
+                                    maxExtend = false
+                                    self.showOptions = true
+                                }
+                                
+                                maxExtend = false
+                                
+                                
+                            }
+                            .onChanged{ value in
+                                let offset = (value.location.y - value.startLocation.y) * -1
+                                
+                                var tmp = extendedHeight
+                                
+                                tmp = max(0, tmp + offset)
+                                
+                        
+                                if screen.size.height*0.35 + tmp <= screen.size.height*0.65 {
+                                    extendedHeight = tmp
+                                }
+                                else {
+                                    maxExtend = true
+                                }
+                                
+                        
+                            }
+                            
+                    )
                 }
-            }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                
+                
+            } // ZStack
         }
-        .navigationBarBackButtonHidden(true)
     }
 }
 

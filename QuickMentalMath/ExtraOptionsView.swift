@@ -12,124 +12,107 @@ struct ExtraOptionsView: View {
     
     @State var progress = 10.0
     @State var pulsingAmount = 0.95
+    @State var showGame = false
     
-    @State var selectedTimes: [String: Bool] = ["1 min":false, "2 min":false, "3 min":false, "∞ min":false]
+    //    @State var selectedTimes: [String: Bool] = ["1 min":false, "2 min":false, "3 min":false, "∞ min":false]
+    
+    @Environment(\.presentationMode) var presentationMode
     
     var body: some View {
-        NavigationStack {
-            GeometryReader { metrics in
+        GeometryReader { metrics in
+            
+            ZStack {
                 
-                ZStack {
-                    
-                    VStack(spacing: 0) {
-                        Color.white
-                            .clipShape(RoundedRectangle(cornerRadius: 30))
-                    }
-                    
-                    VStack(spacing: 0) {
-                        ZStack {
-                            Color("textColor")
-                                .clipShape(RoundedRectangle(cornerRadius: 30))
-                                .ignoresSafeArea()
+                VStack(spacing: 0) {
+                    Color.white
+                        .clipShape(RoundedRectangle(cornerRadius: 30))
+                }
+                
+                VStack(spacing: 20) {
+                    ZStack {
+                        Color("textColor")
+                            .roundedCorner(30, corners: [.bottomLeft, .bottomRight])
+                            .ignoresSafeArea()
+                        
+                        VStack {
                             
-                            VStack {
-                                
-                                HStack {
-                                    NavigationLink() {
-                                        ContentView()
-                                    } label: {
-                                        Image(systemName: "arrow.left")
-                                            .foregroundColor(.white)
-                                            .font(.title3)
-                                            .bold()
-                                    }
-                                    
-                                    Spacer()
-                                }
-                                .padding(.horizontal)
-                                .frame(maxWidth: .infinity)
-                                
-                                VStack(spacing: 20) {
-                                    
-                                    QuestionSlider(value: $progress, in: 10...100)
-                                        .frame(maxWidth: 200, maxHeight: 200)
-                                    Text("Number of Questions")
+                            HStack {
+                                Button {
+                                    presentationMode.wrappedValue.dismiss()
+                                } label: {
+                                    Image(systemName: "xmark")
+                                        .foregroundColor(.white)
                                         .font(.title3)
-                                        .foregroundColor(Color.white)
                                         .bold()
                                 }
+                                
+                                Spacer()
                             }
+                            .padding(.horizontal)
+                            .padding(.top)
+                            .frame(maxWidth: .infinity)
                             
-                            
-                        }
-                        .frame(maxHeight: metrics.size.height * 0.36)
-                        
-                        ZStack {
-                            Color.white
-                                .ignoresSafeArea()
-                            
-                            VStack(spacing: 30) {
-                                VStack(spacing: 20) {
-                                    HStack(spacing: 10) {
-                                        VStack(spacing: 10) {
-                                            TimeButton(text: "1 min", selectedTimes: $selectedTimes)
-                                            TimeButton(text: "3 min", selectedTimes: $selectedTimes)
-                                        }
-                                        
-                                        VStack(spacing: 10) {
-                                            TimeButton(text: "2 min", selectedTimes: $selectedTimes)
-                                            TimeButton(text: "∞ min", selectedTimes: $selectedTimes)
-                                        }
-                                    }
+                            VStack(spacing: 20) {
+                                
+                                QuestionSlider(value: $progress, in: 10...100)
+                                    .frame(maxWidth: metrics.size.height * 0.2, maxHeight: metrics.size.height * 0.2)
+                                Text("Number of Questions")
+                                    .font(.title3)
+                                    .foregroundColor(Color.white)
+                                    .bold()
+                                
+                                
+                                VStack(spacing: 15) {
+                                    OptionSlider(items: ["1 min", "2 min", "3 min", "∞ min"], color: Color.white.opacity(0.65))
                                     
                                     Text("Time Limit")
-                                        .foregroundColor(Color("textColor"))
                                         .font(.title3)
                                         .bold()
-                                    
+                                        .foregroundColor(.white)
                                 }
                                 .padding()
                                 
-                                ZStack {
-                                    
-                                    Circle()
-                                        .fill(Color("startContainerColor"))
-                                        .frame(height: metrics.size.height * 0.2)
-                                        .scaleEffect(pulsingAmount)
-                                        .animation(
-                                            .easeInOut(duration: 0.95)
-                                            .repeatForever(autoreverses: true),
-                                            value: pulsingAmount
-                                        )
-                                        .onAppear{self.pulsingAmount = 1.1}
-                                    
-                                    NavigationLink {
-                                        EmptyView()
-                                    } label: {
-                                        ZStack {
-                                            Circle()
-                                                .fill(Color("goColor"))
-                                                .frame(height: metrics.size.height * 0.2)
-                                                .shadow(radius: 15)
-                                            
-                                            Text("Go!")
-                                                .font(.system(size: 40, weight: .bold))
-                                                .foregroundColor(.white)
-                                        } // ZStack
-                                        
-                                    }
-                                } // ZStack
                                 
-                            } // VStack
+                            }
                             
-                        } // ZStack
+                            
+                        } // VStack
+                        
+                        
+                    } // ZStack
+                    .frame(maxHeight: metrics.size.height * 0.65)
+                    Spacer()
+                    ZStack {
+                        
+                        Button {
+                            showGame = true
+                        } label: {
+                            ZStack {
+                                Capsule(style: .continuous)
+                                    .fill(Color("goColor"))
+                                    .frame(width: metrics.size.width * 0.8)
+                                    .frame(maxHeight: metrics.size.width * 0.3)
+                                    .shadow(radius: 15)
+                                
+                                Text("Begin")
+                                    .font(.system(size: 35, weight: .bold))
+                                    .foregroundColor(.white)
+                                
+                            } // ZStack
+                        }
+                        .fullScreenCover(isPresented: $showGame, content: {
+                            EmptyView()
+                        })
+                        
                     }
-                }
-                
-            }
+                    
+                    Spacer()
+                    
+                    
+                } // VStack
+            } // ZStack
+            
         }
-        .navigationBarBackButtonHidden(true)
-        
     }
 }
 
@@ -140,31 +123,31 @@ struct ExtraOptionsView_Preview: PreviewProvider {
     }
 }
 
-struct TimeButton: View {
-    
-    @State var text: String
-    @Binding var selectedTimes: [String: Bool]
-    
-    var body: some View {
-        Button {
-            self.selectedTimes[text] = true
-            
-            for key in selectedTimes.keys {
-                if key != text {
-                    self.selectedTimes[key] = false
-                }
-            }
-            
-        } label: {
-            ZStack {
-                Color("orange")
-                    .clipShape(RoundedRectangle(cornerRadius: 10))
-                    .opacity(selectedTimes[text]! ? 0.5 : 1.0)
-                Text(text)
-                    .font(.title2)
-                    .bold()
-                    .foregroundColor(.white)
-            }
-        }
-    }
-}
+//struct TimeButton: View {
+//
+//    @State var text: String
+//    @Binding var selectedTimes: [String: Bool]
+//
+//    var body: some View {
+//        Button {
+//            self.selectedTimes[text] = true
+//
+//            for key in selectedTimes.keys {
+//                if key != text {
+//                    self.selectedTimes[key] = false
+//                }
+//            }
+//
+//        } label: {
+//            ZStack {
+//                Color("bgColor")
+//                    .clipShape(RoundedRectangle(cornerRadius: 30))
+//                    .opacity(selectedTimes[text]! ? 0.5 : 1.0)
+//                Text(text)
+//                    .font(.title2)
+//                    .bold()
+//                    .foregroundColor(.white)
+//            }
+//        }
+//    }
+//}
