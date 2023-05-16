@@ -14,9 +14,13 @@ struct ExtraOptionsView: View {
     @State var pulsingAmount = 0.95
     @State var showGame = false
     
-    @State var timeIndex: Int = 0
+    @State var timeIndex = 0
     @Binding var modeIndex: Int
     @Binding var difficultyIndex: Int
+    
+    
+    var modes: [String] = ["+", "-", "x", "÷"]
+    var difficulties: [String] = ["easy", "medium", "hard"]
     
     @Environment(\.presentationMode) var presentationMode
     
@@ -103,7 +107,7 @@ struct ExtraOptionsView: View {
                             } // ZStack
                         }
                         .fullScreenCover(isPresented: $showGame, content: {
-                            GameView()
+                            GameView(timeIndex: $timeIndex, totalQuestions: Int(round(progress)), mode: modes[modeIndex], difficulty: difficulties[difficultyIndex])
                         })
                         
                     }
@@ -115,9 +119,7 @@ struct ExtraOptionsView: View {
             } // ZStack
             
         }
-        .onAppear() {
-            print(difficultyIndex)
-        }
+        
     }
 }
 

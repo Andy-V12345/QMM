@@ -13,9 +13,17 @@ struct GameView: View {
     
     @State var startTime: CGFloat = 60
     
+    @Binding var timeIndex: Int
+    
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     
     @Environment(\.dismiss) var dismiss
+    
+    @State var totalQuestions: Int
+    @State var mode: String
+    @State var difficulty: String
+    
+    @State var times: [CGFloat] = [60, 120, 180, 1000]
         
     var body: some View {
         GeometryReader { screen in
@@ -48,7 +56,7 @@ struct GameView: View {
                                 Spacer()
                                                                 
                                 VStack(spacing: 5) {
-                                    Text("1 / 10")
+                                    Text("1 / \(totalQuestions)")
                                         .font(.title)
                                         .foregroundColor(.white)
                                         .bold()
@@ -66,19 +74,19 @@ struct GameView: View {
                                         .stroke(Color.white.opacity(0.8),
                                                 style: StrokeStyle(lineWidth: 10))
                                         .overlay() {
-                                            Text(convertTime(seconds: timeLeft))
+                                            Text(startTime <= 180 ? convertTime(seconds: timeLeft) : "∞")
                                                 .font(.system(size: screen.size.width * 0.08, weight: .bold, design:.rounded))
                                                 .foregroundColor(Color.white)
                                         }
-                                    
-                                    Circle()
-                                        .trim(from: 0, to: ((startTime - timeLeft) / startTime))
-                                        .stroke(Color("goColor"),
-                                                style: StrokeStyle(lineWidth: 10, lineCap: .round)
-                                        )
-                                        .rotationEffect(Angle(degrees: -90))
-                                        .animation(.easeIn, value: timeLeft)
-                                    
+                                    if self.startTime <= 180 {
+                                        Circle()
+                                            .trim(from: 0, to: ((startTime - timeLeft) / startTime))
+                                            .stroke(Color("goColor"),
+                                                    style: StrokeStyle(lineWidth: 10, lineCap: .round)
+                                            )
+                                            .rotationEffect(Angle(degrees: -90))
+                                            .animation(.easeIn, value: timeLeft)
+                                    }
                                 }
                                 .frame(maxWidth: screen.size.width * 0.3)
                                 .onReceive(timer) { time in
@@ -112,7 +120,7 @@ struct GameView: View {
                                     .foregroundColor(.white)
                                     .frame(maxWidth: .infinity, alignment: .trailing)
                                 HStack {
-                                    Text("+")
+                                    Text("\(mode)")
                                         .font(.system(size: screen.size.width * 0.12, weight: .bold, design: .rounded))
                                         .bold()
                                         .foregroundColor(.white)
@@ -138,15 +146,20 @@ struct GameView: View {
                         
                     }
                     Spacer()
+                                        
                 } // VStack
                 
             } // ZStack
+            .onAppear() {
+                startTime = times[timeIndex]
+                timeLeft = times[timeIndex]
+            }
         } // GeometryReader
     } // body
     
     func convertTime(seconds: CGFloat) -> String {
-        var min = Int(floor(seconds / 60))
-        var sec = Int(seconds) % 60
+        let min = Int(floor(seconds / 60))
+        let sec = Int(seconds) % 60
         
         
         if sec < 10 {
@@ -161,8 +174,8 @@ struct GameView: View {
     
 } // struct
 
-struct GameView_Previews: PreviewProvider {
-    static var previews: some View {
-        GameView()
-    }
-}
+//struct GameView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        GameView(timeIndex: 1, totalQuestions: 20, mode: "x", difficulty: "easy")
+//    }
+//}

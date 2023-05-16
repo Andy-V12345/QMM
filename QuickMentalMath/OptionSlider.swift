@@ -16,7 +16,6 @@ struct OptionSlider: View {
     @Binding var selectedIndex: Int
     
     var body: some View {
-        var prevId = 0
         TabView(selection: $selectedIndex) {
             ForEach(items, id: \.self) { item in
                 let tabId = items.firstIndex(of: item)
