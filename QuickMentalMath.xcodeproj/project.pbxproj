@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D89009902A1316BB00ED7459 /* GameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D890098F2A1316BB00ED7459 /* GameView.swift */; };
 		D8A455ED2A0DD40D00DCA8DF /* OptionSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8A455EC2A0DD40D00DCA8DF /* OptionSlider.swift */; };
 		D8BAFEF62A09A12400D49C49 /* QuickMentalMathApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8BAFEF52A09A12400D49C49 /* QuickMentalMathApp.swift */; };
 		D8BAFEF82A09A12400D49C49 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8BAFEF72A09A12400D49C49 /* ContentView.swift */; };
@@ -38,6 +39,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		D890098F2A1316BB00ED7459 /* GameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameView.swift; sourceTree = "<group>"; };
 		D8A455EC2A0DD40D00DCA8DF /* OptionSlider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptionSlider.swift; sourceTree = "<group>"; };
 		D8BAFEF22A09A12400D49C49 /* QuickMentalMath.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = QuickMentalMath.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D8BAFEF52A09A12400D49C49 /* QuickMentalMathApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickMentalMathApp.swift; sourceTree = "<group>"; };
@@ -112,6 +114,7 @@
 				D8BAFEFC2A09A12500D49C49 /* Preview Content */,
 				D8ED276A2A113DBA00092F56 /* ExtraOptionsView.swift */,
 				D8ED276C2A11453300092F56 /* QuestionSlider.swift */,
+				D890098F2A1316BB00ED7459 /* GameView.swift */,
 			);
 			path = QuickMentalMath;
 			sourceTree = "<group>";
@@ -277,6 +280,7 @@
 				D8A455ED2A0DD40D00DCA8DF /* OptionSlider.swift in Sources */,
 				D8ED27692A0E25A700092F56 /* OptionsGroup.swift in Sources */,
 				D8BAFEF62A09A12400D49C49 /* QuickMentalMathApp.swift in Sources */,
+				D89009902A1316BB00ED7459 /* GameView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -33,6 +33,9 @@ struct ContentView: View {
     let hapticFeedback = UIImpactFeedbackGenerator(style: .medium)
     
     @State var maxExtend = false
+    
+    @State var modeIndex = 0
+    @State var difficultyIndex = 0
         
     var body: some View {
         GeometryReader { screen in
@@ -69,11 +72,11 @@ struct ContentView: View {
                     .padding(.top, 10)
                     
                     
-                    OptionsGroup(title: "Mode", items: ["Addition", "Subtraction", "Multiplication", "Division"])
+                    OptionsGroup(title: "Mode", items: ["Addition", "Subtraction", "Multiplication", "Division"], selectedID: $modeIndex)
                         .padding(.horizontal, 10)
                         .frame(maxHeight: screen.size.height * 0.23)
                     
-                    OptionsGroup(title: "Difficulty", items: ["Easy", "Medium", "Hard"])
+                    OptionsGroup(title: "Difficulty", items: ["Easy", "Medium", "Hard"], selectedID: $difficultyIndex)
                         .padding(.horizontal, 10)
                         .frame(maxHeight: screen.size.height * 0.23)
                     
@@ -91,9 +94,12 @@ struct ContentView: View {
                             .ignoresSafeArea()
                             .frame(maxWidth: screen.size.width*0.9, maxHeight: screen.size.height * 0.35 + extendedHeight)
                             .shadow(radius: 7)
+                            .animation(.easeOut(duration: 0.25),
+                                       value: extendedHeight
+                            )
                         
                         VStack(spacing: 30) {
-                            
+                                                        
                             Text("Next")
                                 .font(.largeTitle)
                                 .bold()
@@ -101,25 +107,28 @@ struct ContentView: View {
                             
                             
                             ZStack {
-                                Circle()
-                                    .fill(Color("textColor"))
-                                    .frame(maxWidth: screen.size.height * 0.2)
-                                    .scaleEffect(pulsingAmount)
-                                    .animation(
-                                        .easeInOut(duration: 0.95)
-                                        .repeatForever(autoreverses: true),
-                                        value: pulsingAmount
-                                    )
-                                    .onAppear{self.pulsingAmount = 1.1}
                                 
                                 Button {
-                                    showOptions = true
+                                    extendedHeight = screen.size.height * 0.65 - screen.size.height * 0.35
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+                                        
+                                        hapticFeedback.impactOccurred()
+                                        showOptions = true
+                                    }
+                                    
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                                        extendedHeight = 0
+                                    }
+                                    
+                                    
                                 } label: {
                                     ZStack {
                                         Circle()
-                                            .fill(Color("goColor"))
+                                            .stroke(Color("textColor"), lineWidth: 5)
+                                            .background(Circle().fill(Color("goColor")))
                                             .frame(maxWidth: screen.size.height * 0.2)
                                             .shadow(radius: 15)
+
                                         
                                         Image(systemName: "arrow.up")
                                             .font(.system(size: 55, weight: .bold))
@@ -128,10 +137,18 @@ struct ContentView: View {
                                     
                                 }
                                 .sheet(isPresented: $showOptions, content: {
-                                    ExtraOptionsView()
+                                    ExtraOptionsView(modeIndex: $modeIndex, difficultyIndex: $difficultyIndex)
                                 })
                             }
+                            
+                            Spacer()
+                            
                         }
+                        .padding(.top, 30)
+                        .frame(maxHeight: screen.size.height * 0.35 + extendedHeight)
+                        .animation(.easeOut(duration: 0.25),
+                                   value: extendedHeight
+                        )
                         
                         
                         
@@ -141,7 +158,6 @@ struct ContentView: View {
                         DragGesture(minimumDistance: 30)
                             .onEnded{_ in
                                 extendedHeight = 0
-                                
                                 if maxExtend {
                                     hapticFeedback.impactOccurred()
                                     maxExtend = false
@@ -162,6 +178,7 @@ struct ContentView: View {
                         
                                 if screen.size.height*0.35 + tmp <= screen.size.height*0.65 {
                                     extendedHeight = tmp
+                                    maxExtend = false
                                 }
                                 else {
                                     maxExtend = true
@@ -177,7 +194,8 @@ struct ContentView: View {
                 
             } // ZStack
         }
-    }
+    } // body
+    
 }
 
 struct ContentView_Previews: PreviewProvider {

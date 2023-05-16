@@ -11,37 +11,52 @@ struct OptionSlider: View {
     
     let items: [String]
     @State var color: Color?
+    @State var borderRadius: CGFloat?
+    
+    @Binding var selectedIndex: Int
     
     var body: some View {
-        TabView {
+        var prevId = 0
+        TabView(selection: $selectedIndex) {
             ForEach(items, id: \.self) { item in
+                let tabId = items.firstIndex(of: item)
                 ZStack {
-                    RoundedRectangle(cornerRadius: 10)
+                    RoundedRectangle(cornerRadius: borderRadius ?? 10)
                         .fill(color ?? Color("bgColor"))
                         .frame(maxWidth: .infinity)
                     Text(item)
                         .foregroundColor(.white)
                         .font(.title)
                         .bold()
-                    if self.items.firstIndex(of: item)! < items.count-1 {
+                    if tabId! < items.count-1 {
                         Image(systemName: "chevron.right")
                             .frame(maxWidth: .infinity, alignment: .trailing)
-                            .padding(.horizontal)
+                            .padding(.horizontal, 30)
                             .foregroundColor(.white)
                             .font(.title2)
                             .bold()
+                            .onTapGesture {
+                                selectedIndex += 1
+                            }
                     }
                     
-                    if self.items.firstIndex(of: item)! > 0 {
+                    if tabId! > 0 {
                         Image(systemName: "chevron.left")
                             .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(.horizontal)
+                            .padding(.horizontal, 30)
                             .foregroundColor(.white)
                             .font(.title2)
                             .bold()
+                            .onTapGesture {
+                                selectedIndex -= 1
+                            }
                     }
                 }
+                .tag(tabId!)
                 .padding(.horizontal, 10)
+                .gesture(DragGesture())
+
+                
             }
         }
 //        .onAppear() {
@@ -49,17 +64,19 @@ struct OptionSlider: View {
 //            UIPageControl.appearance().pageIndicatorTintColor = UIColor.black.withAlphaComponent(0.2)
 //
 //        }
-        .tabViewStyle(PageTabViewStyle())
+        .tabViewStyle(.page(indexDisplayMode: .never))
         .frame(maxWidth: .infinity)
+        .animation(.easeInOut(duration: 0.5), value: selectedIndex)
+        .transition(.slide)
     }
 }
 
-struct OptionSlider_Previews: PreviewProvider {
-    static var previews: some View {
-        OptionSlider(items: ["Addition", "Subtraction", "Multiplication", "Division"])
-            .frame(height: 200)
-    }
-}
+//struct OptionSlider_Previews: PreviewProvider {
+//    static var previews: some View {
+//        OptionSlider(items: ["Addition", "Subtraction", "Multiplication", "Division"])
+//            .frame(height: 200)
+//    }
+//}
 
 
 

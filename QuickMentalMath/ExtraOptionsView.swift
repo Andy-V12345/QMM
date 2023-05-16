@@ -14,7 +14,9 @@ struct ExtraOptionsView: View {
     @State var pulsingAmount = 0.95
     @State var showGame = false
     
-    //    @State var selectedTimes: [String: Bool] = ["1 min":false, "2 min":false, "3 min":false, "∞ min":false]
+    @State var timeIndex: Int = 0
+    @Binding var modeIndex: Int
+    @Binding var difficultyIndex: Int
     
     @Environment(\.presentationMode) var presentationMode
     
@@ -63,7 +65,7 @@ struct ExtraOptionsView: View {
                                 
                                 
                                 VStack(spacing: 15) {
-                                    OptionSlider(items: ["1 min", "2 min", "3 min", "∞ min"], color: Color.white.opacity(0.65))
+                                    OptionSlider(items: ["1 min", "2 min", "3 min", "∞ min"], color: Color.white.opacity(0.65), borderRadius: 30, selectedIndex: $timeIndex)
                                     
                                     Text("Time Limit")
                                         .font(.title3)
@@ -101,7 +103,7 @@ struct ExtraOptionsView: View {
                             } // ZStack
                         }
                         .fullScreenCover(isPresented: $showGame, content: {
-                            EmptyView()
+                            GameView()
                         })
                         
                     }
@@ -113,15 +115,12 @@ struct ExtraOptionsView: View {
             } // ZStack
             
         }
+        .onAppear() {
+            print(difficultyIndex)
+        }
     }
 }
 
-
-struct ExtraOptionsView_Preview: PreviewProvider {
-    static var previews: some View {
-        ExtraOptionsView()
-    }
-}
 
 //struct TimeButton: View {
 //

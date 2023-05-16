@@ -11,6 +11,7 @@ struct OptionsGroup: View {
     
     var title: String
     var items: [String]
+    @Binding var selectedID: Int
     
     var body: some View {
         VStack(spacing: 5) {
@@ -21,14 +22,8 @@ struct OptionsGroup: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.horizontal, 10)
             
-            OptionSlider(items: items)
+            OptionSlider(items: items, selectedIndex: $selectedID)
         }
     }
 }
 
-struct OptionsGroup_Previews: PreviewProvider {
-    static var previews: some View {
-        OptionsGroup(title: "Mode", items: ["Addition", "Subtraction", "Multiplication", "Division"])
-            .frame(height: 300)
-    }
-}
