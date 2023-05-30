@@ -5,6 +5,8 @@
 //  Created by Andy Vu on 5/15/23.
 //
 
+// TODO: implement game flow (end game)
+
 import SwiftUI
 
 struct GameView: View {
@@ -24,7 +26,27 @@ struct GameView: View {
     @State var difficulty: String
     
     @State var times: [CGFloat] = [60, 120, 180, 1000]
-        
+    
+    @State var topSize = 0.6
+    
+    @State var input: String = "f"
+    
+    @State var num1: Int = 0
+    @State var num2: Int = 0
+    
+    @State var answer: Int = 0
+    
+    @State var questionCount: Int = 1
+    
+    @State var correctCount: Int = 0
+    
+    @State var isGameOver = false
+    
+    var keyColumns: [GridItem] = Array(repeating: .init(.flexible(), spacing: 0, alignment: .center), count: 3)
+    
+    var keyNums = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 0, 11]
+    
+    
     var body: some View {
         GeometryReader { screen in
             ZStack {
@@ -35,28 +57,30 @@ struct GameView: View {
                         Color("textColor")
                             .roundedCorner(25, corners: [.bottomLeft, .bottomRight])
                             .ignoresSafeArea()
-                            .frame(maxHeight: screen.size.height * 0.5)
-                        
-                        Image(systemName: "figure.walk.departure")
-                            .font(.title3)
-                            .bold()
-                            .foregroundColor(.white)
-                            .padding(.horizontal)
-                            .frame(maxWidth: .infinity, maxHeight: screen.size.height*0.5, alignment: .topLeading)
-                            .onTapGesture {
-                                dismiss()
-                            }
+                            .frame(maxHeight: screen.size.height * topSize)
+                            .overlay(alignment: .topLeading, content: {
+                                
+                                Image(systemName: "figure.walk.departure")
+                                    .font(.title3)
+                                    .bold()
+                                    .foregroundColor(.white)
+                                    .padding(.horizontal)
+                                    .padding(.vertical, 10)
+                                    .onTapGesture {
+                                        dismiss()
+                                    }
+                                
+                            })
                         
                         
                         VStack {
-                            
                             
                             HStack {
                                 
                                 Spacer()
                                                                 
                                 VStack(spacing: 5) {
-                                    Text("1 / \(totalQuestions)")
+                                    Text("\(questionCount) / \(totalQuestions)")
                                         .font(.title)
                                         .foregroundColor(.white)
                                         .bold()
@@ -93,12 +117,15 @@ struct GameView: View {
                                     if timeLeft > 0 {
                                         timeLeft -= 1
                                     }
+                                    else {
+                                        isGameOver = true
+                                    }
                                 }
                                 
                                 Spacer()
                                 
                                 VStack(spacing: 5) {
-                                    Text("0")
+                                    Text("\(correctCount)")
                                         .font(.title)
                                         .foregroundColor(.white)
                                         .bold()
@@ -110,15 +137,17 @@ struct GameView: View {
                                 Spacer()
                                 
                             } // HStack
+                            .offset(y: 10)
                             
                             Spacer()
                             
                             VStack(spacing: 10) {
                                 
-                                Text("100")
+                                Text(num1 > num2 ? String(num1) : String(num2))
                                     .font(.system(size: screen.size.width * 0.12, weight: .bold, design: .rounded))
                                     .foregroundColor(.white)
                                     .frame(maxWidth: .infinity, alignment: .trailing)
+                                    .tracking(10)
                                 HStack {
                                     Text("\(mode)")
                                         .font(.system(size: screen.size.width * 0.12, weight: .bold, design: .rounded))
@@ -127,33 +156,81 @@ struct GameView: View {
                                     
                                     Spacer()
                                     
-                                    Text("20")
+                                    Text(num1 < num2 ? String(num1) : String(num2))
                                         .font(.system(size: screen.size.width * 0.12, weight: .bold, design: .rounded))
                                         .bold()
                                         .foregroundColor(.white)
                                         .frame(maxWidth: .infinity, alignment: .trailing)
+                                        .tracking(10)
                                 }
+                                
+                                Rectangle()
+                                    .fill(Color.white)
+                                    .frame(maxWidth: .infinity, maxHeight: 5)
+                                    .cornerRadius(5)
+                                
+                                
+                                Text(input)
+                                    .font(.system(size: screen.size.width * 0.12, weight: .bold, design: .rounded))
+                                    .bold()
+                                    .foregroundColor(.white)
+                                    .opacity(input == "f" ? 0 : 1)
+                                    .frame(maxWidth: .infinity, alignment: .trailing)
+                                    .tracking(10)
+                                
                                 
                                 
                             } // VStack
-                            .frame(maxWidth: screen.size.width * 0.3)
+                            .frame(maxWidth: screen.size.width * 0.45)
                             
                             Spacer()
                             
                         } // VStack
                         .padding(.top, 20)
-                        .frame(maxHeight: screen.size.height * 0.5)
+                        .frame(maxHeight: screen.size.height * topSize)
                         
+                    } // ZStack
+                    
+                    VStack {
+                        HStack {
+                            ForEach(1...3, id: \.self) { index in
+                                KeyPadButton(id: String(keyNums[index-1]), input: $input, num1: $num1, num2: $num2, answer: $answer, questionCount: $questionCount, correctCount: $correctCount, isGameOver: $isGameOver, mode: mode, difficulty: difficulty, totalQuestions: totalQuestions)
+                            }
+                        }
+                        HStack {
+                            ForEach(4...6, id: \.self) { index in
+                                KeyPadButton(id: String(keyNums[index-1]), input: $input, num1: $num1, num2: $num2, answer: $answer, questionCount: $questionCount, correctCount: $correctCount, isGameOver: $isGameOver, mode: mode, difficulty: difficulty, totalQuestions: totalQuestions)
+                            }
+                        }
+                        HStack {
+                            ForEach(7...9, id: \.self) { index in
+                                KeyPadButton(id: String(keyNums[index-1]), input: $input, num1: $num1, num2: $num2, answer: $answer, questionCount: $questionCount, correctCount: $correctCount, isGameOver: $isGameOver, mode: mode, difficulty: difficulty, totalQuestions: totalQuestions)
+                            }
+                        }
+                        HStack {
+                            ForEach(10...12, id: \.self) { index in
+                                KeyPadButton(id: String(keyNums[index-1]), input: $input, num1: $num1, num2: $num2, answer: $answer, questionCount: $questionCount, correctCount: $correctCount, isGameOver: $isGameOver, mode: mode, difficulty: difficulty, totalQuestions: totalQuestions)
+                            }
+                        }
                     }
-                    Spacer()
+                    .frame(maxHeight: screen.size.height * (1-topSize))
+                    
                                         
                 } // VStack
                 
             } // ZStack
+            .fullScreenCover(isPresented: $isGameOver, content: {
+                EmptyView()
+            })
+            .onDisappear {
+                timer.upstream.connect().cancel()
+            }
             .onAppear() {
                 startTime = times[timeIndex]
                 timeLeft = times[timeIndex]
+                            
             }
+            
         } // GeometryReader
     } // body
     
@@ -168,14 +245,193 @@ struct GameView: View {
         else {
             return "\(min):\(sec)"
         }
-        
-        
     }
+    
     
 } // struct
 
-//struct GameView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        GameView(timeIndex: 1, totalQuestions: 20, mode: "x", difficulty: "easy")
-//    }
-//}
+struct KeyPadButton: View {
+    
+    @State var id: String
+    @Binding var input: String
+    @Binding var num1: Int
+    @Binding var num2: Int
+    @Binding var answer: Int
+    @Binding var questionCount: Int
+    @Binding var correctCount: Int
+    @Binding var isGameOver: Bool
+    
+    
+    var mode: String
+    var difficulty: String
+    var totalQuestions: Int
+    
+    let hapticFeedback = UIImpactFeedbackGenerator(style: .medium)
+    
+    
+    func checkAnswer() {
+        if Int(input) == answer {
+            correctCount += 1
+        }
+        else {
+            hapticFeedback.impactOccurred()
+        }
+        
+        questionCount += 1
+    }
+    
+    func newQuestion() {
+        
+        
+        input = "f"
+        
+        if mode == "+" {
+            if difficulty == "easy" {
+                num1 = Int.random(in: 0...10)
+                num2 = Int.random(in: 0...10)
+            }
+            else if difficulty == "medium" {
+                num1 = Int.random(in: 5...20)
+                num2 = Int.random(in: 5...20)
+            }
+            else {
+                num1 = Int.random(in: 10...40)
+                num2 = Int.random(in: 10...40)
+            }
+            answer = num1 + num2
+        }
+        else if mode == "-" {
+            if difficulty == "easy" {
+                num1 = Int.random(in: 5...10)
+                num2 = Int.random(in: 0...10)
+                while num2 > num1 {
+                    num2 = Int.random(in: 0...10)
+                }
+            }
+            else if difficulty == "medium" {
+                num1 = Int.random(in: 10...30)
+                num2 = Int.random(in: 0...30)
+                while num2 > num1 {
+                    num2 = Int.random(in: 0...30)
+                }
+            }
+            else {
+                num1 = Int.random(in: 10...60)
+                num2 = Int.random(in: 0...60)
+                while num2 > num1 {
+                    num2 = Int.random(in: 0...60)
+                }
+            }
+            answer = num1 - num2
+        }
+        else if mode == "x" {
+            if difficulty == "easy" {
+                num1 = Int.random(in: 0...5)
+                num2 = Int.random(in: 0...5)
+            }
+            else if difficulty == "medium" {
+                num1 = Int.random(in: 0...12)
+                num2 = Int.random(in: 0...12)
+            }
+            else {
+                num1 = Int.random(in: 0...20)
+                num2 = Int.random(in: 0...20)
+                
+            }
+            answer = num1 * num2
+        }
+        else {
+            if difficulty == "easy" {
+                num1 = Int.random(in: 10...20)
+                num2 = Int.random(in: 1...10)
+                
+                while num1 % num2 != 0 {
+                    num1 = Int.random(in: 10...20)
+                    num2 = Int.random(in: 1...10)
+                }
+            }
+            else if difficulty == "medium" {
+                num1 = Int.random(in: 10...144)
+                num2 = Int.random(in: 2...20)
+                
+                while num1 % num2 != 0 {
+                    num1 = Int.random(in: 10...144)
+                    num2 = Int.random(in: 2...20)
+                }
+                
+            }
+            else {
+                num1 = Int.random(in: 10...400)
+                num2 = Int.random(in: 10...50)
+                
+                while num1 % num2 != 0 {
+                    num1 = Int.random(in: 10...400)
+                    num2 = Int.random(in: 10...50)
+                }
+            }
+            answer = num1 / num2
+        }
+    }
+    
+    var body: some View {
+        Button {
+            if Int(id) == 10 {
+                input.remove(at: input.index(before: input.endIndex))
+                if input.count == 0 {
+                    input = "f"
+                }
+            }
+            else if Int(id) == 11 {
+                checkAnswer()
+                newQuestion()
+                if questionCount > totalQuestions {
+                    isGameOver = true
+                }
+            }
+            else {
+                if input == "f" {
+                    input = id
+                }
+                else {
+                    if input.count < 3 {
+                        input.append(id)
+                    }
+                }
+            }
+        } label: {
+            
+            if Int(id) == 10 {
+                Image(systemName: "delete.left")
+                    .font(.title3)
+                    .bold()
+                    .foregroundColor(Color.red)
+                    .padding()
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            }
+            else if Int(id) == 11 {
+                Image(systemName: "checkmark")
+                    .font(.title3)
+                    .bold()
+                    .foregroundColor(Color.green)
+                    .padding()
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            }
+            else {
+                Text(id)
+                    .font(.title3)
+                    .bold()
+                    .foregroundColor(Color("textColor"))
+                    .padding()
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            }
+        }
+        .disabled(input == "f" && (Int(id) == 10 || Int(id) == 11) ? true : false)
+        .opacity(input == "f" && (Int(id) == 10 || Int(id) == 11) ? 0.4 : 1)
+        .onAppear {
+            newQuestion()
+        }
+    }
+}
+
+
+

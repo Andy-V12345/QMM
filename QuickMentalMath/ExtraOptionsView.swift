@@ -124,31 +124,4 @@ struct ExtraOptionsView: View {
 }
 
 
-//struct TimeButton: View {
-//
-//    @State var text: String
-//    @Binding var selectedTimes: [String: Bool]
-//
-//    var body: some View {
-//        Button {
-//            self.selectedTimes[text] = true
-//
-//            for key in selectedTimes.keys {
-//                if key != text {
-//                    self.selectedTimes[key] = false
-//                }
-//            }
-//
-//        } label: {
-//            ZStack {
-//                Color("bgColor")
-//                    .clipShape(RoundedRectangle(cornerRadius: 30))
-//                    .opacity(selectedTimes[text]! ? 0.5 : 1.0)
-//                Text(text)
-//                    .font(.title2)
-//                    .bold()
-//                    .foregroundColor(.white)
-//            }
-//        }
-//    }
-//}
+
