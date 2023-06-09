@@ -25,6 +25,7 @@ extension View {
 
 struct ContentView: View {
     
+    
     @State var pulsingAmount = 0.95
     @State var showOptions = false
     

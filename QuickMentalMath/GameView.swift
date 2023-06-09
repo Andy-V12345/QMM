@@ -5,8 +5,6 @@
 //  Created by Andy Vu on 5/15/23.
 //
 
-// TODO: implement game flow (end game)
-
 import SwiftUI
 
 struct GameView: View {
@@ -18,9 +16,7 @@ struct GameView: View {
     @Binding var timeIndex: Int
     
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
-    
-    @Environment(\.dismiss) var dismiss
-    
+        
     @State var totalQuestions: Int
     @State var mode: String
     @State var difficulty: String
@@ -41,10 +37,13 @@ struct GameView: View {
     @State var correctCount: Int = 0
     
     @State var isGameOver = false
+    @State var isGoHome = false
     
     var keyColumns: [GridItem] = Array(repeating: .init(.flexible(), spacing: 0, alignment: .center), count: 3)
     
     var keyNums = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 0, 11]
+    
+    @State var missedQuestions: [MissedQuestion] = []
     
     
     var body: some View {
@@ -67,8 +66,11 @@ struct GameView: View {
                                     .padding(.horizontal)
                                     .padding(.vertical, 10)
                                     .onTapGesture {
-                                        dismiss()
+                                        isGoHome = true
                                     }
+                                    .fullScreenCover(isPresented: $isGoHome, content: {
+                                        ContentView()
+                                    })
                                 
                             })
                         
@@ -80,7 +82,7 @@ struct GameView: View {
                                 Spacer()
                                                                 
                                 VStack(spacing: 5) {
-                                    Text("\(questionCount) / \(totalQuestions)")
+                                    Text("\(questionCount > totalQuestions ? totalQuestions : questionCount) / \(totalQuestions)")
                                         .font(.title)
                                         .foregroundColor(.white)
                                         .bold()
@@ -118,6 +120,7 @@ struct GameView: View {
                                         timeLeft -= 1
                                     }
                                     else {
+                                        timer.upstream.connect().cancel()
                                         isGameOver = true
                                     }
                                 }
@@ -194,22 +197,22 @@ struct GameView: View {
                     VStack {
                         HStack {
                             ForEach(1...3, id: \.self) { index in
-                                KeyPadButton(id: String(keyNums[index-1]), input: $input, num1: $num1, num2: $num2, answer: $answer, questionCount: $questionCount, correctCount: $correctCount, isGameOver: $isGameOver, mode: mode, difficulty: difficulty, totalQuestions: totalQuestions)
+                                KeyPadButton(id: String(keyNums[index-1]), input: $input, num1: $num1, num2: $num2, answer: $answer, questionCount: $questionCount, correctCount: $correctCount, isGameOver: $isGameOver, missedQuestions: $missedQuestions, mode: mode, difficulty: difficulty, totalQuestions: totalQuestions)
                             }
                         }
                         HStack {
                             ForEach(4...6, id: \.self) { index in
-                                KeyPadButton(id: String(keyNums[index-1]), input: $input, num1: $num1, num2: $num2, answer: $answer, questionCount: $questionCount, correctCount: $correctCount, isGameOver: $isGameOver, mode: mode, difficulty: difficulty, totalQuestions: totalQuestions)
+                                KeyPadButton(id: String(keyNums[index-1]), input: $input, num1: $num1, num2: $num2, answer: $answer, questionCount: $questionCount, correctCount: $correctCount, isGameOver: $isGameOver, missedQuestions: $missedQuestions, mode: mode, difficulty: difficulty, totalQuestions: totalQuestions)
                             }
                         }
                         HStack {
                             ForEach(7...9, id: \.self) { index in
-                                KeyPadButton(id: String(keyNums[index-1]), input: $input, num1: $num1, num2: $num2, answer: $answer, questionCount: $questionCount, correctCount: $correctCount, isGameOver: $isGameOver, mode: mode, difficulty: difficulty, totalQuestions: totalQuestions)
+                                KeyPadButton(id: String(keyNums[index-1]), input: $input, num1: $num1, num2: $num2, answer: $answer, questionCount: $questionCount, correctCount: $correctCount, isGameOver: $isGameOver, missedQuestions: $missedQuestions, mode: mode, difficulty: difficulty, totalQuestions: totalQuestions)
                             }
                         }
                         HStack {
                             ForEach(10...12, id: \.self) { index in
-                                KeyPadButton(id: String(keyNums[index-1]), input: $input, num1: $num1, num2: $num2, answer: $answer, questionCount: $questionCount, correctCount: $correctCount, isGameOver: $isGameOver, mode: mode, difficulty: difficulty, totalQuestions: totalQuestions)
+                                KeyPadButton(id: String(keyNums[index-1]), input: $input, num1: $num1, num2: $num2, answer: $answer, questionCount: $questionCount, correctCount: $correctCount, isGameOver: $isGameOver, missedQuestions: $missedQuestions, mode: mode, difficulty: difficulty, totalQuestions: totalQuestions)
                             }
                         }
                     }
@@ -220,16 +223,18 @@ struct GameView: View {
                 
             } // ZStack
             .fullScreenCover(isPresented: $isGameOver, content: {
-                EmptyView()
+                EndGameView(score: correctCount, totalQuestions: totalQuestions, timeIndex: timeIndex, mode: mode, difficulty: difficulty, missedQuestions: self.missedQuestions)
             })
-            .onDisappear {
-                timer.upstream.connect().cancel()
-            }
             .onAppear() {
                 startTime = times[timeIndex]
                 timeLeft = times[timeIndex]
-                            
             }
+            .onChange(of: isGameOver, perform: { new in
+                timer.upstream.connect().cancel()
+            })
+            .onChange(of: isGoHome, perform: { new in
+                timer.upstream.connect().cancel()
+            })
             
         } // GeometryReader
     } // body
@@ -260,7 +265,7 @@ struct KeyPadButton: View {
     @Binding var questionCount: Int
     @Binding var correctCount: Int
     @Binding var isGameOver: Bool
-    
+    @Binding var missedQuestions: [MissedQuestion]
     
     var mode: String
     var difficulty: String
@@ -275,6 +280,7 @@ struct KeyPadButton: View {
         }
         else {
             hapticFeedback.impactOccurred()
+            missedQuestions.append(MissedQuestion(question: "\(num1) + \(num2)", userAns: "\(input)", correctAns: "\(answer)"))
         }
         
         questionCount += 1

@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D88D273A2A2D46D800E0EA63 /* EndGameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D88D27392A2D46D800E0EA63 /* EndGameView.swift */; };
+		D88D273C2A2D8AF900E0EA63 /* NunitoSans.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D88D273B2A2D8AF900E0EA63 /* NunitoSans.ttf */; };
+		D88D27432A33824800E0EA63 /* MissedQuestionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D88D27422A33824800E0EA63 /* MissedQuestionsView.swift */; };
 		D89009902A1316BB00ED7459 /* GameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D890098F2A1316BB00ED7459 /* GameView.swift */; };
 		D8A455ED2A0DD40D00DCA8DF /* OptionSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8A455EC2A0DD40D00DCA8DF /* OptionSlider.swift */; };
 		D8BAFEF62A09A12400D49C49 /* QuickMentalMathApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8BAFEF52A09A12400D49C49 /* QuickMentalMathApp.swift */; };
@@ -19,7 +22,6 @@
 		D8ED27692A0E25A700092F56 /* OptionsGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8ED27682A0E25A700092F56 /* OptionsGroup.swift */; };
 		D8ED276B2A113DBA00092F56 /* ExtraOptionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8ED276A2A113DBA00092F56 /* ExtraOptionsView.swift */; };
 		D8ED276D2A11453300092F56 /* QuestionSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8ED276C2A11453300092F56 /* QuestionSlider.swift */; };
-		D8F696B32A13E54E007DABE8 /* CanvasView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8F696B22A13E54E007DABE8 /* CanvasView.swift */; };
 		D8F696B52A13EA2F007DABE8 /* MNISTClassifier.mlmodel in Sources */ = {isa = PBXBuildFile; fileRef = D8F696B42A13EA2F007DABE8 /* MNISTClassifier.mlmodel */; };
 /* End PBXBuildFile section */
 
@@ -41,6 +43,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		D88D27392A2D46D800E0EA63 /* EndGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EndGameView.swift; sourceTree = "<group>"; };
+		D88D273B2A2D8AF900E0EA63 /* NunitoSans.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = NunitoSans.ttf; sourceTree = "<group>"; };
+		D88D273D2A2D8B2C00E0EA63 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		D88D27422A33824800E0EA63 /* MissedQuestionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MissedQuestionsView.swift; sourceTree = "<group>"; };
 		D890098F2A1316BB00ED7459 /* GameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameView.swift; sourceTree = "<group>"; };
 		D8A455EC2A0DD40D00DCA8DF /* OptionSlider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptionSlider.swift; sourceTree = "<group>"; };
 		D8BAFEF22A09A12400D49C49 /* QuickMentalMath.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = QuickMentalMath.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -57,7 +63,6 @@
 		D8ED27682A0E25A700092F56 /* OptionsGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptionsGroup.swift; sourceTree = "<group>"; };
 		D8ED276A2A113DBA00092F56 /* ExtraOptionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtraOptionsView.swift; sourceTree = "<group>"; };
 		D8ED276C2A11453300092F56 /* QuestionSlider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuestionSlider.swift; sourceTree = "<group>"; };
-		D8F696B22A13E54E007DABE8 /* CanvasView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasView.swift; sourceTree = "<group>"; };
 		D8F696B42A13EA2F007DABE8 /* MNISTClassifier.mlmodel */ = {isa = PBXFileReference; lastKnownFileType = file.mlmodel; path = MNISTClassifier.mlmodel; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -109,8 +114,10 @@
 		D8BAFEF42A09A12400D49C49 /* QuickMentalMath */ = {
 			isa = PBXGroup;
 			children = (
+				D88D273D2A2D8B2C00E0EA63 /* Info.plist */,
 				D8BAFEF52A09A12400D49C49 /* QuickMentalMathApp.swift */,
 				D8BAFEF72A09A12400D49C49 /* ContentView.swift */,
+				D88D273B2A2D8AF900E0EA63 /* NunitoSans.ttf */,
 				D8A455EC2A0DD40D00DCA8DF /* OptionSlider.swift */,
 				D8ED27682A0E25A700092F56 /* OptionsGroup.swift */,
 				D8BAFEF92A09A12500D49C49 /* Assets.xcassets */,
@@ -120,7 +127,8 @@
 				D8ED276A2A113DBA00092F56 /* ExtraOptionsView.swift */,
 				D8ED276C2A11453300092F56 /* QuestionSlider.swift */,
 				D890098F2A1316BB00ED7459 /* GameView.swift */,
-				D8F696B22A13E54E007DABE8 /* CanvasView.swift */,
+				D88D27392A2D46D800E0EA63 /* EndGameView.swift */,
+				D88D27422A33824800E0EA63 /* MissedQuestionsView.swift */,
 			);
 			path = QuickMentalMath;
 			sourceTree = "<group>";
@@ -254,6 +262,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D88D273C2A2D8AF900E0EA63 /* NunitoSans.ttf in Resources */,
 				D8BAFEFE2A09A12500D49C49 /* Preview Assets.xcassets in Resources */,
 				D8BAFEFA2A09A12500D49C49 /* Assets.xcassets in Resources */,
 			);
@@ -282,11 +291,12 @@
 			files = (
 				D8ED276D2A11453300092F56 /* QuestionSlider.swift in Sources */,
 				D8ED276B2A113DBA00092F56 /* ExtraOptionsView.swift in Sources */,
-				D8F696B32A13E54E007DABE8 /* CanvasView.swift in Sources */,
 				D8BAFEF82A09A12400D49C49 /* ContentView.swift in Sources */,
+				D88D273A2A2D46D800E0EA63 /* EndGameView.swift in Sources */,
 				D8A455ED2A0DD40D00DCA8DF /* OptionSlider.swift in Sources */,
 				D8ED27692A0E25A700092F56 /* OptionsGroup.swift in Sources */,
 				D8BAFEF62A09A12400D49C49 /* QuickMentalMathApp.swift in Sources */,
+				D88D27432A33824800E0EA63 /* MissedQuestionsView.swift in Sources */,
 				D89009902A1316BB00ED7459 /* GameView.swift in Sources */,
 				D8F696B52A13EA2F007DABE8 /* MNISTClassifier.mlmodel in Sources */,
 			);
@@ -447,6 +457,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = QuickMentalMath/Info.plist;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -489,6 +500,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = QuickMentalMath/Info.plist;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
