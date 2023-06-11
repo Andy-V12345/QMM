@@ -46,6 +46,7 @@ struct GameView: View {
     @State var missedQuestions: [MissedQuestion] = []
     
     
+    
     var body: some View {
         GeometryReader { screen in
             ZStack {
@@ -280,7 +281,7 @@ struct KeyPadButton: View {
         }
         else {
             hapticFeedback.impactOccurred()
-            missedQuestions.append(MissedQuestion(question: "\(num1) + \(num2)", userAns: "\(input)", correctAns: "\(answer)"))
+            missedQuestions.append(MissedQuestion(question: "\(num1) \(mode) \(num2)", userAns: "\(input)", correctAns: "\(answer)"))
         }
         
         questionCount += 1

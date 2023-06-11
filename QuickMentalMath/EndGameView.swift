@@ -48,6 +48,9 @@ struct EndGameView: View {
     
     @State var missedQuestions: [MissedQuestion]
     
+    @State var totalQuestionsAnswered: [String: Int] = [:]
+    @State var totalQuestionsCorrect: [String: Int] = [:]
+    
     let hapticFeedback = UIImpactFeedbackGenerator(style: .medium)
     
     var body: some View {
@@ -230,6 +233,30 @@ struct EndGameView: View {
                         UserDefaults.standard.set(score, forKey: "best")
                     }
                     
+                    var modeString = ""
+                    
+                    if mode == "+" {
+                        modeString = "Addition"
+                    }
+                    else if mode == "-" {
+                        modeString = "Subtraction"
+                    }
+                    else if mode == "x" {
+                        modeString = "Multiplication"
+                    }
+                    else {
+                        modeString = "Division"
+                    }
+                    
+                    totalQuestionsCorrect = UserDefaults.standard.dictionary(forKey: "totalCorrect") as! [String: Int]
+                    totalQuestionsAnswered = UserDefaults.standard.dictionary(forKey: "totalAnswered") as! [String: Int]
+                    
+                    totalQuestionsCorrect.updateValue(totalQuestionsCorrect[modeString]! + score, forKey: modeString)
+                    totalQuestionsAnswered.updateValue(totalQuestionsAnswered[modeString]! + totalQuestions, forKey: modeString)
+                    
+                    UserDefaults.standard.set(totalQuestionsCorrect, forKey: "totalCorrect")
+                    UserDefaults.standard.set(totalQuestionsAnswered, forKey: "totalAnswered")
+                    
                 }
                 .opacity(isReviewing ? 0.6 : 1)
                 
@@ -248,8 +275,8 @@ struct EndGameView: View {
     
 }
 
-struct EndGameView_Previews: PreviewProvider {
-    static var previews: some View {
-        EndGameView(score: 20, totalQuestions: 40, timeIndex: 0, mode: "+", difficulty: "easy", missedQuestions: [])
-    }
-}
+//struct EndGameView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        EndGameView(score: 20, totalQuestions: 40, timeIndex: 0, mode: "+", difficulty: "easy", missedQuestions: [])
+//    }
+//}

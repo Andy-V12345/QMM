@@ -38,6 +38,22 @@ struct ContentView: View {
     @State var modeIndex = 0
     @State var difficultyIndex = 0
     
+    @State var isProfileView = false
+    
+    @State var totalQuestionsAnswered: [String: Int] = [
+        "Addition": 0,
+        "Subtraction": 0,
+        "Multiplication": 0,
+        "Division": 0
+    ]
+    
+    @State var totalQuestionsCorrect: [String: Int] = [
+        "Addition": 0,
+        "Subtraction": 0,
+        "Multiplication": 0,
+        "Division": 0
+    ]
+    
     
     var body: some View {
         GeometryReader { screen in
@@ -59,12 +75,15 @@ struct ContentView: View {
                         Spacer()
 
                         Button {
-
+                            isProfileView = true
                         } label: {
                             Image(systemName: "person.circle.fill")
                                 .foregroundColor(Color("textColor"))
                                 .font(.title)
                         }
+                        .sheet(isPresented: $isProfileView, content: {
+                            ProfileView(totalQuestionsAnswered: $totalQuestionsAnswered, totalQuestionsCorrect: $totalQuestionsCorrect, isProfileView: $isProfileView)
+                        })
 
 
                         Spacer()
@@ -195,6 +214,23 @@ struct ContentView: View {
 
 
             } // ZStack
+            .onAppear {
+                if UserDefaults.standard.dictionary(forKey: "totalAnswered") == nil {
+                    UserDefaults.standard.set(self.totalQuestionsAnswered, forKey: "totalAnswered")
+                }
+                else {
+                    self.totalQuestionsAnswered = UserDefaults.standard.dictionary(forKey: "totalAnswered") as! [String: Int]
+                }
+                
+                if UserDefaults.standard.dictionary(forKey: "totalCorrect") == nil {
+                    UserDefaults.standard.set(self.totalQuestionsCorrect, forKey: "totalCorrect")
+                }
+                else {
+                    self.totalQuestionsCorrect = UserDefaults.standard.dictionary(forKey: "totalCorrect") as! [String: Int]
+                }
+                
+                
+            }
         }
     } // body
     

@@ -19,6 +19,7 @@ struct ExtraOptionsView: View {
     @Binding var difficultyIndex: Int
     
     
+    
     var modes: [String] = ["+", "-", "x", "÷"]
     var difficulties: [String] = ["easy", "medium", "hard"]
     

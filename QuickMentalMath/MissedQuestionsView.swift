@@ -58,7 +58,7 @@ struct MissedQuestionsView: View {
         }
         .padding(.top)
         .background(Color.white)
-        .frame(width: .infinity)
+        .frame(maxWidth: .infinity)
     }
 }
 
