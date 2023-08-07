@@ -82,23 +82,23 @@ struct ContentView: View {
                                 .font(.title)
                         }
                         .sheet(isPresented: $isProfileView, content: {
-                            ProfileView(totalQuestionsAnswered: $totalQuestionsAnswered, totalQuestionsCorrect: $totalQuestionsCorrect, isProfileView: $isProfileView)
+                            ProfileView(totalQuestionsAnswered: $totalQuestionsAnswered, totalQuestionsCorrect: $totalQuestionsCorrect, isProfileView: $isProfileView, isIpad: screen.size.width > 500)
                         })
 
 
                         Spacer()
 
                     } // HStack
-                    .padding(.horizontal, 20)
+                    .padding(.horizontal, screen.size.width > 500 ? 60 : 20)
                     .padding(.top, 10)
 
 
                     OptionsGroup(title: "Mode", items: ["Addition", "Subtraction", "Multiplication", "Division"], selectedID: $modeIndex)
-                        .padding(.horizontal, 10)
+                        .padding(.horizontal, screen.size.width > 500 ? 50 : 20)
                         .frame(maxHeight: screen.size.height * 0.23)
-
+                    
                     OptionsGroup(title: "Difficulty", items: ["Easy", "Medium", "Hard"], selectedID: $difficultyIndex)
-                        .padding(.horizontal, 10)
+                        .padding(.horizontal, screen.size.width > 500 ? 50 : 20)
                         .frame(maxHeight: screen.size.height * 0.23)
 
                     Spacer()
@@ -113,7 +113,7 @@ struct ContentView: View {
                         Color("orange")
                             .roundedCorner(25, corners: [.topLeft, .topRight])
                             .ignoresSafeArea()
-                            .frame(maxWidth: screen.size.width*0.9, maxHeight: screen.size.height * 0.35 + extendedHeight)
+                            .frame(maxWidth: screen.size.width > 500 ? screen.size.width*0.8 : screen.size.width*0.9, maxHeight: screen.size.height * 0.35 + extendedHeight)
                             .shadow(radius: 7)
                             .animation(.easeOut(duration: 0.25),
                                        value: extendedHeight

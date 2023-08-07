@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import AVKit
 
 struct AnimatableNumberModifier: AnimatableModifier {
     var number: Double
@@ -51,6 +52,9 @@ struct EndGameView: View {
     @State var totalQuestionsAnswered: [String: Int] = [:]
     @State var totalQuestionsCorrect: [String: Int] = [:]
     
+    @State var audioPlayer: AVAudioPlayer!
+    @State var audioPlayer2: AVAudioPlayer!
+    
     let hapticFeedback = UIImpactFeedbackGenerator(style: .medium)
     
     var body: some View {
@@ -79,14 +83,13 @@ struct EndGameView: View {
                     
                     ZStack {
                        
-                        
                         Color("goColor")
                             .cornerRadius(20)
                             .shadow(radius: 20)
                         
                         
                         
-                        VStack(spacing: 40) {
+                        VStack {
                             
                             Text("Results")
                                 .font(.largeTitle)
@@ -99,56 +102,64 @@ struct EndGameView: View {
 
                                 )
                                 
-                                   
+                            Spacer()
                             
-                            ZStack {
-                                Circle()
-                                    .stroke(Color.white.opacity(0.9),
-                                            style: StrokeStyle(lineWidth: screen.size.width * 0.04))
-                                    .animatingOverlay(for: Double(percentage))
-                                    .font(.system(size: screen.size.width * 0.12, weight: .bold))
-                                    .foregroundColor(.white)
+                            VStack(spacing: screen.size.width > 500 ? 40 : 20) {
+                                Spacer()
+                                ZStack {
+                                    Circle()
+                                        .stroke(Color.white.opacity(0.9),
+                                                style: StrokeStyle(lineWidth: screen.size.width * 0.04))
+                                        .animatingOverlay(for: Double(percentage))
+                                        .font(.system(size: screen.size.width * 0.12, weight: .bold))
+                                        .foregroundColor(.white)
+                                        
                                     
+                                    Circle()
+                                        .trim(from: 0, to: CGFloat(percentage) / 100)
+                                        .stroke(Color("bgColor"),
+                                                style: StrokeStyle(lineWidth: screen.size.width * 0.04, lineCap: .round)
+                                        )
+                                        .rotationEffect(Angle(degrees: -90))
+                                    
+                                } // ZStack
+                                .frame(maxWidth: screen.size.width * 0.55)
+                                .frame(maxHeight: screen.size.width > 500 ? screen.size.height * 0.3 : screen.size.width * 0.55)
                                 
-                                Circle()
-                                    .trim(from: 0, to: CGFloat(percentage) / 100)
-                                    .stroke(Color("bgColor"),
-                                            style: StrokeStyle(lineWidth: screen.size.width * 0.04, lineCap: .round)
-                                    )
-                                    .rotationEffect(Angle(degrees: -90))
                                 
-                            } // ZStack
-                            .frame(maxWidth: screen.size.width * 0.6)
-                            
-                            
-                            HStack {
-                                VStack(spacing: 10) {
-                                    Text("Score")
-                                        .font(.largeTitle)
-                                        .bold()
-                                        .foregroundColor(.white)
-                                    Text("\(score)")
-                                        .font(.title)
-                                        .bold()
-                                        .foregroundColor(.white)
-                                }
-                                .frame(maxWidth: .infinity)
+                                HStack {
+                                    VStack(spacing: 0) {
+                                        Text("Score")
+                                            .font(screen.size.height < 800 ? .title : .largeTitle)
+                                            .bold()
+                                            .foregroundColor(.white)
+                                        Text("\(score)")
+                                            .font(screen.size.height < 800 ? .title2 : .title)
+                                            .bold()
+                                            .foregroundColor(.white)
+                                    }
+                                    .frame(maxWidth: .infinity)
+                                    
+                                    Spacer()
+                                    
+                                    VStack(spacing: 0) {
+                                        Text("Best")
+                                            .font(screen.size.height < 800 ? .title : .largeTitle)
+                                            .bold()
+                                            .foregroundColor(.white)
+                                        Text("\(bestScore)")
+                                            .font(screen.size.height < 800 ? .title2 : .title)
+                                            .bold()
+                                            .foregroundColor(.white)
+                                    }
+                                    .frame(maxWidth: .infinity)
+                                } // HStack
+                                .padding(.horizontal)
                                 
                                 Spacer()
-                                
-                                VStack(spacing: 10) {
-                                    Text("Best")
-                                        .font(.largeTitle)
-                                        .bold()
-                                        .foregroundColor(.white)
-                                    Text("\(bestScore)")
-                                        .font(.title)
-                                        .bold()
-                                        .foregroundColor(.white)
-                                }
-                                .frame(maxWidth: .infinity)
-                            } // HStack
-                            .padding(.horizontal)
+                            }
+                            
+                            
                             
                             Spacer()
                             
@@ -219,13 +230,23 @@ struct EndGameView: View {
                     .frame(maxWidth: .infinity, maxHeight: screen.size.height * 0.1)
                     
                 } // VStack
-                .padding(.top)
+                .padding(.vertical)
                 .onAppear {
                     withAnimation(.linear(duration: 1)) {
                         percentage = (Float(score) / Float(totalQuestions)) * 100
                     }
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                        hapticFeedback.impactOccurred()
+                    
+                    let sound = Bundle.main.path(forResource: "uiButton", ofType: "mp3")
+                    
+                    self.audioPlayer = try! AVAudioPlayer(contentsOf: URL(fileURLWithPath: sound!))
+                    
+                    if score > 0 {
+                                                
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.1) {
+                            hapticFeedback.impactOccurred()
+                            audioPlayer.volume = 1.0
+                            self.audioPlayer.play()
+                        }
                     }
                     
                     if score > bestScore {
@@ -248,15 +269,15 @@ struct EndGameView: View {
                         modeString = "Division"
                     }
                     
-                    totalQuestionsCorrect = UserDefaults.standard.dictionary(forKey: "totalCorrect") as! [String: Int]
-                    totalQuestionsAnswered = UserDefaults.standard.dictionary(forKey: "totalAnswered") as! [String: Int]
-                    
-                    totalQuestionsCorrect.updateValue(totalQuestionsCorrect[modeString]! + score, forKey: modeString)
-                    totalQuestionsAnswered.updateValue(totalQuestionsAnswered[modeString]! + totalQuestions, forKey: modeString)
-                    
-                    UserDefaults.standard.set(totalQuestionsCorrect, forKey: "totalCorrect")
-                    UserDefaults.standard.set(totalQuestionsAnswered, forKey: "totalAnswered")
-                    
+//                    totalQuestionsCorrect = UserDefaults.standard.dictionary(forKey: "totalCorrect") as! [String: Int]
+//                    totalQuestionsAnswered = UserDefaults.standard.dictionary(forKey: "totalAnswered") as! [String: Int]
+//
+//                    totalQuestionsCorrect.updateValue(totalQuestionsCorrect[modeString]! + score, forKey: modeString)
+//                    totalQuestionsAnswered.updateValue(totalQuestionsAnswered[modeString]! + totalQuestions, forKey: modeString)
+//
+//                    UserDefaults.standard.set(totalQuestionsCorrect, forKey: "totalCorrect")
+//                    UserDefaults.standard.set(totalQuestionsAnswered, forKey: "totalAnswered")
+//
                 }
                 .opacity(isReviewing ? 0.6 : 1)
                 
@@ -275,8 +296,8 @@ struct EndGameView: View {
     
 }
 
-//struct EndGameView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        EndGameView(score: 20, totalQuestions: 40, timeIndex: 0, mode: "+", difficulty: "easy", missedQuestions: [])
-//    }
-//}
+struct EndGameView_Previews: PreviewProvider {
+    static var previews: some View {
+        EndGameView(score: 20, totalQuestions: 40, timeIndex: 0, mode: "+", difficulty: "easy", missedQuestions: [])
+    }
+}
