@@ -73,7 +73,7 @@ struct ContentView: View {
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .foregroundColor(Color("textColor"))
                         Spacer()
-
+                        
                         Button {
                             isProfileView = true
                         } label: {
@@ -84,22 +84,30 @@ struct ContentView: View {
                         .sheet(isPresented: $isProfileView, content: {
                             ProfileView(totalQuestionsAnswered: $totalQuestionsAnswered, totalQuestionsCorrect: $totalQuestionsCorrect, isProfileView: $isProfileView, isIpad: screen.size.width > 500)
                         })
-
-
+                        
+                        
                         Spacer()
-
+                        
                     } // HStack
                     .padding(.horizontal, screen.size.width > 500 ? 60 : 20)
                     .padding(.top, 10)
-
-
+                    
+                    
                     OptionsGroup(title: "Mode", items: ["Addition", "Subtraction", "Multiplication", "Division"], selectedID: $modeIndex)
                         .padding(.horizontal, screen.size.width > 500 ? 50 : 20)
                         .frame(maxHeight: screen.size.height * 0.23)
                     
-                    OptionsGroup(title: "Difficulty", items: ["Easy", "Medium", "Hard"], selectedID: $difficultyIndex)
-                        .padding(.horizontal, screen.size.width > 500 ? 50 : 20)
-                        .frame(maxHeight: screen.size.height * 0.23)
+                    if modeIndex < 3 {
+                        OptionsGroup(title: "Difficulty", items: ["Easy", "Medium", "Hard", "Decimals"], selectedID: $difficultyIndex)
+                            .padding(.horizontal, screen.size.width > 500 ? 50 : 20)
+                            .frame(maxHeight: screen.size.height * 0.23)
+                        
+                    }
+                    else {
+                        OptionsGroup(title: "Difficulty", items: ["Easy", "Medium", "Hard"], selectedID: $difficultyIndex)
+                            .padding(.horizontal, screen.size.width > 500 ? 50 : 20)
+                            .frame(maxHeight: screen.size.height * 0.23)
+                    }
 
                     Spacer()
 
@@ -119,10 +127,10 @@ struct ContentView: View {
                                        value: extendedHeight
                             )
 
-                        VStack(spacing: 30) {
+                        VStack(spacing: screen.size.height < 736 && screen.size.width < 390 ? 20 : 30) {
 
                             Text("Next")
-                                .font(.largeTitle)
+                                .font(screen.size.height < 736 && screen.size.width < 390 ? .title : .largeTitle)
                                 .bold()
                                 .foregroundColor(.white)
 
@@ -150,9 +158,8 @@ struct ContentView: View {
                                             .frame(maxWidth: screen.size.height * 0.2)
                                             .shadow(radius: 15)
 
-
                                         Image(systemName: "arrow.up")
-                                            .font(.system(size: 55, weight: .bold))
+                                            .font(.system(size: screen.size.height < 736 && screen.size.width < 390 ? 45 : 55, weight: .bold))
                                             .foregroundColor(.white)
                                     } // ZStack
 

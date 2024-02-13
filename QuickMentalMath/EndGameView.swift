@@ -53,7 +53,6 @@ struct EndGameView: View {
     @State var totalQuestionsCorrect: [String: Int] = [:]
     
     @State var audioPlayer: AVAudioPlayer!
-    @State var audioPlayer2: AVAudioPlayer!
     
     let hapticFeedback = UIImpactFeedbackGenerator(style: .medium)
     
@@ -245,7 +244,9 @@ struct EndGameView: View {
                         DispatchQueue.main.asyncAfter(deadline: .now() + 1.1) {
                             hapticFeedback.impactOccurred()
                             audioPlayer.volume = 1.0
-                            self.audioPlayer.play()
+                            if !UserDefaults.standard.bool(forKey: "isMuted") {
+                                self.audioPlayer.play()
+                            }
                         }
                     }
                     
@@ -254,30 +255,6 @@ struct EndGameView: View {
                         UserDefaults.standard.set(score, forKey: "best")
                     }
                     
-                    var modeString = ""
-                    
-                    if mode == "+" {
-                        modeString = "Addition"
-                    }
-                    else if mode == "-" {
-                        modeString = "Subtraction"
-                    }
-                    else if mode == "x" {
-                        modeString = "Multiplication"
-                    }
-                    else {
-                        modeString = "Division"
-                    }
-                    
-//                    totalQuestionsCorrect = UserDefaults.standard.dictionary(forKey: "totalCorrect") as! [String: Int]
-//                    totalQuestionsAnswered = UserDefaults.standard.dictionary(forKey: "totalAnswered") as! [String: Int]
-//
-//                    totalQuestionsCorrect.updateValue(totalQuestionsCorrect[modeString]! + score, forKey: modeString)
-//                    totalQuestionsAnswered.updateValue(totalQuestionsAnswered[modeString]! + totalQuestions, forKey: modeString)
-//
-//                    UserDefaults.standard.set(totalQuestionsCorrect, forKey: "totalCorrect")
-//                    UserDefaults.standard.set(totalQuestionsAnswered, forKey: "totalAnswered")
-//
                 }
                 .opacity(isReviewing ? 0.6 : 1)
                 

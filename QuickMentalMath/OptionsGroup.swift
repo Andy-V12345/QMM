@@ -14,15 +14,17 @@ struct OptionsGroup: View {
     @Binding var selectedID: Int
     
     var body: some View {
-        VStack(spacing: 5) {
-            Text(title)
-                .font(.title3)
-                .bold()
-                .foregroundColor(Color("textColor"))
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.horizontal, 10)
-            
-            OptionSlider(items: items, selectedIndex: $selectedID)
+        GeometryReader { screen in
+            VStack(spacing: 5) {
+                Text(title)
+                    .font(.title3)
+                    .bold()
+                    .foregroundColor(Color("textColor"))
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal, 10)
+                
+                OptionSlider(items: items, isSmall: screen.size.height < 736 && screen.size.width < 390, selectedIndex: $selectedID)
+            }
         }
     }
 }

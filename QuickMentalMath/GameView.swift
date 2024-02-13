@@ -28,10 +28,10 @@ struct GameView: View {
     
     @State var input: String = "f"
     
-    @State var num1: Int = 0
-    @State var num2: Int = 0
+    @State var num1: Double = 0
+    @State var num2: Double = 0
     
-    @State var answer: Int = 0
+    @State var answer: Double = 0
     
     @State var questionCount: Int = 1
     
@@ -42,11 +42,11 @@ struct GameView: View {
     
     var keyColumns: [GridItem] = Array(repeating: .init(.flexible(), spacing: 0, alignment: .center), count: 3)
     
-    var keyNums = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 0, 11]
+    var keyNums = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 0, 11, 12]
     
     @State var missedQuestions: [MissedQuestion] = []
     
-    @State var isMuted = false
+    @State var isMuted = UserDefaults.standard.bool(forKey: "isMuted")
     
     
     
@@ -87,6 +87,7 @@ struct GameView: View {
                                     .padding(.vertical, screen.size.width > 500 ? 20 : 10)
                                     .onTapGesture {
                                         isMuted.toggle()
+                                        UserDefaults.standard.set(isMuted, forKey: "isMuted")
                                     }
                         
                             })
@@ -98,7 +99,7 @@ struct GameView: View {
                                 
                                 VStack(spacing: 5) {
                                     Text("\(questionCount > totalQuestions ? totalQuestions : questionCount) / \(totalQuestions)")
-                                        .font(.system(size: screen.size.width * 0.055, weight: .bold))
+                                        .font(.system(size: screen.size.width * 0.054, weight: .bold))
                                         .foregroundColor(.white)
                                     Text("Question")
                                         .font(screen.size.width > 500 ? .title : .headline)
@@ -115,7 +116,7 @@ struct GameView: View {
                                                 style: StrokeStyle(lineWidth: screen.size.width > 500 ? screen.size.width * 0.015 : screen.size.width * 0.021))
                                         .overlay() {
                                             Text(startTime <= 180 ? convertTime(seconds: timeLeft) : "∞")
-                                                .font(.system(size: screen.size.width > 500 ? screen.size.width * 0.06 : screen.size.width * 0.07, weight: .bold))
+                                                .font(.system(size: (screen.size.width > 500 || screen.size.height < 736) ? screen.size.width * 0.057 : screen.size.width * 0.065, weight: .bold))
                                                 .foregroundColor(Color.white)
                                         }
                                     if self.startTime <= 180 {
@@ -142,7 +143,7 @@ struct GameView: View {
                                 
                                 VStack(spacing: 5) {
                                     Text("\(correctCount)")
-                                        .font(.system(size: screen.size.width * 0.055, weight: .bold))
+                                        .font(.system(size: screen.size.width * 0.054, weight: .bold))
                                         .foregroundColor(.white)
                                     Text("Correct")
                                         .font(screen.size.width > 500 ? .title : .headline)
@@ -157,27 +158,49 @@ struct GameView: View {
                             
                             Spacer()
                             
+                            // numbers display
+                            
                             VStack(spacing: 10) {
                                 
-                                Text(num1 > num2 ? String(num1) : String(num2))
-                                    .font(.system(size: screen.size.width * 0.1, weight: .bold, design: .rounded))
-                                    .foregroundColor(.white)
-                                    .frame(maxWidth: .infinity, alignment: .trailing)
-                                    .tracking(10)
+                                if difficulty != "decimals" {
+                                    Text(num1 > num2 ? String(Int(num1)) : String(Int(num2)))
+                                        .font(.system(size: screen.size.width * 0.08, weight: .bold, design: .rounded))
+                                        .foregroundColor(.white)
+                                        .frame(maxWidth: .infinity, alignment: .trailing)
+                                        .tracking(screen.size.height < 736 && screen.size.width < 390 ? 5 : 8)
+                                }
+                                else {
+                                    Text(num1 > num2 ? String(format: "%.2f", num1) : String(format: "%.2f", num2))
+                                        .font(.system(size: screen.size.width * 0.08, weight: .bold, design: .rounded))
+                                        .foregroundColor(.white)
+                                        .frame(maxWidth: .infinity, alignment: .trailing)
+                                        .tracking(screen.size.height < 736 && screen.size.width < 390 ? 5 : 8)
+                                }
+                                
                                 HStack {
                                     Text("\(mode)")
-                                        .font(.system(size: screen.size.width * 0.1, weight: .bold, design: .rounded))
+                                        .font(.system(size: screen.size.width * 0.08, weight: .bold, design: .rounded))
                                         .bold()
                                         .foregroundColor(.white)
                                     
                                     Spacer()
                                     
-                                    Text(num1 < num2 ? String(num1) : String(num2))
-                                        .font(.system(size: screen.size.width * 0.1, weight: .bold, design: .rounded))
-                                        .bold()
-                                        .foregroundColor(.white)
-                                        .frame(maxWidth: .infinity, alignment: .trailing)
-                                        .tracking(10)
+                                    if difficulty != "decimals" {
+                                        Text(num1 < num2 ? String(Int(num1)) : String(Int(num2)))
+                                            .font(.system(size: screen.size.width * 0.08, weight: .bold, design: .rounded))
+                                            .bold()
+                                            .foregroundColor(.white)
+                                            .frame(maxWidth: .infinity, alignment: .trailing)
+                                            .tracking(screen.size.height < 736 && screen.size.width < 390 ? 5 : 8)
+                                    }
+                                    else {
+                                        Text(num1 < num2 ? String(format: "%.2f", num1) : String(format: "%.2f", num2))
+                                            .font(.system(size: screen.size.width * 0.08, weight: .bold, design: .rounded))
+                                            .bold()
+                                            .foregroundColor(.white)
+                                            .frame(maxWidth: .infinity, alignment: .trailing)
+                                            .tracking(screen.size.height < 736 && screen.size.width < 390 ? 5 : 8)
+                                    }
                                 }
                                 
                                 Rectangle()
@@ -187,7 +210,7 @@ struct GameView: View {
                                 
                                 
                                 Text(input)
-                                    .font(.system(size: screen.size.width * 0.1, weight: .bold, design: .rounded))
+                                    .font(.system(size: screen.size.width * 0.08, weight: .bold, design: .rounded))
                                     .bold()
                                     .foregroundColor(.white)
                                     .opacity(input == "f" ? 0 : 1)
@@ -197,7 +220,7 @@ struct GameView: View {
                                 
                                 
                             } // VStack
-                            .frame(maxWidth: screen.size.width * 0.41)
+                            .frame(maxWidth: screen.size.width * (difficulty == "decimals" ? 0.5 : 0.45))
                             
                             Spacer()
                             
@@ -206,6 +229,8 @@ struct GameView: View {
                         
                     } // ZStack
                     .frame(maxHeight: screen.size.height * topSize)
+                    
+                    // keypad
                     
                     VStack {
                         HStack {
@@ -228,8 +253,12 @@ struct GameView: View {
                                 KeyPadButton(id: String(keyNums[index-1]), input: $input, num1: $num1, num2: $num2, answer: $answer, questionCount: $questionCount, correctCount: $correctCount, isGameOver: $isGameOver, missedQuestions: $missedQuestions, isIpad: screen.size.width > 500, isMuted: $isMuted, mode: mode, difficulty: difficulty, totalQuestions: totalQuestions)
                             }
                         }
+                        
+                        if difficulty == "decimals" {
+                            KeyPadButton(id: String(keyNums[12]), input: $input, num1: $num1, num2: $num2, answer: $answer, questionCount: $questionCount, correctCount: $correctCount, isGameOver: $isGameOver, missedQuestions: $missedQuestions, isIpad: screen.size.width > 500, isMuted: $isMuted, mode: mode, difficulty: difficulty, totalQuestions: totalQuestions)
+                        }
                     }
-                    .frame(height: screen.size.height * 0.35)
+                    .frame(height: screen.size.height * (1 - topSize))
                     
                     Spacer()
                     
@@ -244,7 +273,7 @@ struct GameView: View {
             .onAppear() {
                 startTime = times[timeIndex]
                 timeLeft = times[timeIndex]
-                
+                topSize = difficulty == "decimals" ? 0.6 : 0.65
                 
             }
             .onChange(of: isGameOver, perform: { new in
@@ -279,9 +308,9 @@ struct KeyPadButton: View {
     
     @State var id: String
     @Binding var input: String
-    @Binding var num1: Int
-    @Binding var num2: Int
-    @Binding var answer: Int
+    @Binding var num1: Double
+    @Binding var num2: Double
+    @Binding var answer: Double
     @Binding var questionCount: Int
     @Binding var correctCount: Int
     @Binding var isGameOver: Bool
@@ -302,7 +331,7 @@ struct KeyPadButton: View {
     
     
     func checkAnswer() -> Bool {
-        return Int(input) == answer
+        return answer.isEqual(to: Double(input)!)
     }
     
     func newQuestion() {
@@ -311,67 +340,81 @@ struct KeyPadButton: View {
         
         if mode == "+" {
             if difficulty == "easy" {
-                num1 = Int.random(in: 0...10)
-                num2 = Int.random(in: 0...10)
+                num1 = Double(Int.random(in: 0...10))
+                num2 = Double(Int.random(in: 0...10))
             }
             else if difficulty == "medium" {
-                num1 = Int.random(in: 5...20)
-                num2 = Int.random(in: 5...20)
+                num1 = Double(Int.random(in: 5...20))
+                num2 = Double(Int.random(in: 5...20))
+            }
+            else if difficulty == "hard" {
+                num1 = Double(Int.random(in: 10...40))
+                num2 = Double(Int.random(in: 10...40))
             }
             else {
-                num1 = Int.random(in: 10...40)
-                num2 = Int.random(in: 10...40)
+                num1 = round(100.0 * Double.random(in: 0.01...10)) / 100.0
+                num2 = round(100.0 * Double.random(in: 0.01...10)) / 100.0
             }
             answer = num1 + num2
         }
         else if mode == "-" {
             if difficulty == "easy" {
-                num1 = Int.random(in: 5...10)
-                num2 = Int.random(in: 0...10)
+                num1 = Double(Int.random(in: 5...10))
+                num2 = Double(Int.random(in: 0...10))
                 while num2 > num1 {
-                    num2 = Int.random(in: 0...10)
+                    num2 = Double(Int.random(in: 0...10))
                 }
             }
             else if difficulty == "medium" {
-                num1 = Int.random(in: 10...30)
-                num2 = Int.random(in: 0...30)
+                num1 = Double(Int.random(in: 10...30))
+                num2 = Double(Int.random(in: 0...30))
                 while num2 > num1 {
-                    num2 = Int.random(in: 0...30)
+                    num2 = Double(Int.random(in: 0...30))
+                }
+            }
+            else if difficulty == "hard" {
+                num1 = Double(Int.random(in: 10...60))
+                num2 = Double(Int.random(in: 5...60))
+                while num2 > num1 {
+                    num2 = Double(Int.random(in: 5...60))
                 }
             }
             else {
-                num1 = Int.random(in: 10...60)
-                num2 = Int.random(in: 0...60)
+                num1 = round(100.0 * Double.random(in: 10...20)) / 100.0
+                num2 = round(100.0 * Double.random(in: 0.01..<10)) / 100.0
                 while num2 > num1 {
-                    num2 = Int.random(in: 0...60)
+                    num2 = round(100.0 * Double.random(in: 0.01..<10)) / 100.0
                 }
             }
             answer = num1 - num2
         }
         else if mode == "x" {
             if difficulty == "easy" {
-                num1 = Int.random(in: 0...5)
-                num2 = Int.random(in: 0...5)
+                num1 = Double(Int.random(in: 1...5))
+                num2 = Double(Int.random(in: 0...5))
             }
             else if difficulty == "medium" {
-                num1 = Int.random(in: 0...12)
-                num2 = Int.random(in: 0...12)
+                num1 = Double(Int.random(in: 1...12))
+                num2 = Double(Int.random(in: 0...12))
+            }
+            else if difficulty == "hard" {
+                num1 = Double(Int.random(in: 1...20))
+                num2 = Double(Int.random(in: 1...20))
             }
             else {
-                num1 = Int.random(in: 0...20)
-                num2 = Int.random(in: 0...20)
-                
+                num1 = round(100.0 * Double.random(in: 0.01...20)) / 100.0
+                num2 = Double(Int.random(in: 1...20))
             }
             answer = num1 * num2
         }
         else {
             if difficulty == "easy" {
-                num1 = Int.random(in: 10...20)
-                num2 = Int.random(in: 1...10)
+                num1 = Double(Int.random(in: 10...20))
+                num2 = Double(Int.random(in: 1...10))
                 
-                while num1 % num2 != 0 {
-                    num1 = Int.random(in: 10...20)
-                    num2 = Int.random(in: 1...10)
+                while Int(num1) % Int(num2) != 0 {
+                    num1 = Double(Int.random(in: 10...20))
+                    num2 = Double(Int.random(in: 1...10))
                 }
             }
             else if difficulty == "medium" {
@@ -381,8 +424,8 @@ struct KeyPadButton: View {
                 
                 let productNums = [choices.randomElement()!, choices.randomElement()!]
                 
-                num1 = productNums[0] * productNums[1]
-                num2 = productNums.randomElement()!
+                num1 = Double(productNums[0] * productNums[1])
+                num2 = Double(productNums.randomElement()!)
                 
             }
             else {
@@ -391,8 +434,8 @@ struct KeyPadButton: View {
                 
                 let productNums = [choices.randomElement()!, choices.randomElement()!]
                 
-                num1 = productNums[0] * productNums[1]
-                num2 = productNums.randomElement()!
+                num1 = Double(productNums[0] * productNums[1])
+                num2 = Double(productNums.randomElement()!)
             }
             answer = num1 / num2
         }
@@ -406,8 +449,9 @@ struct KeyPadButton: View {
                     if input.count == 0 {
                         input = "f"
                     }
+                    
                 }
-                else if Int(id) == 11 {
+                else if Int(id) == 12 {
                     let isCorrect = checkAnswer()
                     
                     if isCorrect {
@@ -431,12 +475,48 @@ struct KeyPadButton: View {
                     }
                     newQuestion()
                 }
+                else if Int(id) == 11 {
+                    if difficulty != "decimals" {
+                        let isCorrect = checkAnswer()
+                        
+                        if isCorrect {
+                            correctCount += 1
+                            if !isMuted {
+                                audioPlayer.play()
+                            }
+                        }
+                        else {
+                            if !isMuted {
+                                audioPlayer2.play()
+                            }
+                            hapticFeedback.impactOccurred()
+                            missedQuestions.append(MissedQuestion(question: "\(num1) \(mode) \(num2)", userAns: "\(input)", correctAns: "\(answer)"))
+                        }
+                        
+                        questionCount += 1
+                        
+                        if questionCount > totalQuestions {
+                            isGameOver = true
+                        }
+                        newQuestion()
+                    }
+                    else {
+                        if input == "f" {
+                            input = "."
+                        }
+                        else {
+                            if input.count < 5 {
+                                input.append(".")
+                            }
+                        }
+                    }
+                }
                 else {
                     if input == "f" {
                         input = id
                     }
                     else {
-                        if input.count < 3 {
+                        if input.count < (difficulty == "decimals" ? 5 : 4) {
                             input.append(id)
                         }
                     }
@@ -463,13 +543,32 @@ struct KeyPadButton: View {
                         .padding()
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
-                else if Int(id) == 11 {
+                else if Int(id) == 12 {
                     Image(systemName: "checkmark")
                         .font(isIpad ? .title : .title3)
                         .bold()
                         .foregroundColor(Color.green)
                         .padding()
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
+                }
+                else if Int(id) == 11 {
+                    if difficulty != "decimals" {
+                        Image(systemName: "checkmark")
+                            .font(isIpad ? .title : .title3)
+                            .bold()
+                            .foregroundColor(Color.green)
+                            .padding()
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    }
+                    else {
+                        Text(".")
+                            .font(isIpad ? .title : .title3)
+                            .bold()
+                            .foregroundColor(Color("textColor"))
+                            .padding()
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    }
+                    
                 }
                 else {
                     Text(id)
@@ -480,8 +579,8 @@ struct KeyPadButton: View {
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
             }
-            .disabled(input == "f" && (Int(id) == 10 || Int(id) == 11) ? true : false)
-            .opacity(input == "f" && (Int(id) == 10 || Int(id) == 11) ? 0.4 : 1)
+            .disabled((input == "f" || input == ".") && (Int(id) == 10 || (Int(id) == 11 && difficulty != "decimals") || Int(id) == 12) ? true : false)
+            .opacity((input == "f" || input == ".") && (Int(id) == 10 || (Int(id) == 11 && difficulty != "decimals") || Int(id) == 12) ? 0.4 : 1)
             .onAppear {
                 
                 newQuestion()

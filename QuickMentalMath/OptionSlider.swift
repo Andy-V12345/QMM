@@ -12,6 +12,7 @@ struct OptionSlider: View {
     let items: [String]
     @State var color: Color?
     @State var borderRadius: CGFloat?
+    let isSmall: Bool?
     
     @Binding var selectedIndex: Int
     
@@ -25,7 +26,7 @@ struct OptionSlider: View {
                         .frame(maxWidth: .infinity)
                     Text(item)
                         .foregroundColor(.white)
-                        .font(.title)
+                        .font(isSmall! ? .title2 : .title)
                         .bold()
                     if tabId! < items.count-1 {
                         Image(systemName: "chevron.right")
@@ -56,6 +57,11 @@ struct OptionSlider: View {
                 
 
                 
+            }
+        }
+        .onAppear {
+            if selectedIndex >= items.count {
+                selectedIndex = items.count - 1
             }
         }
         .tabViewStyle(.page(indexDisplayMode: .never))
