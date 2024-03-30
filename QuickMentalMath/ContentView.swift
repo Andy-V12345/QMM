@@ -24,18 +24,14 @@ extension View {
 }
 
 struct ContentView: View {
+        
+    @State var width1: CGFloat = 0
+    @State var width2: CGFloat = 0
+    @State var width3: CGFloat = 0
+    @State var width4: CGFloat = 0
     
-    
-    @State var pulsingAmount = 0.95
-    @State var showOptions = false
-    
-    @State var extendedHeight: CGFloat = 0
-    
-    let hapticFeedback = UIImpactFeedbackGenerator(style: .medium)
-    
-    @State var maxExtend = false
-    
-    @State var modeIndex = 0
+        
+    @State var modeIndex = -1
     @State var difficultyIndex = 0
     
     @State var isProfileView = false
@@ -58,186 +54,167 @@ struct ContentView: View {
     var body: some View {
         GeometryReader { screen in
             ZStack {
-
-                VStack(spacing: 0) {
-                    Color.white.ignoresSafeArea()
-                    Color("textColor").ignoresSafeArea()
-                        .frame(height: screen.size.height * 0.3)
-                }
-
-                VStack(alignment: .center, spacing: 20) {
-                    HStack {
-                        Text("Welcome!")
-                            .font(.largeTitle)
-                            .bold()
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .foregroundColor(Color("textColor"))
-                        Spacer()
-                        
-                        Button {
-                            isProfileView = true
-                        } label: {
-                            Image(systemName: "person.circle.fill")
-                                .foregroundColor(Color("textColor"))
-                                .font(.title)
-                        }
-                        .sheet(isPresented: $isProfileView, content: {
-                            ProfileView(totalQuestionsAnswered: $totalQuestionsAnswered, totalQuestionsCorrect: $totalQuestionsCorrect, isProfileView: $isProfileView, isIpad: screen.size.width > 500)
-                        })
-                        
-                        
-                        Spacer()
-                        
-                    } // HStack
-                    .padding(.horizontal, screen.size.width > 500 ? 60 : 20)
-                    .padding(.top, 10)
-                    
-                    
-                    OptionsGroup(title: "Mode", items: ["Addition", "Subtraction", "Multiplication", "Division"], selectedID: $modeIndex)
-                        .padding(.horizontal, screen.size.width > 500 ? 50 : 20)
-                        .frame(maxHeight: screen.size.height * 0.23)
-                    
-                    if modeIndex < 3 {
-                        OptionsGroup(title: "Difficulty", items: ["Easy", "Medium", "Hard", "Decimals"], selectedID: $difficultyIndex)
-                            .padding(.horizontal, screen.size.width > 500 ? 50 : 20)
-                            .frame(maxHeight: screen.size.height * 0.23)
-                        
-                    }
-                    else {
-                        OptionsGroup(title: "Difficulty", items: ["Easy", "Medium", "Hard"], selectedID: $difficultyIndex)
-                            .padding(.horizontal, screen.size.width > 500 ? 50 : 20)
-                            .frame(maxHeight: screen.size.height * 0.23)
-                    }
-
-                    Spacer()
-
-
-
-                } // VStack
-
                 VStack {
-                    Spacer()
-                    ZStack {
-                        Color("orange")
-                            .roundedCorner(25, corners: [.topLeft, .topRight])
-                            .ignoresSafeArea()
-                            .frame(maxWidth: screen.size.width > 500 ? screen.size.width*0.8 : screen.size.width*0.9, maxHeight: screen.size.height * 0.35 + extendedHeight)
-                            .shadow(radius: 7)
-                            .animation(.easeOut(duration: 0.25),
-                                       value: extendedHeight
-                            )
-
-                        VStack(spacing: screen.size.height < 736 && screen.size.width < 390 ? 20 : 30) {
-
-                            Text("Next")
-                                .font(screen.size.height < 736 && screen.size.width < 390 ? .title : .largeTitle)
-                                .bold()
-                                .foregroundColor(.white)
-
-
-                            ZStack {
-
-                                Button {
-                                    extendedHeight = screen.size.height * 0.65 - screen.size.height * 0.35
-                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
-
-                                        hapticFeedback.impactOccurred()
-                                        showOptions = true
-                                    }
-
-                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                                        extendedHeight = 0
-                                    }
-
-
-                                } label: {
-                                    ZStack {
-                                        Circle()
-                                            .stroke(Color("textColor"), lineWidth: 5)
-                                            .background(Circle().fill(Color("goColor")))
-                                            .frame(maxWidth: screen.size.height * 0.2)
-                                            .shadow(radius: 15)
-
-                                        Image(systemName: "arrow.up")
-                                            .font(.system(size: screen.size.height < 736 && screen.size.width < 390 ? 45 : 55, weight: .bold))
-                                            .foregroundColor(.white)
-                                    } // ZStack
-
-                                }
-                                .sheet(isPresented: $showOptions, content: {
-                                    ExtraOptionsView(modeIndex: $modeIndex, difficultyIndex: $difficultyIndex)
-                                })
-                            }
-
-                            Spacer()
-
+                    Color.white.ignoresSafeArea()
+                }
+                
+                VStack(alignment: .leading, spacing: 30) {
+                    VStack {
+                        Text("Welcome to QMM!")
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .foregroundStyle(Color("darkPurple"))
+                            .fontWeight(.semibold)
+                            .font(screen.size.height < 700 ? .headline : .title2)
+                        
+                        Text("Choose a mode")
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .foregroundStyle(Color("darkPurple"))
+                            .font(screen.size.height < 700 ? .title : .largeTitle)
+                            .bold()
+                    }
+                    .padding(.horizontal, 20)
+                    
+                                        
+                    HStack(spacing: 0) {
+                        Text("Addition")
+                            .frame(maxWidth: .infinity, alignment: .center)
+                            .font(.title2)
+                            .fontWeight(.bold)
+                            .foregroundStyle(Color("pastelPurple"))
+                        Image(systemName: "plus")
+                            .padding(.horizontal, 20)
+                            .font(.title2)
+                            .frame(maxHeight: .infinity)
+                            .roundedCorner(10, corners: [.topRight, .bottomRight])
+                            .background(Color("pastelPurple"))
+                            .foregroundStyle(.white)
+                            .fontWeight(.semibold)
+                            
+                    }
+                    .frame(maxWidth: .infinity)
+                    .frame(width: modeIndex != 0 ? screen.size.width * 0.75 : screen.size.width * 0.95, height: screen.size.height < 700 ? 80 : 100)
+                    .background(.white)
+                    .roundedCorner(10, corners: [.topRight, .bottomRight])
+                    .shadow(color: modeIndex == 0 ? Color("lightPurple") : Color.black.opacity(0.2), radius: modeIndex == 0 ? 8 : 3)
+                    .padding(0)
+                    .onTapGesture {
+                        modeIndex = 0
+                    }
+                    .animation(.spring(duration: 0.3, bounce: 0.6), value: modeIndex)
+                    
+                    HStack {
+                        Spacer()
+                        HStack(spacing: 0) {
+                            Image(systemName: "minus")
+                                .padding(.horizontal, 20)
+                                .font(.title2)
+                                .frame(maxHeight: .infinity)
+                                .roundedCorner(10, corners: [.topLeft, .bottomLeft])
+                                .background(Color("pastelBlue"))
+                                .foregroundStyle(.white)
+                                .fontWeight(.semibold)
+                            
+                            Text("Subtraction")
+                                .frame(maxWidth: .infinity, alignment: .center)
+                                .font(.title2)
+                                .fontWeight(.bold)
+                                .foregroundStyle(Color("pastelBlue"))
+                            
                         }
-                        .padding(.top, 30)
-                        .frame(maxHeight: screen.size.height * 0.35 + extendedHeight)
-                        .animation(.easeOut(duration: 0.25),
-                                   value: extendedHeight
-                        )
+                        .frame(maxWidth: .infinity)
+                        .frame(width: modeIndex != 1 ? screen.size.width * 0.75 : screen.size.width * 0.95, height: screen.size.height < 700 ? 80 : 100)
+                        .background(.white)
+                        .roundedCorner(10, corners: [.topLeft, .bottomLeft])
+                        .shadow(color: modeIndex == 1 ? Color("lightBlue") : Color.black.opacity(0.2), radius: modeIndex == 1 ? 8 : 3)
+                        .onTapGesture {
+                            
+                            modeIndex = 1
+                            
+                        }
+                        .animation(.spring(duration: 0.3, bounce: 0.6), value: modeIndex)
+                    }
+                    
+                    HStack(spacing: 0) {
+                        Text("Multiplication")
+                            .frame(maxWidth: .infinity, alignment: .center)
+                            .font(.title2)
+                            .fontWeight(.bold)
+                            .foregroundStyle(Color("pastelRed"))
+                        Image(systemName: "multiply")
+                            .padding(.horizontal, 20)
+                            .font(.title2)
+                            .frame(maxHeight: .infinity)
+                            .roundedCorner(10, corners: [.topRight, .bottomRight])
+                            .background(Color("pastelRed"))
+                            .foregroundStyle(.white)
+                            .fontWeight(.semibold)
+                            
+                    }
+                    .frame(maxWidth: .infinity)
+                    .frame(width: modeIndex != 2 ? screen.size.width * 0.75 : screen.size.width * 0.95, height: screen.size.height < 700 ? 80 : 100)
+                    .background(.white)
+                    .roundedCorner(10, corners: [.topRight, .bottomRight])
+                    .shadow(color: modeIndex == 2 ? Color("pastelRed") : Color.black.opacity(0.2), radius: modeIndex == 2 ? 8 : 3)
+                    .onTapGesture {
+                        modeIndex = 2
+                    }
+                    .animation(.spring(duration: 0.3, bounce: 0.6), value: modeIndex)
+                    
+                    HStack {
+                        Spacer()
+                        HStack(spacing: 0) {
+                            Image(systemName: "divide")
+                                .padding(.horizontal, 20)
+                                .font(.title2)
+                                .frame(maxHeight: .infinity)
+                                .roundedCorner(10, corners: [.topLeft, .bottomLeft])
+                                .background(Color("pastelGreen"))
+                                .foregroundStyle(.white)
+                                .fontWeight(.semibold)
+                            
+                            Text("Division")
+                                .frame(maxWidth: .infinity, alignment: .center)
+                                .font(.title2)
+                                .fontWeight(.bold)
+                                .foregroundStyle(Color("pastelGreen"))
+                            
+                        }
+                        .frame(maxWidth: .infinity)
+                        .frame(width: modeIndex != 3 ? screen.size.width * 0.75 : screen.size.width * 0.95, height: screen.size.height < 700 ? 80 : 100)
+                        .background(.white)
+                        .roundedCorner(10, corners: [.topLeft, .bottomLeft])
+                        .shadow(color: modeIndex == 3 ? Color("lightGreen") : Color.black.opacity(0.2), radius: modeIndex == 3 ? 8 : 3)
+                        .onTapGesture {
+                            modeIndex = 3
+                        }
+                        .animation(.spring(duration: 0.3, bounce: 0.6), value: modeIndex)
+                    }
+                    
+                    
+                    Button(action: {
+                        
+                    }, label: {
+                        Text("Confirm")
+                            .font(.title2)
+                            .fontWeight(.medium)
+                            .foregroundStyle(.white)
+                            .padding(.vertical, 18)
+                            .frame(maxWidth: .infinity, alignment: .center)
+                            .background(Color("darkPurple"))
+                            .roundedCorner(10, corners: .allCorners)
+                    })
+                    .padding(.horizontal, 20)
+                    .shadow(radius: 3)
+                    .opacity(modeIndex == -1 ? 0.6 : 1)
+                    .disabled(modeIndex == -1)
 
-
-
-
-                    } // ZStack
-                    .gesture(
-                        DragGesture(minimumDistance: 30)
-                            .onEnded{_ in
-                                extendedHeight = 0
-                                if maxExtend {
-                                    hapticFeedback.impactOccurred()
-                                    maxExtend = false
-                                    self.showOptions = true
-                                }
-
-                                maxExtend = false
-
-
-                            }
-                            .onChanged{ value in
-                                let offset = (value.location.y - value.startLocation.y) * -1
-
-                                var tmp = extendedHeight
-
-                                tmp = max(0, tmp + offset)
-
-
-                                if screen.size.height*0.35 + tmp <= screen.size.height*0.65 {
-                                    extendedHeight = tmp
-                                    maxExtend = false
-                                }
-                                else {
-                                    maxExtend = true
-                                }
-
-
-                            }
-
-                    )
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-
-
-            } // ZStack
-            .onAppear {
-                if UserDefaults.standard.dictionary(forKey: "totalAnswered") == nil {
-                    UserDefaults.standard.set(self.totalQuestionsAnswered, forKey: "totalAnswered")
-                }
-                else {
-                    self.totalQuestionsAnswered = UserDefaults.standard.dictionary(forKey: "totalAnswered") as! [String: Int]
-                }
+                    Spacer()
+                                
+        
+                } //: VStack
+                .padding(.vertical, 10)
                 
-                if UserDefaults.standard.dictionary(forKey: "totalCorrect") == nil {
-                    UserDefaults.standard.set(self.totalQuestionsCorrect, forKey: "totalCorrect")
-                }
-                else {
-                    self.totalQuestionsCorrect = UserDefaults.standard.dictionary(forKey: "totalCorrect") as! [String: Int]
-                }
-                
-                
-            }
+            } //: ZStack
         }
     } // body
     
