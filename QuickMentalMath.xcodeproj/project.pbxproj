@@ -22,6 +22,7 @@
 		D8BAFF082A09A12500D49C49 /* QuickMentalMathTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8BAFF072A09A12500D49C49 /* QuickMentalMathTests.swift */; };
 		D8BAFF122A09A12500D49C49 /* QuickMentalMathUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8BAFF112A09A12500D49C49 /* QuickMentalMathUITests.swift */; };
 		D8BAFF142A09A12500D49C49 /* QuickMentalMathUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8BAFF132A09A12500D49C49 /* QuickMentalMathUITestsLaunchTests.swift */; };
+		D8E279222BB8E36D009B029E /* DifficultySelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8E279212BB8E36D009B029E /* DifficultySelector.swift */; };
 		D8ED27692A0E25A700092F56 /* OptionsGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8ED27682A0E25A700092F56 /* OptionsGroup.swift */; };
 		D8ED276B2A113DBA00092F56 /* ExtraOptionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8ED276A2A113DBA00092F56 /* ExtraOptionsView.swift */; };
 		D8ED276D2A11453300092F56 /* QuestionSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8ED276C2A11453300092F56 /* QuestionSlider.swift */; };
@@ -65,6 +66,7 @@
 		D8BAFF0D2A09A12500D49C49 /* QuickMentalMathUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = QuickMentalMathUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D8BAFF112A09A12500D49C49 /* QuickMentalMathUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickMentalMathUITests.swift; sourceTree = "<group>"; };
 		D8BAFF132A09A12500D49C49 /* QuickMentalMathUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickMentalMathUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		D8E279212BB8E36D009B029E /* DifficultySelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DifficultySelector.swift; sourceTree = "<group>"; };
 		D8ED27682A0E25A700092F56 /* OptionsGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptionsGroup.swift; sourceTree = "<group>"; };
 		D8ED276A2A113DBA00092F56 /* ExtraOptionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtraOptionsView.swift; sourceTree = "<group>"; };
 		D8ED276C2A11453300092F56 /* QuestionSlider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuestionSlider.swift; sourceTree = "<group>"; };
@@ -98,6 +100,7 @@
 		D8BAFEE92A09A12400D49C49 = {
 			isa = PBXGroup;
 			children = (
+				D8E279212BB8E36D009B029E /* DifficultySelector.swift */,
 				D8BAFEF42A09A12400D49C49 /* QuickMentalMath */,
 				D8BAFF062A09A12500D49C49 /* QuickMentalMathTests */,
 				D8BAFF102A09A12500D49C49 /* QuickMentalMathUITests */,
@@ -306,6 +309,7 @@
 				D8BAFEF62A09A12400D49C49 /* QuickMentalMathApp.swift in Sources */,
 				D88D27432A33824800E0EA63 /* MissedQuestionsView.swift in Sources */,
 				D89009902A1316BB00ED7459 /* GameView.swift in Sources */,
+				D8E279222BB8E36D009B029E /* DifficultySelector.swift in Sources */,
 				D88D27452A35438000E0EA63 /* ProfileView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

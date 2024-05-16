@@ -16,7 +16,7 @@ struct ExtraOptionsView: View {
     
     @State var timeIndex = 0
     @Binding var modeIndex: Int
-    @Binding var difficultyIndex: Int
+    @State var difficultyIndex = 0
     
     
     
@@ -36,19 +36,13 @@ struct ExtraOptionsView: View {
                 }
                 
                 VStack {
-                    ZStack {
-                        Color("textColor")
-                            .roundedCorner(30, corners: [.bottomLeft, .bottomRight])
-                            .ignoresSafeArea()
-                        
                         VStack {
-                            
                             HStack {
                                 Button {
                                     presentationMode.wrappedValue.dismiss()
                                 } label: {
                                     Image(systemName: "xmark")
-                                        .foregroundColor(.white)
+                                        .foregroundColor(Color("darkPurple"))
                                         .font(.title3)
                                         .bold()
                                 }
@@ -59,36 +53,41 @@ struct ExtraOptionsView: View {
                             .padding(.top)
                             .frame(maxWidth: .infinity)
                             
-                            VStack(spacing: 20) {
+                            VStack(spacing: 30) {
                                 
-                                QuestionSlider(value: $progress, in: 10...100)
-                                    .frame(maxWidth: metrics.size.height * 0.2, maxHeight: metrics.size.height * 0.2)
-                                Text("Number of Questions")
-                                    .font(metrics.size.height < 736 && metrics.size.width < 390 ? .headline : .title3)
-                                    .foregroundColor(Color.white)
-                                    .bold()
+                                VStack(spacing: 10) {
+                                    QuestionSlider(value: $progress, in: 10...100)
+                                        .frame(maxWidth: metrics.size.height * 0.2, maxHeight: metrics.size.height * 0.2)
+                                    Text("Number of Questions")
+                                        .font(metrics.size.height < 736 && metrics.size.width < 390 ? .headline : .title3)
+                                        .foregroundColor(Color("darkPurple"))
+                                        .bold()
+                                }
+                                
+                                VStack(spacing: 10) {
+                                    DifficultySelector(difficultyIndex: $difficultyIndex)
+                                    Text("Difficulty")
+                                        .font(metrics.size.height < 736 && metrics.size.width < 390 ? .headline : .title3)
+                                        .bold()
+                                        .foregroundColor(Color("darkPurple"))
+                                }
                                 
                                 
-                                VStack(spacing: 15) {
-                                    OptionSlider(items: ["1 min", "2 min", "3 min", "∞ min"], color: Color.white.opacity(0.65), borderRadius: 30, isSmall: metrics.size.height < 736 && metrics.size.width < 390, selectedIndex: $timeIndex)
+                                VStack(spacing: 10) {
+                                    OptionSlider(items: ["1 min", "2 min", "3 min", "∞ min"], color: Color("darkPurple"), borderRadius: 30, isSmall: metrics.size.height < 736 && metrics.size.width < 390, selectedIndex: $timeIndex)
                                     
                                     Text("Time Limit")
                                         .font(metrics.size.height < 736 && metrics.size.width < 390 ? .headline : .title3)
                                         .bold()
-                                        .foregroundColor(.white)
+                                        .foregroundColor(Color("darkPurple"))
                                 }
-                                .padding()
                                 .padding(.bottom, 20)
-                                
                                 
                             }
                             
                             
                         } // VStack
                         
-                        
-                    } // ZStack
-                    .frame(maxHeight: metrics.size.height * (metrics.size.height < 736 ? 0.7 : 0.65))
                     
                     Spacer()
                     
