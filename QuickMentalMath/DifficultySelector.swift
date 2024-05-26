@@ -12,7 +12,7 @@ struct DifficultySelector: View {
     @Binding var difficultyIndex: Int
         
     var body: some View {
-        HStack {
+        VStack(spacing: 15) {
             Button(action: {
                 difficultyIndex = 0
             }, label: {
@@ -21,12 +21,13 @@ struct DifficultySelector: View {
                     .fontWeight(.medium)
                     .padding(.vertical, 10)
                     .padding(.horizontal, 15)
+                    .frame(maxWidth: .infinity)
                     .background(difficultyIndex == 0 ? Color("lightGreen") : .white)
                     .roundedCorner(10, corners: .allCorners)
                     .animation(.easeInOut(duration: 0.25), value: difficultyIndex)
             })
             
-            Divider().frame(width: 1)
+            Divider()
             
             Button(action: {
                 difficultyIndex = 1
@@ -36,12 +37,13 @@ struct DifficultySelector: View {
                     .fontWeight(.medium)
                     .padding(.vertical, 10)
                     .padding(.horizontal, 15)
+                    .frame(maxWidth: .infinity)
                     .background(difficultyIndex == 1 ? Color("lightYellow") : .white)
                     .roundedCorner(10, corners: .allCorners)
                     .animation(.easeInOut(duration: 0.25), value: difficultyIndex)
             })
             
-            Divider().frame(width: 1)
+            Divider()
             
             Button(action: {
                 difficultyIndex = 2
@@ -51,12 +53,13 @@ struct DifficultySelector: View {
                     .fontWeight(.medium)
                     .padding(.vertical, 10)
                     .padding(.horizontal, 15)
+                    .frame(maxWidth: .infinity)
                     .background(difficultyIndex == 2 ? Color("lightOrange") : .white)
                     .roundedCorner(10, corners: .allCorners)
                     .animation(.easeInOut(duration: 0.25), value: difficultyIndex)
             })
             
-            Divider().frame(width: 1)
+            Divider()
             
             Button(action: {
                 difficultyIndex = 3
@@ -66,12 +69,12 @@ struct DifficultySelector: View {
                     .fontWeight(.medium)
                     .padding(.vertical, 10)
                     .padding(.horizontal, 15)
+                    .frame(maxWidth: .infinity)
                     .background(difficultyIndex == 3 ? Color("lightRed") : .white)
                     .roundedCorner(10, corners: .allCorners)
                     .animation(.easeInOut(duration: 0.25), value: difficultyIndex)
             })
             
         }
-        .frame(height: 30)
     }
 }
