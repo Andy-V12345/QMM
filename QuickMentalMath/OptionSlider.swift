@@ -26,34 +26,38 @@ struct OptionSlider: View {
                         .frame(maxWidth: .infinity)
                     Text(item)
                         .foregroundColor(.white)
-                        .font(isSmall! ? .title2 : .title)
+                        .font(isSmall! ? .title3 : .title2)
                         .bold()
                     if tabId! < items.count-1 {
-                        Image(systemName: "chevron.right")
-                            .frame(maxWidth: .infinity, alignment: .trailing)
-                            .padding(.horizontal, 30)
-                            .foregroundColor(.white)
-                            .font(.title2)
-                            .bold()
-                            .onTapGesture {
-                                selectedIndex += 1
-                            }
+                        HStack {
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .padding(.horizontal, 20)
+                                .foregroundColor(.white)
+                                .font(.headline)
+                                .bold()
+                                .onTapGesture {
+                                    selectedIndex += 1
+                                }
+                        }
                     }
                     
                     if tabId! > 0 {
-                        Image(systemName: "chevron.left")
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(.horizontal, 30)
-                            .foregroundColor(.white)
-                            .font(.title2)
-                            .bold()
-                            .onTapGesture {
-                                selectedIndex -= 1
-                            }
+                        HStack {
+                            Image(systemName: "chevron.left")
+                                .padding(.horizontal, 20)
+                                .foregroundColor(.white)
+                                .font(.title2)
+                                .bold()
+                                .onTapGesture {
+                                    selectedIndex -= 1
+                                }
+                            Spacer()
+                        }
                     }
                 }
                 .tag(tabId!)
-                .padding(.horizontal, 10)
+                .padding(.horizontal, 3)
                 
 
                 

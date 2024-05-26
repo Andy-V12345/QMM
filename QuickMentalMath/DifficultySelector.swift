@@ -10,13 +10,16 @@ import SwiftUI
 struct DifficultySelector: View {
     
     @Binding var difficultyIndex: Int
+    
+    @EnvironmentObject private var device: DeviceModel
         
     var body: some View {
-        VStack(spacing: 15) {
+        VStack(spacing: device.isSmall ? 8 : 15) {
             Button(action: {
                 difficultyIndex = 0
             }, label: {
                 Text("Easy")
+                    .font(device.isSmall ? .subheadline : .headline)
                     .foregroundStyle(difficultyIndex == 0 ? .white : Color("lightGreen"))
                     .fontWeight(.medium)
                     .padding(.vertical, 10)
@@ -33,6 +36,7 @@ struct DifficultySelector: View {
                 difficultyIndex = 1
             }, label: {
                 Text("Medium")
+                    .font(device.isSmall ? .subheadline : .headline)
                     .foregroundStyle(difficultyIndex == 1 ? .white : Color("lightYellow"))
                     .fontWeight(.medium)
                     .padding(.vertical, 10)
@@ -49,6 +53,7 @@ struct DifficultySelector: View {
                 difficultyIndex = 2
             }, label: {
                 Text("Hard")
+                    .font(device.isSmall ? .subheadline : .headline)
                     .foregroundStyle(difficultyIndex == 2 ? .white : Color("lightOrange"))
                     .fontWeight(.medium)
                     .padding(.vertical, 10)
@@ -65,6 +70,7 @@ struct DifficultySelector: View {
                 difficultyIndex = 3
             }, label: {
                 Text("Decimals")
+                    .font(device.isSmall ? .subheadline : .headline)
                     .foregroundStyle(difficultyIndex == 3 ? .white : Color("lightRed"))
                     .fontWeight(.medium)
                     .padding(.vertical, 10)

@@ -34,13 +34,8 @@ extension View {
 struct EndGameView: View {
     
     @State var score: Int
-    @State var totalQuestions: Int
     @State var percentage: Float = 0
-    
-    @State var timeIndex: Int
-    @State var mode: String
-    @State var difficulty: String
-    
+        
     @State var isGoHome = false
     @State var isRedo = false
     @State var isReviewing = false
@@ -54,6 +49,8 @@ struct EndGameView: View {
     
     @State var audioPlayer: AVAudioPlayer!
     
+    @EnvironmentObject private var game: GameModel
+    
     let hapticFeedback = UIImpactFeedbackGenerator(style: .medium)
     
     var body: some View {
@@ -63,7 +60,7 @@ struct EndGameView: View {
                     .ignoresSafeArea()
                 VStack {
                     ZStack {
-                        Color("goColor")
+                        Color("lightGreen")
                             .ignoresSafeArea()
                         
                     } // ZStack
@@ -82,12 +79,10 @@ struct EndGameView: View {
                     
                     ZStack {
                        
-                        Color("goColor")
+                        Color(.white)
                             .cornerRadius(20)
                             .shadow(radius: 20)
-                        
-                        
-                        
+                                                
                         VStack {
                             
                             Text("Results")
@@ -95,8 +90,9 @@ struct EndGameView: View {
                                 .bold()
                                 .foregroundColor(.white)
                                 .frame(maxWidth: screen.size.width * 0.5, maxHeight: screen.size.height * 0.08)
+                                .padding(.vertical, 5)
                                 .background(
-                                    Color("bgColor")
+                                    Color("darkPurple")
                                         .roundedCorner(20, corners: [.bottomLeft, .bottomRight])
 
                                 )
@@ -107,16 +103,16 @@ struct EndGameView: View {
                                 Spacer()
                                 ZStack {
                                     Circle()
-                                        .stroke(Color.white.opacity(0.9),
+                                        .stroke(Color.gray.opacity(0.1),
                                                 style: StrokeStyle(lineWidth: screen.size.width * 0.04))
                                         .animatingOverlay(for: Double(percentage))
                                         .font(.system(size: screen.size.width * 0.12, weight: .bold))
-                                        .foregroundColor(.white)
+                                        .foregroundColor(Color("lightGreen"))
                                         
                                     
                                     Circle()
                                         .trim(from: 0, to: CGFloat(percentage) / 100)
-                                        .stroke(Color("bgColor"),
+                                        .stroke(Color("lightGreen"),
                                                 style: StrokeStyle(lineWidth: screen.size.width * 0.04, lineCap: .round)
                                         )
                                         .rotationEffect(Angle(degrees: -90))
@@ -131,11 +127,11 @@ struct EndGameView: View {
                                         Text("Score")
                                             .font(screen.size.height < 800 ? .title : .largeTitle)
                                             .bold()
-                                            .foregroundColor(.white)
+                                            .foregroundColor(Color("darkPurple"))
                                         Text("\(score)")
                                             .font(screen.size.height < 800 ? .title2 : .title)
                                             .bold()
-                                            .foregroundColor(.white)
+                                            .foregroundColor(Color("darkPurple"))
                                     }
                                     .frame(maxWidth: .infinity)
                                     
@@ -145,11 +141,11 @@ struct EndGameView: View {
                                         Text("Best")
                                             .font(screen.size.height < 800 ? .title : .largeTitle)
                                             .bold()
-                                            .foregroundColor(.white)
+                                            .foregroundColor(Color("darkPurple"))
                                         Text("\(bestScore)")
                                             .font(screen.size.height < 800 ? .title2 : .title)
                                             .bold()
-                                            .foregroundColor(.white)
+                                            .foregroundColor(Color("darkPurple"))
                                     }
                                     .frame(maxWidth: .infinity)
                                 } // HStack
@@ -169,70 +165,72 @@ struct EndGameView: View {
                     .frame(maxWidth: screen.size.width * 0.85)
                     .frame(height: screen.size.height * 0.6)
                     
-                    
-                    ZStack {
-                        Color("bgColor")
-                        HStack(spacing: 15) {
-                            Text("Review")
-                                .font(.largeTitle)
-                            Image(systemName: "doc.text.magnifyingglass")
-                                .font(.title)
-                        }
-                        .bold()
-                        .foregroundColor(.white)
-                    }
-                    .cornerRadius(15)
-                    .padding(.horizontal)
-                    .onTapGesture {
-                        withAnimation {
-                            isReviewing = true
-                        }
-                    }
-                    
-                    HStack(spacing: 20) {
-                        ZStack {
-                            Color("bgColor")
-                            Image(systemName: "arrow.counterclockwise")
-                                .font(.title)
-                                .bold()
-                                .foregroundColor(.white)
-                                
-                        }
-                        .onTapGesture {
-                            isRedo = true
-                        }
-                        .fullScreenCover(isPresented: $isRedo, content: {
-                            GameView(timeIndex: $timeIndex, totalQuestions: totalQuestions, mode: mode, difficulty: difficulty)
-                        })
-                        .cornerRadius(15)
+                    VStack(spacing: 10) {
                         
                         ZStack {
-                            Color("bgColor")
-                            Image(systemName: "house.fill")
-                                .font(.title)
-                                .bold()
-                                .foregroundColor(.white)
-                                
+                            Color("darkPurple")
+                            HStack(spacing: 15) {
+                                Text("Review")
+                                    .font(.largeTitle)
+                                Image(systemName: "doc.text.magnifyingglass")
+                                    .font(.title)
+                            }
+                            .bold()
+                            .foregroundColor(.white)
                         }
                         .cornerRadius(15)
+                        .padding(.horizontal)
                         .onTapGesture {
-                            isGoHome = true
+                            withAnimation {
+                                isReviewing = true
+                            }
                         }
-                        .fullScreenCover(isPresented: $isGoHome, content: {
-                            ContentView()
+                        
+                        HStack(spacing: 10) {
+                            ZStack {
+                                Color("darkPurple")
+                                Image(systemName: "arrow.counterclockwise")
+                                    .font(.title)
+                                    .bold()
+                                    .foregroundColor(.white)
+                                
+                            }
+                            .onTapGesture {
+                                isRedo = true
+                            }
+                            .fullScreenCover(isPresented: $isRedo, content: {
+                                GameView()
+                            })
+                            .cornerRadius(15)
                             
-                        })
-
-                        
+                            ZStack {
+                                Color("darkPurple")
+                                Image(systemName: "house.fill")
+                                    .font(.title)
+                                    .bold()
+                                    .foregroundColor(.white)
+                                
+                            }
+                            .cornerRadius(15)
+                            .onTapGesture {
+                                isGoHome = true
+                            }
+                            .fullScreenCover(isPresented: $isGoHome, content: {
+                                ContentView()
+                                
+                            })
+                            
+                            
+                        }
+                        .padding(.horizontal)
+                        .frame(maxWidth: .infinity, maxHeight: screen.size.height * 0.1)
                     }
-                    .padding(.horizontal)
-                    .frame(maxWidth: .infinity, maxHeight: screen.size.height * 0.1)
                     
                 } // VStack
                 .padding(.vertical)
                 .onAppear {
                     withAnimation(.linear(duration: 1)) {
-                        percentage = (Float(score) / Float(totalQuestions)) * 100
+                        percentage = (Float(score) / Float(game.totQuestions)) * 100
                     }
                     
                     let sound = Bundle.main.path(forResource: "uiButton", ofType: "mp3")
@@ -271,10 +269,4 @@ struct EndGameView: View {
         
     } // body
     
-}
-
-struct EndGameView_Previews: PreviewProvider {
-    static var previews: some View {
-        EndGameView(score: 20, totalQuestions: 40, timeIndex: 0, mode: "+", difficulty: "easy", missedQuestions: [])
-    }
 }

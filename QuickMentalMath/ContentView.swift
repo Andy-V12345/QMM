@@ -23,6 +23,34 @@ extension View {
     }
 }
 
+class GameModel: ObservableObject {
+    @Published var mode = ""
+    @Published var difficulty = ""
+    @Published var time: CGFloat = 0
+    @Published var totQuestions = 0
+    
+    var modes: [String] = ["+", "-", "x", "÷"]
+    var difficulties: [String] = ["easy", "medium", "hard", "decimals"]
+    var times: [CGFloat] = [60, 120, 180, 1000]
+    
+    func setMode(modeIndex: Int) {
+        mode = modes[modeIndex]
+    }
+    
+    func setDifficulty(difficultyIndex: Int) {
+        difficulty = difficulties[difficultyIndex]
+    }
+    
+    func setTime(timeIndex: Int) {
+        time = times[timeIndex]
+    }
+
+}
+
+class DeviceModel: ObservableObject {
+    @Published var isSmall = false
+}
+
 struct ContentView: View {
     
     @State var showOptions = false
@@ -34,7 +62,6 @@ struct ContentView: View {
     
         
     @State var modeIndex = -1
-    @State var difficultyIndex = 0
     
     @State var isProfileView = false
     
@@ -52,6 +79,9 @@ struct ContentView: View {
         "Division": 0
     ]
     
+    @StateObject private var game = GameModel()
+    
+    @StateObject private var device = DeviceModel()
     
     var body: some View {
         GeometryReader { screen in
@@ -78,17 +108,17 @@ struct ContentView: View {
                     
                     Spacer()
                     
-                    VStack(alignment: .leading, spacing: 30) {
+                    VStack(alignment: .leading, spacing: screen.size.width > 500 ? 70 : 30) {
                         
                         HStack(spacing: 0) {
                             Text("Addition")
                                 .frame(maxWidth: .infinity, alignment: .center)
-                                .font(.title2)
+                                .font(screen.size.width > 500 ? .title : .title2)
                                 .fontWeight(.bold)
                                 .foregroundStyle(Color("pastelPurple"))
                             Image(systemName: "plus")
-                                .padding(.horizontal, 20)
-                                .font(.title2)
+                                .padding(.horizontal, screen.size.width > 500 ? 30 : 20)
+                                .font(screen.size.width > 500 ? .title : .title2)
                                 .frame(maxHeight: .infinity)
                                 .roundedCorner(10, corners: [.topRight, .bottomRight])
                                 .background(Color("pastelPurple"))
@@ -111,8 +141,8 @@ struct ContentView: View {
                             Spacer()
                             HStack(spacing: 0) {
                                 Image(systemName: "minus")
-                                    .padding(.horizontal, 20)
-                                    .font(.title2)
+                                    .padding(.horizontal, screen.size.width > 500 ? 30 : 20)
+                                    .font(screen.size.width > 500 ? .title : .title2)
                                     .frame(maxHeight: .infinity)
                                     .roundedCorner(10, corners: [.topLeft, .bottomLeft])
                                     .background(Color("pastelBlue"))
@@ -121,7 +151,7 @@ struct ContentView: View {
                                 
                                 Text("Subtraction")
                                     .frame(maxWidth: .infinity, alignment: .center)
-                                    .font(.title2)
+                                    .font(screen.size.width > 500 ? .title : .title2)
                                     .fontWeight(.bold)
                                     .foregroundStyle(Color("pastelBlue"))
                                 
@@ -142,12 +172,12 @@ struct ContentView: View {
                         HStack(spacing: 0) {
                             Text("Multiplication")
                                 .frame(maxWidth: .infinity, alignment: .center)
-                                .font(.title2)
+                                .font(screen.size.width > 500 ? .title : .title2)
                                 .fontWeight(.bold)
                                 .foregroundStyle(Color("pastelRed"))
                             Image(systemName: "multiply")
-                                .padding(.horizontal, 20)
-                                .font(.title2)
+                                .padding(.horizontal, screen.size.width > 500 ? 30 : 20)
+                                .font(screen.size.width > 500 ? .title : .title2)
                                 .frame(maxHeight: .infinity)
                                 .roundedCorner(10, corners: [.topRight, .bottomRight])
                                 .background(Color("pastelRed"))
@@ -169,8 +199,8 @@ struct ContentView: View {
                             Spacer()
                             HStack(spacing: 0) {
                                 Image(systemName: "divide")
-                                    .padding(.horizontal, 20)
-                                    .font(.title2)
+                                    .padding(.horizontal, screen.size.width > 500 ? 30 : 20)
+                                    .font(screen.size.width > 500 ? .title : .title2)
                                     .frame(maxHeight: .infinity)
                                     .roundedCorner(10, corners: [.topLeft, .bottomLeft])
                                     .background(Color("pastelGreen"))
@@ -179,7 +209,7 @@ struct ContentView: View {
                                 
                                 Text("Division")
                                     .frame(maxWidth: .infinity, alignment: .center)
-                                    .font(.title2)
+                                    .font(screen.size.width > 500 ? .title : .title2)
                                     .fontWeight(.bold)
                                     .foregroundStyle(Color("pastelGreen"))
                                 
@@ -201,13 +231,15 @@ struct ContentView: View {
                     
                     
                     Button(action: {
+                        game.setMode(modeIndex: modeIndex)
+                        device.isSmall = screen.size.height < 736 && screen.size.width < 390
                         showOptions = true
                     }, label: {
                         Text("Confirm")
-                            .font(.title2)
+                            .font(screen.size.width > 500 ? .title : .title2)
                             .fontWeight(.medium)
                             .foregroundStyle(.white)
-                            .padding(.vertical, 18)
+                            .padding(.vertical, screen.size.width > 500 ? 30 : 18)
                             .frame(maxWidth: .infinity, alignment: .center)
                             .background(Color("darkPurple"))
                             .roundedCorner(10, corners: .allCorners)
@@ -224,7 +256,9 @@ struct ContentView: View {
                 
             } //: ZStack
             .sheet(isPresented: $showOptions, content: {
-                ExtraOptionsView(modeIndex: $modeIndex)
+                ExtraOptionsView()
+                    .environmentObject(game)
+                    .environmentObject(device)
             })
         }
     } // body

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D863BB622BF8049600A8825C /* TimeSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = D863BB612BF8049600A8825C /* TimeSelector.swift */; };
 		D88D273A2A2D46D800E0EA63 /* EndGameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D88D27392A2D46D800E0EA63 /* EndGameView.swift */; };
 		D88D27432A33824800E0EA63 /* MissedQuestionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D88D27422A33824800E0EA63 /* MissedQuestionsView.swift */; };
 		D88D27452A35438000E0EA63 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D88D27442A35438000E0EA63 /* ProfileView.swift */; };
@@ -46,6 +47,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		D863BB612BF8049600A8825C /* TimeSelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeSelector.swift; sourceTree = "<group>"; };
 		D88D27392A2D46D800E0EA63 /* EndGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EndGameView.swift; sourceTree = "<group>"; };
 		D88D273D2A2D8B2C00E0EA63 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		D88D27422A33824800E0EA63 /* MissedQuestionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MissedQuestionsView.swift; sourceTree = "<group>"; };
@@ -100,7 +102,6 @@
 		D8BAFEE92A09A12400D49C49 = {
 			isa = PBXGroup;
 			children = (
-				D8E279212BB8E36D009B029E /* DifficultySelector.swift */,
 				D8BAFEF42A09A12400D49C49 /* QuickMentalMath */,
 				D8BAFF062A09A12500D49C49 /* QuickMentalMathTests */,
 				D8BAFF102A09A12500D49C49 /* QuickMentalMathUITests */,
@@ -122,6 +123,7 @@
 			isa = PBXGroup;
 			children = (
 				D88D273D2A2D8B2C00E0EA63 /* Info.plist */,
+				D8E279212BB8E36D009B029E /* DifficultySelector.swift */,
 				D8BAFEF52A09A12400D49C49 /* QuickMentalMathApp.swift */,
 				D89431002A37776B004FFE88 /* uiButton.mp3 */,
 				D89430FA2A36CBB1004FFE88 /* wrongSound.mp3 */,
@@ -138,6 +140,7 @@
 				D88D27392A2D46D800E0EA63 /* EndGameView.swift */,
 				D88D27422A33824800E0EA63 /* MissedQuestionsView.swift */,
 				D88D27442A35438000E0EA63 /* ProfileView.swift */,
+				D863BB612BF8049600A8825C /* TimeSelector.swift */,
 			);
 			path = QuickMentalMath;
 			sourceTree = "<group>";
@@ -301,6 +304,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D8ED276D2A11453300092F56 /* QuestionSlider.swift in Sources */,
+				D863BB622BF8049600A8825C /* TimeSelector.swift in Sources */,
 				D8ED276B2A113DBA00092F56 /* ExtraOptionsView.swift in Sources */,
 				D8BAFEF82A09A12400D49C49 /* ContentView.swift in Sources */,
 				D88D273A2A2D46D800E0EA63 /* EndGameView.swift in Sources */,

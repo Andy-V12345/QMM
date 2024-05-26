@@ -38,7 +38,7 @@ struct MissedQuestionsView: View {
                     }
                 
             }
-            .foregroundColor(Color("textColor"))
+            .foregroundColor(Color("darkPurple"))
             ScrollView {
                 VStack(spacing: 30) {
                     ForEach(misssedQuestions) { question in
@@ -51,7 +51,7 @@ struct MissedQuestionsView: View {
                         .frame(maxWidth: .infinity)
                         .padding(.horizontal)
                         .font(.title)
-                        .foregroundColor(Color("textColor"))
+                        .foregroundColor(Color("darkPurple"))
                         
                         Divider()
                     }

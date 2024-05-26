@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import AVKit
 
 struct GameView: View {
     
@@ -14,15 +13,9 @@ struct GameView: View {
     
     @State var startTime: CGFloat = 60
     
-    @Binding var timeIndex: Int
     
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     
-    @State var totalQuestions: Int
-    @State var mode: String
-    @State var difficulty: String
-    
-    @State var times: [CGFloat] = [60, 120, 180, 1000]
     
     @State var topSize = 0.65
     
@@ -48,7 +41,7 @@ struct GameView: View {
     
     @State var isMuted = UserDefaults.standard.bool(forKey: "isMuted")
     
-    
+    @EnvironmentObject private var game: GameModel
     
     var body: some View {
         GeometryReader { screen in
@@ -58,7 +51,7 @@ struct GameView: View {
                 
                 VStack(spacing: 0) {
                     ZStack {
-                        Color("textColor")
+                        Color(.white)
                             .roundedCorner(25, corners: [.bottomLeft, .bottomRight])
                             .ignoresSafeArea()
                             .frame(maxHeight: .infinity)
@@ -67,7 +60,7 @@ struct GameView: View {
                                 Image(systemName: "figure.walk.departure")
                                     .font(screen.size.width > 500 ? .title : .title3)
                                     .bold()
-                                    .foregroundColor(.white)
+                                    .foregroundColor(Color("darkPurple"))
                                     .padding(.horizontal, 20)
                                     .padding(.vertical, screen.size.width > 500 ? 20 : 10)
                                     .onTapGesture {
@@ -78,83 +71,91 @@ struct GameView: View {
                                     })
                                 
                             })
-                            .overlay(alignment: .topTrailing, content: {
-                                Image(systemName: isMuted ? "speaker.slash.fill" : "speaker.wave.2.fill")
-                                    .font(screen.size.width > 500 ? .title : .title3)
-                                    .bold()
-                                    .foregroundColor(.white)
-                                    .padding(.horizontal, 20)
-                                    .padding(.vertical, screen.size.width > 500 ? 20 : 10)
-                                    .onTapGesture {
-                                        isMuted.toggle()
-                                        UserDefaults.standard.set(isMuted, forKey: "isMuted")
-                                    }
-                        
-                            })
                         
                         VStack {
-                            HStack {
-                                
-                                Spacer()
-                                
-                                VStack(spacing: 5) {
-                                    Text("\(questionCount > totalQuestions ? totalQuestions : questionCount) / \(totalQuestions)")
-                                        .font(.system(size: screen.size.width * 0.054, weight: .bold))
-                                        .foregroundColor(.white)
-                                    Text("Question")
-                                        .font(screen.size.width > 500 ? .title : .headline)
-                                        .foregroundColor(.white)
-                                }
-                                
-                                Spacer()
-                                
-                                // timer
-                                
-                                ZStack {
-                                    Circle()
-                                        .stroke(Color.white.opacity(0.8),
-                                                style: StrokeStyle(lineWidth: screen.size.width > 500 ? screen.size.width * 0.015 : screen.size.width * 0.021))
-                                        .overlay() {
-                                            Text(startTime <= 180 ? convertTime(seconds: timeLeft) : "∞")
-                                                .font(.system(size: (screen.size.width > 500 || screen.size.height < 736) ? screen.size.width * 0.057 : screen.size.width * 0.065, weight: .bold))
-                                                .foregroundColor(Color.white)
-                                        }
-                                    if self.startTime <= 180 {
+                            VStack(spacing: screen.size.height < 736 && screen.size.width < 390 ? 20 : 25) {
+                                HStack {
+                                    Spacer()
+                                    
+                                    // timer
+                                    
+                                    ZStack {
                                         Circle()
-                                            .trim(from: 0, to: ((startTime - timeLeft) / startTime))
-                                            .stroke(Color("goColor"),
-                                                    style: StrokeStyle(lineWidth: screen.size.width > 500 ? screen.size.width * 0.015 : screen.size.width * 0.021, lineCap: .round)
-                                            )
-                                            .rotationEffect(Angle(degrees: -90))
-                                            .animation(.easeIn, value: timeLeft)
+                                            .stroke(Color.gray.opacity(0.2),
+                                                    style: StrokeStyle(lineWidth: screen.size.width > 500 ? screen.size.width * 0.015 : screen.size.width * 0.021))
+                                            .overlay() {
+                                                Text(startTime <= 180 ? convertTime(seconds: timeLeft) : "∞")
+                                                    .font(.system(size: (screen.size.width > 500 || screen.size.height < 736) ? screen.size.width * 0.057 : screen.size.width * 0.065, weight: .bold))
+                                                    .foregroundColor(Color("darkPurple"))
+                                            }
+                                        if self.startTime <= 180 {
+                                            Circle()
+                                                .trim(from: 0, to: ((startTime - timeLeft) / startTime))
+                                                .stroke(Color("lightGreen"),
+                                                        style: StrokeStyle(lineWidth: screen.size.width > 500 ? screen.size.width * 0.015 : screen.size.width * 0.021, lineCap: .round)
+                                                )
+                                                .rotationEffect(Angle(degrees: -90))
+                                                .animation(.easeIn, value: timeLeft)
+                                        }
                                     }
-                                }
-                                .onReceive(timer) { time in
-                                    if timeLeft > 0 {
-                                        timeLeft -= 1
+                                    .onReceive(timer) { time in
+                                        if timeLeft > 0 {
+                                            timeLeft -= 1
+                                        }
+                                        else {
+                                            timer.upstream.connect().cancel()
+                                            isGameOver = true
+                                        }
                                     }
-                                    else {
-                                        timer.upstream.connect().cancel()
-                                        isGameOver = true
+                                    
+                                    Spacer()
+                                    
+                                } // HStack
+                                .frame(maxHeight: screen.size.height * (topSize / 3.85))
+                                
+                                
+                                
+                                HStack(spacing: 10) {
+                                    
+                                    VStack(spacing: 5) {
+                                        Text("\(questionCount > game.totQuestions ? game.totQuestions : questionCount) / \(game.totQuestions)")
+                                            .font(.system(size: screen.size.width * 0.054, weight: .bold))
+                                            .foregroundColor(Color("darkPurple"))
+                                        Text("Question")
+                                            .font(screen.size.width > 500 ? .title : .headline)
+                                            .foregroundColor(Color("darkPurple"))
                                     }
+                                    .padding(.horizontal, 20)
+                                    .padding(.vertical, screen.size.height < 736 && screen.size.width < 390 ? 15 : 20)
+                                    .frame(maxWidth: .infinity)
+                                    .background(.white)
+                                    .roundedCorner(15, corners: .allCorners)
+                                    .clipped()
+                                    .shadow(radius: 5)
+                                    
+                                    Spacer()
+                                    
+                                    VStack(spacing: 5) {
+                                        Text("\(correctCount)")
+                                            .font(.system(size: screen.size.width * 0.054, weight: .bold))
+                                            .foregroundColor(Color("darkPurple"))
+                                        Text("Correct")
+                                            .font(screen.size.width > 500 ? .title : .headline)
+                                            .foregroundColor(Color("darkPurple"))
+                                    }
+                                    .padding(.horizontal, 20)
+                                    .padding(.vertical, screen.size.height < 736 && screen.size.width < 390 ? 15 : 20)
+                                    .frame(maxWidth: .infinity)
+                                    .background(.white)
+                                    .roundedCorner(15, corners: .allCorners)
+                                    .clipped()
+                                    .shadow(radius: 5)
+                                    
                                 }
                                 
-                                Spacer()
                                 
-                                VStack(spacing: 5) {
-                                    Text("\(correctCount)")
-                                        .font(.system(size: screen.size.width * 0.054, weight: .bold))
-                                        .foregroundColor(.white)
-                                    Text("Correct")
-                                        .font(screen.size.width > 500 ? .title : .headline)
-                                        .foregroundColor(.white)
-                                }
-                                
-                                Spacer()
-                                
-                            } // HStack
-                            .offset(y: 20)
-                            .frame(maxHeight: screen.size.height * (topSize / 3.5))
+                            }
+                            .padding(.horizontal, 20)
                             
                             Spacer()
                             
@@ -162,34 +163,34 @@ struct GameView: View {
                             
                             VStack(spacing: 10) {
                                 
-                                if difficulty != "decimals" {
+                                if game.difficulty != "decimals" {
                                     Text(num1 > num2 ? String(Int(num1)) : String(Int(num2)))
                                         .font(.system(size: screen.size.width * 0.08, weight: .bold, design: .rounded))
-                                        .foregroundColor(.white)
+                                        .foregroundColor(Color("darkPurple"))
                                         .frame(maxWidth: .infinity, alignment: .trailing)
                                         .tracking(screen.size.height < 736 && screen.size.width < 390 ? 5 : 8)
                                 }
                                 else {
                                     Text(num1 > num2 ? String(format: "%.2f", num1) : String(format: "%.2f", num2))
                                         .font(.system(size: screen.size.width * 0.08, weight: .bold, design: .rounded))
-                                        .foregroundColor(.white)
+                                        .foregroundColor(Color("darkPurple"))
                                         .frame(maxWidth: .infinity, alignment: .trailing)
                                         .tracking(screen.size.height < 736 && screen.size.width < 390 ? 5 : 8)
                                 }
                                 
                                 HStack {
-                                    Text("\(mode)")
+                                    Text("\(game.mode)")
                                         .font(.system(size: screen.size.width * 0.08, weight: .bold, design: .rounded))
                                         .bold()
-                                        .foregroundColor(.white)
+                                        .foregroundColor(Color("darkPurple"))
                                     
                                     Spacer()
                                     
-                                    if difficulty != "decimals" {
+                                    if game.difficulty != "decimals" {
                                         Text(num1 < num2 ? String(Int(num1)) : String(Int(num2)))
                                             .font(.system(size: screen.size.width * 0.08, weight: .bold, design: .rounded))
                                             .bold()
-                                            .foregroundColor(.white)
+                                            .foregroundColor(Color("darkPurple"))
                                             .frame(maxWidth: .infinity, alignment: .trailing)
                                             .tracking(screen.size.height < 736 && screen.size.width < 390 ? 5 : 8)
                                     }
@@ -197,14 +198,14 @@ struct GameView: View {
                                         Text(num1 < num2 ? String(format: "%.2f", num1) : String(format: "%.2f", num2))
                                             .font(.system(size: screen.size.width * 0.08, weight: .bold, design: .rounded))
                                             .bold()
-                                            .foregroundColor(.white)
+                                            .foregroundColor(Color("darkPurple"))
                                             .frame(maxWidth: .infinity, alignment: .trailing)
                                             .tracking(screen.size.height < 736 && screen.size.width < 390 ? 5 : 8)
                                     }
                                 }
                                 
                                 Rectangle()
-                                    .fill(Color.white)
+                                    .fill(Color("darkPurple"))
                                     .frame(maxWidth: .infinity, maxHeight: 5)
                                     .cornerRadius(5)
                                 
@@ -212,19 +213,20 @@ struct GameView: View {
                                 Text(input)
                                     .font(.system(size: screen.size.width * 0.08, weight: .bold, design: .rounded))
                                     .bold()
-                                    .foregroundColor(.white)
+                                    .foregroundColor(Color("darkPurple"))
                                     .opacity(input == "f" ? 0 : 1)
                                     .frame(maxWidth: .infinity, alignment: .trailing)
-                                    .tracking(10)
+                                    .tracking(screen.size.height < 736 && screen.size.width < 390 ? 5 : 8)
                                 
                                 
                                 
                             } // VStack
-                            .frame(maxWidth: screen.size.width * (difficulty == "decimals" ? 0.5 : 0.45))
+                            .frame(maxWidth: screen.size.width * (game.difficulty == "decimals" ? 0.5 : 0.45))
                             
                             Spacer()
                             
                         } // VStack
+                        .padding(.top, 20)
                         .frame(maxHeight: .infinity)
                         
                     } // ZStack
@@ -235,27 +237,27 @@ struct GameView: View {
                     VStack {
                         HStack {
                             ForEach(1...3, id: \.self) { index in
-                                KeyPadButton(id: String(keyNums[index-1]), input: $input, num1: $num1, num2: $num2, answer: $answer, questionCount: $questionCount, correctCount: $correctCount, isGameOver: $isGameOver, missedQuestions: $missedQuestions, isIpad: screen.size.width > 500, isMuted: $isMuted, mode: mode, difficulty: difficulty, totalQuestions: totalQuestions)
+                                KeyPadButton(id: String(keyNums[index-1]), input: $input, num1: $num1, num2: $num2, answer: $answer, questionCount: $questionCount, correctCount: $correctCount, isGameOver: $isGameOver, missedQuestions: $missedQuestions, isIpad: screen.size.width > 500, isMuted: $isMuted, mode: game.mode, difficulty: game.difficulty, totalQuestions: game.totQuestions)
                             }
                         }
                         HStack {
                             ForEach(4...6, id: \.self) { index in
-                                KeyPadButton(id: String(keyNums[index-1]), input: $input, num1: $num1, num2: $num2, answer: $answer, questionCount: $questionCount, correctCount: $correctCount, isGameOver: $isGameOver, missedQuestions: $missedQuestions, isIpad: screen.size.width > 500, isMuted: $isMuted, mode: mode, difficulty: difficulty, totalQuestions: totalQuestions)
+                                KeyPadButton(id: String(keyNums[index-1]), input: $input, num1: $num1, num2: $num2, answer: $answer, questionCount: $questionCount, correctCount: $correctCount, isGameOver: $isGameOver, missedQuestions: $missedQuestions, isIpad: screen.size.width > 500, isMuted: $isMuted, mode: game.mode, difficulty: game.difficulty, totalQuestions: game.totQuestions)
                             }
                         }
                         HStack {
                             ForEach(7...9, id: \.self) { index in
-                                KeyPadButton(id: String(keyNums[index-1]), input: $input, num1: $num1, num2: $num2, answer: $answer, questionCount: $questionCount, correctCount: $correctCount, isGameOver: $isGameOver, missedQuestions: $missedQuestions, isIpad: screen.size.width > 500, isMuted: $isMuted, mode: mode, difficulty: difficulty, totalQuestions: totalQuestions)
+                                KeyPadButton(id: String(keyNums[index-1]), input: $input, num1: $num1, num2: $num2, answer: $answer, questionCount: $questionCount, correctCount: $correctCount, isGameOver: $isGameOver, missedQuestions: $missedQuestions, isIpad: screen.size.width > 500, isMuted: $isMuted, mode: game.mode, difficulty: game.difficulty, totalQuestions: game.totQuestions)
                             }
                         }
                         HStack {
                             ForEach(10...12, id: \.self) { index in
-                                KeyPadButton(id: String(keyNums[index-1]), input: $input, num1: $num1, num2: $num2, answer: $answer, questionCount: $questionCount, correctCount: $correctCount, isGameOver: $isGameOver, missedQuestions: $missedQuestions, isIpad: screen.size.width > 500, isMuted: $isMuted, mode: mode, difficulty: difficulty, totalQuestions: totalQuestions)
+                                KeyPadButton(id: String(keyNums[index-1]), input: $input, num1: $num1, num2: $num2, answer: $answer, questionCount: $questionCount, correctCount: $correctCount, isGameOver: $isGameOver, missedQuestions: $missedQuestions, isIpad: screen.size.width > 500, isMuted: $isMuted, mode: game.mode, difficulty: game.difficulty, totalQuestions: game.totQuestions)
                             }
                         }
                         
-                        if difficulty == "decimals" {
-                            KeyPadButton(id: String(keyNums[12]), input: $input, num1: $num1, num2: $num2, answer: $answer, questionCount: $questionCount, correctCount: $correctCount, isGameOver: $isGameOver, missedQuestions: $missedQuestions, isIpad: screen.size.width > 500, isMuted: $isMuted, mode: mode, difficulty: difficulty, totalQuestions: totalQuestions)
+                        if game.difficulty == "decimals" {
+                            KeyPadButton(id: String(keyNums[12]), input: $input, num1: $num1, num2: $num2, answer: $answer, questionCount: $questionCount, correctCount: $correctCount, isGameOver: $isGameOver, missedQuestions: $missedQuestions, isIpad: screen.size.width > 500, isMuted: $isMuted, mode: game.mode, difficulty: game.difficulty, totalQuestions: game.totQuestions)
                         }
                     }
                     .frame(height: screen.size.height * (1 - topSize))
@@ -268,13 +270,12 @@ struct GameView: View {
             } // ZStack
             .frame(maxHeight: .infinity)
             .fullScreenCover(isPresented: $isGameOver, content: {
-                EndGameView(score: correctCount, totalQuestions: totalQuestions, timeIndex: timeIndex, mode: mode, difficulty: difficulty, missedQuestions: self.missedQuestions)
+                EndGameView(score: correctCount, missedQuestions: missedQuestions)
             })
             .onAppear() {
-                startTime = times[timeIndex]
-                timeLeft = times[timeIndex]
-                topSize = difficulty == "decimals" ? 0.6 : 0.65
-                
+                startTime = game.time
+                timeLeft = game.time
+                topSize = game.difficulty == "decimals" ? 0.6 : 0.65
             }
             .onChange(of: isGameOver, perform: { new in
                 timer.upstream.connect().cancel()
@@ -315,9 +316,6 @@ struct KeyPadButton: View {
     @Binding var correctCount: Int
     @Binding var isGameOver: Bool
     @Binding var missedQuestions: [MissedQuestion]
-    
-    @State var audioPlayer: AVAudioPlayer!
-    @State var audioPlayer2: AVAudioPlayer!
     
     @State var isIpad: Bool
     
@@ -456,16 +454,12 @@ struct KeyPadButton: View {
                     
                     if isCorrect {
                         correctCount += 1
-                        if !isMuted {
-                            audioPlayer.play()
-                        }
+                        
                     }
                     else {
-                        if !isMuted {
-                            audioPlayer2.play()
-                        }
                         hapticFeedback.impactOccurred()
-                        missedQuestions.append(MissedQuestion(question: "\(num1) \(mode) \(num2)", userAns: "\(input)", correctAns: "\(answer)"))
+                        missedQuestions.append(MissedQuestion(question: "\(String(format: "%.2f", num1)) \(mode) \(String(format: "%.2f", num2))", userAns: "\(input)", correctAns: "\(String(format: "%.2f", answer))"))
+
                     }
                     
                     questionCount += 1
@@ -481,16 +475,12 @@ struct KeyPadButton: View {
                         
                         if isCorrect {
                             correctCount += 1
-                            if !isMuted {
-                                audioPlayer.play()
-                            }
+                            
                         }
                         else {
-                            if !isMuted {
-                                audioPlayer2.play()
-                            }
+                            
                             hapticFeedback.impactOccurred()
-                            missedQuestions.append(MissedQuestion(question: "\(num1) \(mode) \(num2)", userAns: "\(input)", correctAns: "\(answer)"))
+                            missedQuestions.append(MissedQuestion(question: "\(String(format: "%.0f", num1)) \(mode) \(String(format: "%.0f", num2))", userAns: "\(input)", correctAns: "\(String(format: "%.0f", answer))"))
                         }
                         
                         questionCount += 1
@@ -523,9 +513,6 @@ struct KeyPadButton: View {
                     
                     if checkAnswer() {
                         correctCount += 1
-                        if !isMuted {
-                            audioPlayer.play()
-                        }
                         questionCount += 1
                         if questionCount > totalQuestions {
                             isGameOver = true
@@ -564,7 +551,7 @@ struct KeyPadButton: View {
                         Text(".")
                             .font(isIpad ? .title : .title3)
                             .bold()
-                            .foregroundColor(Color("textColor"))
+                            .foregroundColor(Color("darkPurple"))
                             .padding()
                             .frame(maxWidth: .infinity, maxHeight: .infinity)
                     }
@@ -574,7 +561,7 @@ struct KeyPadButton: View {
                     Text(id)
                         .font(isIpad ? .title : .title3)
                         .bold()
-                        .foregroundColor(Color("textColor"))
+                        .foregroundColor(Color("darkPurple"))
                         .padding()
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
@@ -585,13 +572,7 @@ struct KeyPadButton: View {
                 
                 newQuestion()
                 
-                let sound = Bundle.main.path(forResource: "brightButton", ofType: "mp3")
-                let sound2 = Bundle.main.path(forResource: "wrongSound", ofType: "mp3")
-                
-                self.audioPlayer = try! AVAudioPlayer(contentsOf: URL(fileURLWithPath: sound!))
-                self.audioPlayer2 = try! AVAudioPlayer(contentsOf: URL(fileURLWithPath: sound2!))
-                
-        }
+            }
         }
     }
 }
