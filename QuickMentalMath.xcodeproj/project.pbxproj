@@ -7,15 +7,17 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D84ED7E02C44A48F0043995D /* LeaderboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D84ED7DF2C44A48F0043995D /* LeaderboardView.swift */; };
+		D84ED7E22C44AA0B0043995D /* LeaderboardEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = D84ED7E12C44AA0B0043995D /* LeaderboardEntry.swift */; };
+		D84ED7E42C44E98A0043995D /* ForgotPasswordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D84ED7E32C44E98A0043995D /* ForgotPasswordView.swift */; };
 		D863BB622BF8049600A8825C /* TimeSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = D863BB612BF8049600A8825C /* TimeSelector.swift */; };
+		D886E8CC2C3A50C80054DD61 /* AuthView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D886E8CB2C3A50C80054DD61 /* AuthView.swift */; };
+		D886E8D22C3AD8350054DD61 /* AuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D886E8D12C3AD8350054DD61 /* AuthService.swift */; };
+		D886E8D42C3ADA290054DD61 /* LoadingSpinner.swift in Sources */ = {isa = PBXBuildFile; fileRef = D886E8D32C3ADA290054DD61 /* LoadingSpinner.swift */; };
+		D886E8D62C3AEAFB0054DD61 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D886E8D52C3AEAFB0054DD61 /* HomeView.swift */; };
 		D88D273A2A2D46D800E0EA63 /* EndGameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D88D27392A2D46D800E0EA63 /* EndGameView.swift */; };
 		D88D27432A33824800E0EA63 /* MissedQuestionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D88D27422A33824800E0EA63 /* MissedQuestionsView.swift */; };
-		D88D27452A35438000E0EA63 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D88D27442A35438000E0EA63 /* ProfileView.swift */; };
-		D88D27482A36BF0A00E0EA63 /* brightButton.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = D88D27462A36BF0A00E0EA63 /* brightButton.mp3 */; };
 		D89009902A1316BB00ED7459 /* GameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D890098F2A1316BB00ED7459 /* GameView.swift */; };
-		D89430FD2A36CBB1004FFE88 /* wrongSound.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = D89430FA2A36CBB1004FFE88 /* wrongSound.mp3 */; };
-		D89431022A37776B004FFE88 /* uiButton.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = D89431002A37776B004FFE88 /* uiButton.mp3 */; };
-		D8A455ED2A0DD40D00DCA8DF /* OptionSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8A455EC2A0DD40D00DCA8DF /* OptionSlider.swift */; };
 		D8BAFEF62A09A12400D49C49 /* QuickMentalMathApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8BAFEF52A09A12400D49C49 /* QuickMentalMathApp.swift */; };
 		D8BAFEF82A09A12400D49C49 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8BAFEF72A09A12400D49C49 /* ContentView.swift */; };
 		D8BAFEFA2A09A12500D49C49 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D8BAFEF92A09A12500D49C49 /* Assets.xcassets */; };
@@ -24,9 +26,12 @@
 		D8BAFF122A09A12500D49C49 /* QuickMentalMathUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8BAFF112A09A12500D49C49 /* QuickMentalMathUITests.swift */; };
 		D8BAFF142A09A12500D49C49 /* QuickMentalMathUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8BAFF132A09A12500D49C49 /* QuickMentalMathUITestsLaunchTests.swift */; };
 		D8E279222BB8E36D009B029E /* DifficultySelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8E279212BB8E36D009B029E /* DifficultySelector.swift */; };
-		D8ED27692A0E25A700092F56 /* OptionsGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8ED27682A0E25A700092F56 /* OptionsGroup.swift */; };
 		D8ED276B2A113DBA00092F56 /* ExtraOptionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8ED276A2A113DBA00092F56 /* ExtraOptionsView.swift */; };
 		D8ED276D2A11453300092F56 /* QuestionSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8ED276C2A11453300092F56 /* QuestionSlider.swift */; };
+		D8F7B7B92C3ED278005CFCF0 /* TimeTrialView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8F7B7B82C3ED278005CFCF0 /* TimeTrialView.swift */; };
+		D8F7B7BB2C3FB0CE005CFCF0 /* SideBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8F7B7BA2C3FB0CE005CFCF0 /* SideBar.swift */; };
+		D8F7B7BD2C443530005CFCF0 /* StatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8F7B7BC2C443530005CFCF0 /* StatsView.swift */; };
+		D8F7B7BF2C444413005CFCF0 /* StatsBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8F7B7BE2C444413005CFCF0 /* StatsBar.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -47,16 +52,18 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		D84ED7DF2C44A48F0043995D /* LeaderboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeaderboardView.swift; sourceTree = "<group>"; };
+		D84ED7E12C44AA0B0043995D /* LeaderboardEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeaderboardEntry.swift; sourceTree = "<group>"; };
+		D84ED7E32C44E98A0043995D /* ForgotPasswordView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForgotPasswordView.swift; sourceTree = "<group>"; };
 		D863BB612BF8049600A8825C /* TimeSelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeSelector.swift; sourceTree = "<group>"; };
+		D886E8CB2C3A50C80054DD61 /* AuthView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthView.swift; sourceTree = "<group>"; };
+		D886E8D12C3AD8350054DD61 /* AuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthService.swift; sourceTree = "<group>"; };
+		D886E8D32C3ADA290054DD61 /* LoadingSpinner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingSpinner.swift; sourceTree = "<group>"; };
+		D886E8D52C3AEAFB0054DD61 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		D88D27392A2D46D800E0EA63 /* EndGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EndGameView.swift; sourceTree = "<group>"; };
 		D88D273D2A2D8B2C00E0EA63 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		D88D27422A33824800E0EA63 /* MissedQuestionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MissedQuestionsView.swift; sourceTree = "<group>"; };
-		D88D27442A35438000E0EA63 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
-		D88D27462A36BF0A00E0EA63 /* brightButton.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = brightButton.mp3; sourceTree = "<group>"; };
 		D890098F2A1316BB00ED7459 /* GameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameView.swift; sourceTree = "<group>"; };
-		D89430FA2A36CBB1004FFE88 /* wrongSound.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = wrongSound.mp3; sourceTree = "<group>"; };
-		D89431002A37776B004FFE88 /* uiButton.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = uiButton.mp3; sourceTree = "<group>"; };
-		D8A455EC2A0DD40D00DCA8DF /* OptionSlider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptionSlider.swift; sourceTree = "<group>"; };
 		D8BAFEF22A09A12400D49C49 /* QuickMentalMath.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = QuickMentalMath.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D8BAFEF52A09A12400D49C49 /* QuickMentalMathApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickMentalMathApp.swift; sourceTree = "<group>"; };
 		D8BAFEF72A09A12400D49C49 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -69,9 +76,12 @@
 		D8BAFF112A09A12500D49C49 /* QuickMentalMathUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickMentalMathUITests.swift; sourceTree = "<group>"; };
 		D8BAFF132A09A12500D49C49 /* QuickMentalMathUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickMentalMathUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		D8E279212BB8E36D009B029E /* DifficultySelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DifficultySelector.swift; sourceTree = "<group>"; };
-		D8ED27682A0E25A700092F56 /* OptionsGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptionsGroup.swift; sourceTree = "<group>"; };
 		D8ED276A2A113DBA00092F56 /* ExtraOptionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtraOptionsView.swift; sourceTree = "<group>"; };
 		D8ED276C2A11453300092F56 /* QuestionSlider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuestionSlider.swift; sourceTree = "<group>"; };
+		D8F7B7B82C3ED278005CFCF0 /* TimeTrialView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeTrialView.swift; sourceTree = "<group>"; };
+		D8F7B7BA2C3FB0CE005CFCF0 /* SideBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideBar.swift; sourceTree = "<group>"; };
+		D8F7B7BC2C443530005CFCF0 /* StatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsView.swift; sourceTree = "<group>"; };
+		D8F7B7BE2C444413005CFCF0 /* StatsBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsBar.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -99,6 +109,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		D886E8CF2C3AD7530054DD61 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				D886E8D12C3AD8350054DD61 /* AuthService.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
 		D8BAFEE92A09A12400D49C49 = {
 			isa = PBXGroup;
 			children = (
@@ -122,25 +140,30 @@
 		D8BAFEF42A09A12400D49C49 /* QuickMentalMath */ = {
 			isa = PBXGroup;
 			children = (
+				D886E8CF2C3AD7530054DD61 /* Services */,
 				D88D273D2A2D8B2C00E0EA63 /* Info.plist */,
 				D8E279212BB8E36D009B029E /* DifficultySelector.swift */,
 				D8BAFEF52A09A12400D49C49 /* QuickMentalMathApp.swift */,
-				D89431002A37776B004FFE88 /* uiButton.mp3 */,
-				D89430FA2A36CBB1004FFE88 /* wrongSound.mp3 */,
-				D88D27462A36BF0A00E0EA63 /* brightButton.mp3 */,
 				D8BAFEF72A09A12400D49C49 /* ContentView.swift */,
-				D8A455EC2A0DD40D00DCA8DF /* OptionSlider.swift */,
-				D8ED27682A0E25A700092F56 /* OptionsGroup.swift */,
 				D8BAFEF92A09A12500D49C49 /* Assets.xcassets */,
 				D8BAFEFB2A09A12500D49C49 /* QuickMentalMath.entitlements */,
 				D8BAFEFC2A09A12500D49C49 /* Preview Content */,
-				D8ED276A2A113DBA00092F56 /* ExtraOptionsView.swift */,
 				D8ED276C2A11453300092F56 /* QuestionSlider.swift */,
 				D890098F2A1316BB00ED7459 /* GameView.swift */,
+				D8ED276A2A113DBA00092F56 /* ExtraOptionsView.swift */,
 				D88D27392A2D46D800E0EA63 /* EndGameView.swift */,
+				D886E8CB2C3A50C80054DD61 /* AuthView.swift */,
 				D88D27422A33824800E0EA63 /* MissedQuestionsView.swift */,
-				D88D27442A35438000E0EA63 /* ProfileView.swift */,
 				D863BB612BF8049600A8825C /* TimeSelector.swift */,
+				D886E8D32C3ADA290054DD61 /* LoadingSpinner.swift */,
+				D886E8D52C3AEAFB0054DD61 /* HomeView.swift */,
+				D8F7B7B82C3ED278005CFCF0 /* TimeTrialView.swift */,
+				D8F7B7BA2C3FB0CE005CFCF0 /* SideBar.swift */,
+				D8F7B7BC2C443530005CFCF0 /* StatsView.swift */,
+				D8F7B7BE2C444413005CFCF0 /* StatsBar.swift */,
+				D84ED7DF2C44A48F0043995D /* LeaderboardView.swift */,
+				D84ED7E12C44AA0B0043995D /* LeaderboardEntry.swift */,
+				D84ED7E32C44E98A0043995D /* ForgotPasswordView.swift */,
 			);
 			path = QuickMentalMath;
 			sourceTree = "<group>";
@@ -274,10 +297,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D89431022A37776B004FFE88 /* uiButton.mp3 in Resources */,
-				D89430FD2A36CBB1004FFE88 /* wrongSound.mp3 in Resources */,
 				D8BAFEFE2A09A12500D49C49 /* Preview Assets.xcassets in Resources */,
-				D88D27482A36BF0A00E0EA63 /* brightButton.mp3 in Resources */,
 				D8BAFEFA2A09A12500D49C49 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -305,16 +325,24 @@
 			files = (
 				D8ED276D2A11453300092F56 /* QuestionSlider.swift in Sources */,
 				D863BB622BF8049600A8825C /* TimeSelector.swift in Sources */,
+				D886E8D62C3AEAFB0054DD61 /* HomeView.swift in Sources */,
 				D8ED276B2A113DBA00092F56 /* ExtraOptionsView.swift in Sources */,
+				D84ED7E02C44A48F0043995D /* LeaderboardView.swift in Sources */,
+				D8F7B7BD2C443530005CFCF0 /* StatsView.swift in Sources */,
 				D8BAFEF82A09A12400D49C49 /* ContentView.swift in Sources */,
+				D84ED7E22C44AA0B0043995D /* LeaderboardEntry.swift in Sources */,
 				D88D273A2A2D46D800E0EA63 /* EndGameView.swift in Sources */,
-				D8A455ED2A0DD40D00DCA8DF /* OptionSlider.swift in Sources */,
-				D8ED27692A0E25A700092F56 /* OptionsGroup.swift in Sources */,
+				D886E8D22C3AD8350054DD61 /* AuthService.swift in Sources */,
 				D8BAFEF62A09A12400D49C49 /* QuickMentalMathApp.swift in Sources */,
+				D8F7B7BF2C444413005CFCF0 /* StatsBar.swift in Sources */,
+				D886E8CC2C3A50C80054DD61 /* AuthView.swift in Sources */,
+				D886E8D42C3ADA290054DD61 /* LoadingSpinner.swift in Sources */,
+				D8F7B7BB2C3FB0CE005CFCF0 /* SideBar.swift in Sources */,
+				D8F7B7B92C3ED278005CFCF0 /* TimeTrialView.swift in Sources */,
 				D88D27432A33824800E0EA63 /* MissedQuestionsView.swift in Sources */,
 				D89009902A1316BB00ED7459 /* GameView.swift in Sources */,
+				D84ED7E42C44E98A0043995D /* ForgotPasswordView.swift in Sources */,
 				D8E279222BB8E36D009B029E /* DifficultySelector.swift in Sources */,
-				D88D27452A35438000E0EA63 /* ProfileView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -482,15 +510,16 @@
 				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = YES;
 				INFOPLIST_KEY_UIRequiresFullScreen = YES;
-				INFOPLIST_KEY_UIStatusBarStyle = "";
+				INFOPLIST_KEY_UIStatusBarStyle = UIStatusBarStyleDarkContent;
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UIUserInterfaceStyle = Light;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
-				MARKETING_VERSION = 13.3;
+				MARKETING_VERSION = 13.6;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.andyvu.Math-Facts";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
@@ -525,15 +554,16 @@
 				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = YES;
 				INFOPLIST_KEY_UIRequiresFullScreen = YES;
-				INFOPLIST_KEY_UIStatusBarStyle = "";
+				INFOPLIST_KEY_UIStatusBarStyle = UIStatusBarStyleDarkContent;
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UIUserInterfaceStyle = Light;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
-				MARKETING_VERSION = 13.3;
+				MARKETING_VERSION = 13.6;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.andyvu.Math-Facts";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;

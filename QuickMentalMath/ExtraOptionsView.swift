@@ -13,143 +13,127 @@ struct ExtraOptionsView: View {
     @State var progress = 10.0
     @State var pulsingAmount = 0.95
     @State var showGame = false
-
+    
     @State var timeIndex = 0
     @State var difficultyIndex = 0
     
-    @EnvironmentObject private var game: GameModel
-    @EnvironmentObject private var device: DeviceModel
+    @EnvironmentObject private var gameModel: GameModel
+    @EnvironmentObject private var deviceModel: DeviceModel
+    @EnvironmentObject private var appModel: AppModel
     
     @Environment(\.presentationMode) var presentationMode
     
     var body: some View {
         GeometryReader { metrics in
             ZStack {
-                
                 Color.white
                     .clipShape(RoundedRectangle(cornerRadius: 30))
                 
-                VStack {
+                VStack(spacing: 10) {
                     HStack {
-                        Button {
-                            presentationMode.wrappedValue.dismiss()
-                        } label: {
-                            Image(systemName: "xmark")
-                                .foregroundColor(Color("darkPurple"))
-                                .font(.title3)
+                        Button(action: {
+                            appModel.path.removeLast()
+                        }, label: {
+                            Image(systemName: "chevron.left")
+                                .foregroundStyle(Color("darkPurple"))
+                        })
+                        .font(.title3)
+                        .bold()
+                        
+                        Spacer()
+                    }
+                    
+                    VStack(spacing: 40) {
+                        
+                        
+                        VStack(spacing: 10) {
+                            QuestionSlider(value: $progress, in: 10...100)
+                                .frame(width: metrics.size.height * 0.18, height: metrics.size.height * 0.18)
+                            Text("Number of Questions")
+                                .font(metrics.size.height < 736 && metrics.size.width < 390 ? .headline : .title3)
+                                .foregroundColor(Color("lightPurple"))
                                 .bold()
                         }
                         
-                        Spacer()
-                    }
-                    .padding(.top)
-                    .frame(maxWidth: .infinity)
-                    
-                    
-                    VStack {
+                        HStack(spacing: 20) {
+                            
+                            VStack(spacing: metrics.size.height < 736 && metrics.size.width < 390 ? 8 : 15) {
+                                DifficultySelector(difficultyIndex: $difficultyIndex)
+                                    .environmentObject(deviceModel)
+                                
+                                Divider()
+                                
+                                Text("Difficulty")
+                                    .font(metrics.size.height < 736 && metrics.size.width < 390 ? .subheadline : .headline)
+                                    .fontWeight(.heavy)
+                                    .foregroundColor(Color("lightPurple"))
+                            }
+                            .padding(metrics.size.height < 736 && metrics.size.width < 390 ? 8 : 15)
+                            .background(.white)
+                            .roundedCorner(10, corners: .allCorners)
+                            .clipped()
+                            .shadow(radius: 2)
+                            
+                            VStack(spacing: metrics.size.height < 736 && metrics.size.width < 390 ? 8 : 15) {
+                                
+                                TimeSelector(timeIndex: $timeIndex)
+                                    .environmentObject(deviceModel)
+                                
+                                Divider()
+                                
+                                Text("Time Limit")
+                                    .font(metrics.size.height < 736 && metrics.size.width < 390 ? .subheadline : .headline)
+                                    .fontWeight(.heavy)
+                                    .foregroundColor(Color("lightPurple"))
+                            }
+                            .padding(metrics.size.height < 736 && metrics.size.width < 390 ? 8 : 15)
+                            .background(.white)
+                            .roundedCorner(10, corners: .allCorners)
+                            .clipped()
+                            .shadow(radius: 2)
+                        }
                         
-                        VStack(spacing: 30) {
+                        HStack {
+                            Spacer()
                             
-                            
-                            VStack(spacing: 10) {
-                                QuestionSlider(value: $progress, in: 10...100)
-                                    .frame(width: metrics.size.height * 0.18, height: metrics.size.height * 0.18)
-                                Text("Number of Questions")
-                                    .font(metrics.size.height < 736 && metrics.size.width < 390 ? .headline : .title3)
-                                    .foregroundColor(Color("darkPurple"))
-                                    .bold()
-                            }
-                            
-                            HStack(spacing: 20) {
+                            Button {
+                                gameModel.setTime(timeIndex: timeIndex)
+                                gameModel.setDifficulty(difficultyIndex: difficultyIndex)
+                                gameModel.totQuestions = Int(round(progress))
                                 
-                                VStack(spacing: metrics.size.height < 736 && metrics.size.width < 390 ? 8 : 15) {
-                                    DifficultySelector(difficultyIndex: $difficultyIndex)
-                                        .environmentObject(device)
+                                appModel.path.append(AppState.GAME)
+                            } label: {
+                                HStack {
+                                    Text("Start")
                                     
-                                    Divider()
-                                    
-                                    Text("Difficulty")
-                                        .font(metrics.size.height < 736 && metrics.size.width < 390 ? .subheadline : .headline)
-                                        .bold()
-                                        .foregroundColor(Color("darkPurple"))
+                                    Image(systemName: "arrow.right")
                                 }
-                                .padding(metrics.size.height < 736 && metrics.size.width < 390 ? 8 : 15)
-                                .background(.white)
-                                .roundedCorner(10, corners: .allCorners)
-                                .clipped()
-                                .shadow(radius: 5)
-                                
-                                VStack(spacing: metrics.size.height < 736 && metrics.size.width < 390 ? 8 : 15) {
-                                    
-                                    TimeSelector(timeIndex: $timeIndex)
-                                        .environmentObject(device)
-                                    
-                                    Divider()
-                                    
-                                    Text("Time Limit")
-                                        .font(metrics.size.height < 736 && metrics.size.width < 390 ? .subheadline : .headline)
-                                        .bold()
-                                        .foregroundColor(Color("darkPurple"))
-                                }
-                                .padding(metrics.size.height < 736 && metrics.size.width < 390 ? 8 : 15)
-                                .background(.white)
-                                .roundedCorner(10, corners: .allCorners)
-                                .clipped()
-                                .shadow(radius: 5)
-                            }
+                                .foregroundStyle(Color("darkPurple"))
+                                .font(.title2)
+                                .fontWeight(.heavy)
+                            } //: Start Button
                         }
                         
                         Spacer()
-                        
-                        Button {
-                            game.setTime(timeIndex: timeIndex)
-                            game.setDifficulty(difficultyIndex: difficultyIndex)
-                            game.totQuestions = Int(round(progress))
-                            showGame = true
-                        } label: {
-//                            ZStack {
-//                                Capsule(style: .continuous)
-//                                    .fill(Color("darkPurple"))
-//                                    .frame(maxHeight: metrics.size.height * 0.1)
-//                                    .shadow(color: Color("darkPurple"), radius: 5)
-//                                
-//                                
-//                                
-//                                
-//                                Text("Begin")
-//                                    .font(.system(size: 35, weight: .bold))
-//                                    .foregroundColor(.white)
-//                                
-//                            } // ZStack
-                            Text("Begin")
-                                .padding(.vertical, 30)
-                                .frame(maxWidth: .infinity)
-                                .background(
-                                    Capsule(style: .continuous)
-                                        .fill(Color("darkPurple"))
-                                )
-                                .font(.system(size: metrics.size.height < 736 && metrics.size.width < 390 ? 30 : 35, weight: .bold))
-                                .foregroundStyle(.white)
-                            
-                        }
-                        .fullScreenCover(isPresented: $showGame, content: {
-                            GameView()
-                                .environmentObject(game)
-                        })
-                        
-                        
-                    }
+                    } //: VStack
                     
-                } // VStack
-                .padding(.horizontal, 15)
-                .padding(.bottom, 15)
-                
+                    
+                } //: VStack
+                .padding(.horizontal, 20)
+                .padding(.top, 20)
                 
             } // ZStack
             
         }
         
     }
+}
+
+#Preview {
+    ExtraOptionsView()
+        .environmentObject(GameModel())
+        .environmentObject(DeviceModel())
+        .environmentObject(AppModel(path: NavigationPath()))
 }
 
 

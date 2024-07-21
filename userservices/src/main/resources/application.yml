@@ -1,0 +1,32 @@
+spring:
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: quickmentalmath@gmail.com
+    password: grws lesi ydwt lsqv
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+  datasource:
+    url: jdbc:postgresql://ep-calm-king-a5u9r3lk.us-east-2.aws.neon.tech/qmm?user=qmm_owner&password=IAGZOqU9Ecr7&sslmode=require
+    username: qmm_owner
+    password: IAGZOqU9Ecr7
+  jpa:
+    hibernate:
+      ddl-auto: 'update'
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    show-sql: true
+server:
+  ssl:
+    key-store: classpath:springboot.p12
+    key-store-password: password
+    key-store-type: pkcs12
+    key-alias: springboot
+    key-password: password
+  port: 8443

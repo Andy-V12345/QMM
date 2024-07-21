@@ -16,51 +16,35 @@ struct MissedQuestion: Identifiable {
 
 struct MissedQuestionsView: View {
     
-    @State var misssedQuestions: [MissedQuestion]
-    @Binding var isReviewing: Bool
+    @State var missedQuestions: [MissedQuestion]
     
     var body: some View {
-        VStack {
-            HStack {
-                Text("Missed Questions")
-                    .font(.title)
-                    .bold()
-                    .padding(.horizontal)
+        ScrollView {
+            VStack(spacing: 20) {
+                Divider()
                 
-                Spacer()
-                
-                Image(systemName: "xmark")
-                    .font(.title2)
-                    .bold()
-                    .padding(.horizontal)
-                    .onTapGesture {
-                        isReviewing = false
-                    }
-                
-            }
-            .foregroundColor(Color("darkPurple"))
-            ScrollView {
-                VStack(spacing: 30) {
-                    ForEach(misssedQuestions) { question in
-                        VStack(spacing: 10) {
-                            Text("\(question.question) = \(question.correctAns)")
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                            Text("Your answer: \(question.userAns)")
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding(.horizontal)
-                        .font(.title)
-                        .foregroundColor(Color("darkPurple"))
+                ForEach(0 ..< missedQuestions.count) { i in
+                    HStack(spacing: 0) {
+                        Text("\(missedQuestions[i].question) = \(missedQuestions[i].correctAns)")
                         
-                        Divider()
+                        Spacer()
+                        
+                        Text("Your answer: \(missedQuestions[i].userAns)")
                     }
+                    .frame(maxWidth: .infinity)
+                    .foregroundColor(Color("lightPurple"))
+                    
+                    Divider()
                 }
             }
         }
-        .padding(.top)
         .background(Color.white)
         .frame(maxWidth: .infinity)
+        .scrollIndicators(.hidden)
     }
+}
+
+#Preview {
+    MissedQuestionsView(missedQuestions: [MissedQuestion(question: "5 + 5", userAns: "1", correctAns: "10"), MissedQuestion(question: "5 + 5", userAns: "1", correctAns: "10")])
 }
 
