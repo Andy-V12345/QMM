@@ -50,17 +50,17 @@ struct QuestionSlider: View {
             VStack(spacing:0) {
                 ZStack {
                     Circle()
-                        .stroke(Color.white.opacity(0.65),
+                        .stroke(Color.gray.opacity(0.35),
                                 style: StrokeStyle(lineWidth: sliderWidth))
                         .overlay() {
                             Text("\(progress, specifier: "%.0f")")
                                 .font(.system(size: radius * 0.5, weight: .bold, design:.rounded))
-                                .foregroundColor(Color.white)
+                                .foregroundColor(Color("darkPurple"))
                         }
                     
                     Circle()
                         .trim(from: 0, to: progressFraction)
-                        .stroke(Color("bgColor"),
+                        .stroke(Color("darkPurple"),
                                 style: StrokeStyle(lineWidth: sliderWidth, lineCap: .round)
                         )
                         .rotationEffect(Angle(degrees: -90))

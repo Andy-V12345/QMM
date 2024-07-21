@@ -6,275 +6,277 @@
 //
 
 import SwiftUI
-import AVKit
 
-struct AnimatableNumberModifier: AnimatableModifier {
-    var number: Double
-    
-    var animatableData: Double {
-        get { number }
-        set { number = newValue }
-    }
-    
-    func body(content: Content) -> some View {
-        content
-            .overlay(
-                Text("\(Int(number))%")
-                
-            )
-    }
-}
+//struct AnimatableNumberModifier: AnimatableModifier {
+//    var number: Double
+//
+//    var animatableData: Double {
+//        get { number }
+//        set { number = newValue }
+//    }
+//
+//    func body(content: Content) -> some View {
+//        content
+//            .overlay(
+////                Text("\(Int(number))%")
+//                Text("0%")
+//            )
+//    }
+//}
 
-extension View {
-    func animatingOverlay(for number: Double) -> some View {
-        modifier(AnimatableNumberModifier(number: number))
-    }
-}
+//extension View {
+//    func animatingOverlay(for number: Double) -> some View {
+//        modifier(AnimatableNumberModifier(number: number))
+//    }
+//}
 
 struct EndGameView: View {
     
-    @State var score: Int
-    @State var totalQuestions: Int
-    @State var percentage: Float = 0
-    
-    @State var timeIndex: Int
-    @State var mode: String
-    @State var difficulty: String
+    @State var percentage: Double = 0
+    @State var uiPercentage: Double = 0
     
     @State var isGoHome = false
     @State var isRedo = false
     @State var isReviewing = false
+    @State var newHighScore = false
+    @State var newTtHighScore = false
+    @State var rotation: CGFloat = 0.0
     
-    @State var bestScore = UserDefaults.standard.integer(forKey: "best")
-    
-    @State var missedQuestions: [MissedQuestion]
-    
-    @State var totalQuestionsAnswered: [String: Int] = [:]
-    @State var totalQuestionsCorrect: [String: Int] = [:]
-    
-    @State var audioPlayer: AVAudioPlayer!
+    @EnvironmentObject var gameModel: GameModel
+    @EnvironmentObject var appModel: AppModel
+    @EnvironmentObject var authInfo: AuthInfo
     
     let hapticFeedback = UIImpactFeedbackGenerator(style: .medium)
     
     var body: some View {
         GeometryReader { screen in
             ZStack {
-                Color.white
-                    .ignoresSafeArea()
-                VStack {
-                    ZStack {
-                        Color("goColor")
-                            .ignoresSafeArea()
-                        
-                    } // ZStack
-                    .frame(maxHeight: screen.size.height * 0.5)
-                    
-                    Spacer()
-                    
-                } // VStack
+                Color.white.ignoresSafeArea()
                 
-                VStack(spacing: 20) {
-                    Text("GAME OVER")
-                        .font(.system(size: screen.size.height*0.06, weight: .bold))
-                        .foregroundColor(.white)
-                    
-                    
-                    
-                    ZStack {
-                       
-                        Color("goColor")
-                            .cornerRadius(20)
-                            .shadow(radius: 20)
-                        
-                        
-                        
-                        VStack {
-                            
-                            Text("Results")
-                                .font(.largeTitle)
-                                .bold()
-                                .foregroundColor(.white)
-                                .frame(maxWidth: screen.size.width * 0.5, maxHeight: screen.size.height * 0.08)
-                                .background(
-                                    Color("bgColor")
-                                        .roundedCorner(20, corners: [.bottomLeft, .bottomRight])
-
-                                )
+                VStack(spacing: 50) {
+                    VStack(spacing: 20) {
+                        HStack {
+                            VStack {
+                                Text("Game over")
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                    .font(.title)
+                                    .foregroundStyle(Color("darkPurple"))
                                 
+                                Text("Your results")
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                    .font(.largeTitle)
+                                    .foregroundStyle(Color("lightPurple"))
+                                
+                            } //: Title VStack
+                            .bold()
+                            
                             Spacer()
                             
-                            VStack(spacing: screen.size.width > 500 ? 40 : 20) {
-                                Spacer()
+                            Button(action: {
+                                gameModel.reset()
+                                appModel.path = NavigationPath([AuthState.UNAUTHORIZED, authInfo.authState])
+                            }, label: {
+                                Image(systemName: "house")
+                                    .font(.title2)
+                                    .foregroundStyle(Color("darkPurple"))
+                                    .bold()
+                            })
+                        }
+                                                
+                        VStack(spacing: 20) {
+                            if newHighScore && screen.size.width > 0 {
                                 ZStack {
-                                    Circle()
-                                        .stroke(Color.white.opacity(0.9),
-                                                style: StrokeStyle(lineWidth: screen.size.width * 0.04))
-                                        .animatingOverlay(for: Double(percentage))
-                                        .font(.system(size: screen.size.width * 0.12, weight: .bold))
-                                        .foregroundColor(.white)
+                                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                        .fill(.white)
+                                        .frame(width: screen.size.width - 40, height: 75)
+                                        .shadow(color: Color("lighterPurple"), radius: 3)
+                                    
+                                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                        .frame(width: screen.size.width - 40, height: 100)
+                                        .foregroundStyle(LinearGradient(colors: [Color("lightPurple"), Color("lighterPurple"), Color("darkPurple")], startPoint: .topLeading, endPoint: .bottomTrailing))
+                                        .rotationEffect(.degrees(rotation))
+                                        .mask {
+                                            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                                .stroke(lineWidth: 3)
+                                                .frame(width: screen.size.width - 40, height: 75)
+                                            
+                                        }
+                                    
+                                    Text("NEW HIGH SCORE: \(authInfo.user?.stats!.highScore ?? 0)")
+                                        .font(.title3)
+                                        .fontWeight(.bold)
+                                        .foregroundStyle(Color("darkPurple"))
+                                }
+                            }
+                            else if newTtHighScore && screen.size.width > 0 {
+                                ZStack {
+                                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                        .fill(.white)
+                                        .frame(width: screen.size.width - 40, height: 75)
+                                        .shadow(color: Color("lighterPurple"), radius: 3)
+                                    
+                                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                        .frame(width: screen.size.width - 40, height: 100)
+                                        .foregroundStyle(LinearGradient(colors: [Color("lightPurple"), Color("lighterPurple"), Color("darkPurple")], startPoint: .topLeading, endPoint: .bottomTrailing))
+                                        .rotationEffect(.degrees(rotation))
+                                        .mask {
+                                            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                                .stroke(lineWidth: 3)
+                                                .frame(width: screen.size.width - 40, height: 75)
+                                            
+                                        }
+                                    
+                                    Text("NEW TIME TRIAL HIGH SCORE: \(authInfo.user?.stats!.ttHighScore ?? 0)")
+                                        .font(.headline)
+                                        .fontWeight(.bold)
+                                        .foregroundStyle(Color("darkPurple"))
+                                }
+                            }
+                            
+                            VStack(spacing: 20) {
+                                VStack(spacing: 15) {
+                                    HStack {
+                                        Text("Performance")
+                                            .foregroundStyle(Color("darkPurple"))
                                         
+                                        Spacer()
+                                        
+                                        Text("\(Int(percentage))%")
+                                            .foregroundStyle(Color("lightPurple"))
+                                    }
                                     
-                                    Circle()
-                                        .trim(from: 0, to: CGFloat(percentage) / 100)
-                                        .stroke(Color("bgColor"),
-                                                style: StrokeStyle(lineWidth: screen.size.width * 0.04, lineCap: .round)
+                                    Rectangle()
+                                        .foregroundStyle(Color.gray.opacity(0.2))
+                                        .frame(height: 4)
+                                        .overlay(
+                                            GeometryReader { metrics in
+                                                Rectangle()
+                                                    .foregroundStyle(percentage <= 25 ? Color.red : percentage > 25 && percentage <= 50 ? Color.orange : percentage > 50 && percentage <= 75 ? Color.yellow : Color.green)
+                                                    .frame(width: (percentage / 100) * metrics.size.width, height: 4)
+                                            }
                                         )
-                                        .rotationEffect(Angle(degrees: -90))
-                                    
-                                } // ZStack
-                                .frame(maxWidth: screen.size.width * 0.55)
-                                .frame(maxHeight: screen.size.width > 500 ? screen.size.height * 0.3 : screen.size.width * 0.55)
-                                
+                                }
                                 
                                 HStack {
-                                    VStack(spacing: 0) {
-                                        Text("Score")
-                                            .font(screen.size.height < 800 ? .title : .largeTitle)
-                                            .bold()
-                                            .foregroundColor(.white)
-                                        Text("\(score)")
-                                            .font(screen.size.height < 800 ? .title2 : .title)
-                                            .bold()
-                                            .foregroundColor(.white)
-                                    }
-                                    .frame(maxWidth: .infinity)
+                                    Text("Score: \(gameModel.score)")
                                     
                                     Spacer()
                                     
-                                    VStack(spacing: 0) {
-                                        Text("Best")
-                                            .font(screen.size.height < 800 ? .title : .largeTitle)
-                                            .bold()
-                                            .foregroundColor(.white)
-                                        Text("\(bestScore)")
-                                            .font(screen.size.height < 800 ? .title2 : .title)
-                                            .bold()
-                                            .foregroundColor(.white)
-                                    }
-                                    .frame(maxWidth: .infinity)
-                                } // HStack
-                                .padding(.horizontal)
+                                    Text("Questions: \(gameModel.mode == "time" ? gameModel.questionCount - 1 : gameModel.totQuestions)")
+                                }
+                                .foregroundStyle(Color("darkPurple"))
+                            } //: Performance VStack
+                            .font(.headline)
+                            .padding(20)
+                            .bold()
+                            .clipped()
+                            .background(
+                                ZStack {
+                                    RoundedRectangle(cornerRadius: 10)
+                                        .fill(.white)
+                                        .shadow(color: Color("lighterPurple"), radius: 3)
+                                }
                                 
-                                Spacer()
+                            )
+                            
+                            if !gameModel.missedQuestions.isEmpty {
+                                VStack(spacing: 20) {
+                                    Text("Missed questions")
+                                        .foregroundStyle(Color("darkPurple"))
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                    
+                                    MissedQuestionsView(missedQuestions: gameModel.missedQuestions)
+                                        .frame(height: 125)
+                                } //: Performance VStack
+                                .font(.headline)
+                                .padding(20)
+                                .bold()
+                                .background(
+                                    Color.white
+                                )
+                                .roundedCorner(10, corners: .allCorners)
+                                .clipped()
+                                .shadow(color: Color("lighterPurple"), radius: 3)
                             }
-                            
-                            
-                            
-                            Spacer()
-                            
-                        } // VStack
-                        .frame(maxHeight: .infinity)
-                        
-                    } // ZStack
-                    .frame(maxWidth: screen.size.width * 0.85)
-                    .frame(height: screen.size.height * 0.6)
-                    
-                    
-                    ZStack {
-                        Color("bgColor")
-                        HStack(spacing: 15) {
-                            Text("Review")
-                                .font(.largeTitle)
-                            Image(systemName: "doc.text.magnifyingglass")
-                                .font(.title)
-                        }
-                        .bold()
-                        .foregroundColor(.white)
-                    }
-                    .cornerRadius(15)
-                    .padding(.horizontal)
-                    .onTapGesture {
-                        withAnimation {
-                            isReviewing = true
-                        }
+                        } //: VStack
                     }
                     
-                    HStack(spacing: 20) {
-                        ZStack {
-                            Color("bgColor")
-                            Image(systemName: "arrow.counterclockwise")
-                                .font(.title)
-                                .bold()
-                                .foregroundColor(.white)
+                    HStack {
+                        Button(action: {
+                            gameModel.playAgain()
+                            appModel.path.removeLast()
+                        }, label: {
+                            HStack {
+                                Image(systemName: "arrow.left")
                                 
-                        }
-                        .onTapGesture {
-                            isRedo = true
-                        }
-                        .fullScreenCover(isPresented: $isRedo, content: {
-                            GameView(timeIndex: $timeIndex, totalQuestions: totalQuestions, mode: mode, difficulty: difficulty)
+                                Text("Play again")
+                            }
                         })
-                        .cornerRadius(15)
                         
-                        ZStack {
-                            Color("bgColor")
-                            Image(systemName: "house.fill")
-                                .font(.title)
-                                .bold()
-                                .foregroundColor(.white)
-                                
-                        }
-                        .cornerRadius(15)
-                        .onTapGesture {
-                            isGoHome = true
-                        }
-                        .fullScreenCover(isPresented: $isGoHome, content: {
-                            ContentView()
-                            
-                        })
+                        Spacer()
+                    }
+                    .font(.title2)
+                    .fontWeight(.heavy)
+                    .foregroundStyle(Color("darkPurple"))
+                    
+                    Spacer()
+                } //: Parent VStack
+                .padding(20)
+            } //: ZStack
+            .onAppear {
+                withAnimation(.linear(duration: 0.85)) {
+                    if gameModel.mode == "time" {
+                        percentage = Double((Float(gameModel.score) / Float(gameModel.questionCount - 1)) * 100)
 
-                        
                     }
-                    .padding(.horizontal)
-                    .frame(maxWidth: .infinity, maxHeight: screen.size.height * 0.1)
-                    
-                } // VStack
-                .padding(.vertical)
-                .onAppear {
-                    withAnimation(.linear(duration: 1)) {
-                        percentage = (Float(score) / Float(totalQuestions)) * 100
+                    else {
+                        percentage = Double((Float(gameModel.score) / Float(gameModel.totQuestions)) * 100)
+                    }
+                }
+                
+                if authInfo.authState == .AUTHORIZED && authInfo.user != nil {
+
+                    switch gameModel.mode {
+                    case "+":
+                        authInfo.user?.stats?.additionScore += gameModel.score
+                        authInfo.user?.stats?.additionTot += gameModel.totQuestions
+                    case "-":
+                        authInfo.user?.stats?.subtractionScore += gameModel.score
+                        authInfo.user?.stats?.subtractionTot += gameModel.totQuestions
+                    case "x":
+                        authInfo.user?.stats?.multiplicationScore += gameModel.score
+                        authInfo.user?.stats?.multiplicationTot += gameModel.totQuestions
+                    case "÷":
+                        authInfo.user?.stats?.divisionScore += gameModel.score
+                        authInfo.user?.stats?.divisionTot += gameModel.totQuestions
+                    default:
+                        break
+                    }
+
+                    if gameModel.score > (authInfo.user?.stats!.highScore)! {
+                        newHighScore = true
                     }
                     
-                    let sound = Bundle.main.path(forResource: "uiButton", ofType: "mp3")
+                    if gameModel.mode == "time" && gameModel.score > (authInfo.user?.stats!.ttHighScore)! {
+                        newTtHighScore = true
+                        authInfo.user?.stats?.ttHighScore = gameModel.score
+                    }
                     
-                    self.audioPlayer = try! AVAudioPlayer(contentsOf: URL(fileURLWithPath: sound!))
-                    
-                    if score > 0 {
-                                                
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.1) {
-                            hapticFeedback.impactOccurred()
-                            audioPlayer.volume = 1.0
-                            if !UserDefaults.standard.bool(forKey: "isMuted") {
-                                self.audioPlayer.play()
-                            }
+                    if newHighScore || newTtHighScore {
+                        withAnimation(.linear(duration: 4).repeatForever(autoreverses: false)) {
+                            rotation = 360
                         }
                     }
-                    
-                    if score > bestScore {
-                        bestScore = score
-                        UserDefaults.standard.set(score, forKey: "best")
+
+                    authInfo.user?.stats?.highScore = max((authInfo.user?.stats!.highScore)!, gameModel.score)
+
+                    Task {
+                        let statsRequest = UserStatsRequest(userStats: (authInfo.user?.stats)!)
+                        let _ = await authInfo.updateUserStats(statsRequest: statsRequest)
                     }
-                    
                 }
-                .opacity(isReviewing ? 0.6 : 1)
-                
-                if isReviewing {
-                    MissedQuestionsView(misssedQuestions: missedQuestions, isReviewing: $isReviewing)
-                        .frame(maxWidth: screen.size.width * 0.95, maxHeight: screen.size.height * 0.4)
-                        .cornerRadius(20)
-                        .shadow(radius: 20)
-                }
-                                
-            } // ZStack
+            }
         }
-    
-        
     } // body
     
-}
-
-struct EndGameView_Previews: PreviewProvider {
-    static var previews: some View {
-        EndGameView(score: 20, totalQuestions: 40, timeIndex: 0, mode: "+", difficulty: "easy", missedQuestions: [])
-    }
 }

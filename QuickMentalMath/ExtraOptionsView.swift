@@ -15,113 +15,127 @@ struct ExtraOptionsView: View {
     @State var showGame = false
     
     @State var timeIndex = 0
-    @Binding var modeIndex: Int
-    @Binding var difficultyIndex: Int
+    @State var difficultyIndex = 0
     
-    
-    
-    var modes: [String] = ["+", "-", "x", "÷"]
-    var difficulties: [String] = ["easy", "medium", "hard", "decimals"]
+    @EnvironmentObject private var gameModel: GameModel
+    @EnvironmentObject private var deviceModel: DeviceModel
+    @EnvironmentObject private var appModel: AppModel
     
     @Environment(\.presentationMode) var presentationMode
     
     var body: some View {
         GeometryReader { metrics in
-            
             ZStack {
+                Color.white
+                    .clipShape(RoundedRectangle(cornerRadius: 30))
                 
-                VStack(spacing: 0) {
-                    Color.white
-                        .clipShape(RoundedRectangle(cornerRadius: 30))
-                }
-                
-                VStack {
-                    ZStack {
-                        Color("textColor")
-                            .roundedCorner(30, corners: [.bottomLeft, .bottomRight])
-                            .ignoresSafeArea()
+                VStack(spacing: 10) {
+                    HStack {
+                        Button(action: {
+                            appModel.path.removeLast()
+                        }, label: {
+                            Image(systemName: "chevron.left")
+                                .foregroundStyle(Color("darkPurple"))
+                        })
+                        .font(.title3)
+                        .bold()
                         
-                        VStack {
-                            
-                            HStack {
-                                Button {
-                                    presentationMode.wrappedValue.dismiss()
-                                } label: {
-                                    Image(systemName: "xmark")
-                                        .foregroundColor(.white)
-                                        .font(.title3)
-                                        .bold()
-                                }
-                                
-                                Spacer()
-                            }
-                            .padding(.horizontal)
-                            .padding(.top)
-                            .frame(maxWidth: .infinity)
-                            
-                            VStack(spacing: 20) {
-                                
-                                QuestionSlider(value: $progress, in: 10...100)
-                                    .frame(maxWidth: metrics.size.height * 0.2, maxHeight: metrics.size.height * 0.2)
-                                Text("Number of Questions")
-                                    .font(metrics.size.height < 736 && metrics.size.width < 390 ? .headline : .title3)
-                                    .foregroundColor(Color.white)
-                                    .bold()
-                                
-                                
-                                VStack(spacing: 15) {
-                                    OptionSlider(items: ["1 min", "2 min", "3 min", "∞ min"], color: Color.white.opacity(0.65), borderRadius: 30, isSmall: metrics.size.height < 736 && metrics.size.width < 390, selectedIndex: $timeIndex)
-                                    
-                                    Text("Time Limit")
-                                        .font(metrics.size.height < 736 && metrics.size.width < 390 ? .headline : .title3)
-                                        .bold()
-                                        .foregroundColor(.white)
-                                }
-                                .padding()
-                                .padding(.bottom, 20)
-                                
-                                
-                            }
-                            
-                            
-                        } // VStack
-                        
-                        
-                    } // ZStack
-                    .frame(maxHeight: metrics.size.height * (metrics.size.height < 736 ? 0.7 : 0.65))
-                    
-                    Spacer()
-                    
-                    Button {
-                        showGame = true
-                    } label: {
-                        ZStack {
-                            Capsule(style: .continuous)
-                                .fill(Color("goColor"))
-                                .frame(width: metrics.size.width * 0.8)
-                                .frame(maxHeight: metrics.size.width * 0.3)
-                                .shadow(radius: 15)
-                            
-                            Text("Begin")
-                                .font(.system(size: 35, weight: .bold))
-                                .foregroundColor(.white)
-                            
-                        } // ZStack
+                        Spacer()
                     }
-                    .fullScreenCover(isPresented: $showGame, content: {
-                        GameView(timeIndex: $timeIndex, totalQuestions: Int(round(progress)), mode: modes[modeIndex], difficulty: difficulties[difficultyIndex])
-                    })
                     
-                    Spacer()
+                    VStack(spacing: 40) {
+                        
+                        
+                        VStack(spacing: 10) {
+                            QuestionSlider(value: $progress, in: 10...100)
+                                .frame(width: metrics.size.height * 0.18, height: metrics.size.height * 0.18)
+                            Text("Number of Questions")
+                                .font(metrics.size.height < 736 && metrics.size.width < 390 ? .headline : .title3)
+                                .foregroundColor(Color("lightPurple"))
+                                .bold()
+                        }
+                        
+                        HStack(spacing: 20) {
+                            
+                            VStack(spacing: metrics.size.height < 736 && metrics.size.width < 390 ? 8 : 15) {
+                                DifficultySelector(difficultyIndex: $difficultyIndex)
+                                    .environmentObject(deviceModel)
+                                
+                                Divider()
+                                
+                                Text("Difficulty")
+                                    .font(metrics.size.height < 736 && metrics.size.width < 390 ? .subheadline : .headline)
+                                    .fontWeight(.heavy)
+                                    .foregroundColor(Color("lightPurple"))
+                            }
+                            .padding(metrics.size.height < 736 && metrics.size.width < 390 ? 8 : 15)
+                            .background(.white)
+                            .roundedCorner(10, corners: .allCorners)
+                            .clipped()
+                            .shadow(radius: 2)
+                            
+                            VStack(spacing: metrics.size.height < 736 && metrics.size.width < 390 ? 8 : 15) {
+                                
+                                TimeSelector(timeIndex: $timeIndex)
+                                    .environmentObject(deviceModel)
+                                
+                                Divider()
+                                
+                                Text("Time Limit")
+                                    .font(metrics.size.height < 736 && metrics.size.width < 390 ? .subheadline : .headline)
+                                    .fontWeight(.heavy)
+                                    .foregroundColor(Color("lightPurple"))
+                            }
+                            .padding(metrics.size.height < 736 && metrics.size.width < 390 ? 8 : 15)
+                            .background(.white)
+                            .roundedCorner(10, corners: .allCorners)
+                            .clipped()
+                            .shadow(radius: 2)
+                        }
+                        
+                        HStack {
+                            Spacer()
+                            
+                            Button {
+                                gameModel.setTime(timeIndex: timeIndex)
+                                gameModel.setDifficulty(difficultyIndex: difficultyIndex)
+                                gameModel.totQuestions = Int(round(progress))
+                                
+                                appModel.path.append(AppState.GAME)
+                            } label: {
+                                HStack {
+                                    Text("Start")
+                                    
+                                    Image(systemName: "arrow.right")
+                                }
+                                .foregroundStyle(Color("darkPurple"))
+                                .font(.title2)
+                                .fontWeight(.heavy)
+                            } //: Start Button
+                        }
+                        
+                        Spacer()
+                    } //: VStack
                     
                     
-                } // VStack
+                } //: VStack
+                .padding(.horizontal, 20)
+                .padding(.top, 20)
+                
             } // ZStack
             
         }
         
     }
 }
+
+#Preview {
+    ExtraOptionsView()
+        .environmentObject(GameModel())
+        .environmentObject(DeviceModel())
+        .environmentObject(AppModel(path: NavigationPath()))
+}
+
 
 
 
