@@ -290,7 +290,7 @@ class AuthService {
         
         do {
             request.httpBody = try JSONEncoder().encode(statsRequest)
-            guard let (data, httpResponse) = try await URLSession.shared.data(for: request) as? (Data?, HTTPURLResponse?) else {
+            guard let (_, httpResponse) = try await URLSession.shared.data(for: request) as? (Data?, HTTPURLResponse?) else {
                 return false
             }
             
@@ -316,7 +316,7 @@ class AuthService {
         
         do {
             request.httpBody = try JSONEncoder().encode(statsRequest)
-            guard let (data, httpResponse) = try await URLSession.shared.data(for: request) as? (Data?, HTTPURLResponse?) else {
+            guard let (_, httpResponse) = try await URLSession.shared.data(for: request) as? (Data?, HTTPURLResponse?) else {
                 return false
             }
             
@@ -383,7 +383,7 @@ class AuthService {
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
         do {
-            guard let (_, httpResponse) = try? await URLSession.shared.data(for: request) as? (Data?, HTTPURLResponse?) else {
+            guard let (_, httpResponse) = try await URLSession.shared.data(for: request) as? (Data?, HTTPURLResponse?) else {
                 return false
             }
             if httpResponse?.statusCode == 200 {
@@ -405,7 +405,7 @@ class AuthService {
         
         do {
             request.httpBody = try JSONEncoder().encode(body)
-            guard let (response, httpResponse) = try? await URLSession.shared.data(for: request) as? (Data?, HTTPURLResponse?) else {
+            guard let (_, httpResponse) = try await URLSession.shared.data(for: request) as? (Data?, HTTPURLResponse?) else {
                 return "UNKNOWN_ERROR"
             }
             if httpResponse?.statusCode == 200 {
@@ -433,7 +433,7 @@ class AuthService {
         request.setValue("Bearer \(jwtToken)", forHTTPHeaderField: "Authorization")
         
         do {
-            guard let (_, httpResponse) = try? await URLSession.shared.data(for: request) as? (Data?, HTTPURLResponse?) else {
+            guard let (_, httpResponse) = try await URLSession.shared.data(for: request) as? (Data?, HTTPURLResponse?) else {
                 return false
             }
             if httpResponse?.statusCode == 200 {
@@ -456,7 +456,7 @@ class AuthService {
         request.setValue("Bearer \(jwtToken)", forHTTPHeaderField: "Authorization")
         
         do {
-            guard let (_, httpResponse) = try? await URLSession.shared.data(for: request) as? (Data?, HTTPURLResponse?) else {
+            guard let (_, httpResponse) = try await URLSession.shared.data(for: request) as? (Data?, HTTPURLResponse?) else {
                 return false
             }
             if httpResponse?.statusCode == 403 {

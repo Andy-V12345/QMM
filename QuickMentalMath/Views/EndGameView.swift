@@ -7,29 +7,6 @@
 
 import SwiftUI
 
-//struct AnimatableNumberModifier: AnimatableModifier {
-//    var number: Double
-//
-//    var animatableData: Double {
-//        get { number }
-//        set { number = newValue }
-//    }
-//
-//    func body(content: Content) -> some View {
-//        content
-//            .overlay(
-////                Text("\(Int(number))%")
-//                Text("0%")
-//            )
-//    }
-//}
-
-//extension View {
-//    func animatingOverlay(for number: Double) -> some View {
-//        modifier(AnimatableNumberModifier(number: number))
-//    }
-//}
-
 struct EndGameView: View {
     
     @State var percentage: Double = 0

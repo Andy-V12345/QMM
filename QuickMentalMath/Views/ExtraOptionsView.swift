@@ -11,7 +11,6 @@ import SwiftUI
 struct ExtraOptionsView: View {
     
     @State var progress = 10.0
-    @State var pulsingAmount = 0.95
     @State var showGame = false
     
     @State var timeIndex = 0
