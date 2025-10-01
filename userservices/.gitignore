@@ -24,6 +24,10 @@ target/
 *.iml
 *.ipr
 
+###
+qmm-backend-aws.pem
+src/main/resources/application.yml
+
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/
