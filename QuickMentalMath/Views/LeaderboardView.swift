@@ -13,7 +13,7 @@ struct LeaderboardView: View {
     
     @State var viewState: ViewState = .LOADING
     
-    @EnvironmentObject var authInfo: AuthInfo
+    @EnvironmentObject var authInfo: AuthInfoModel
     
     @State var leaderboard: [LeaderboardResponse]? = []
     

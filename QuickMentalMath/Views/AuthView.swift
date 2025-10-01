@@ -42,7 +42,7 @@ struct AuthView: View {
     @FocusState var isPasswordFocused: Bool
     @FocusState var isUsernameFocused: Bool
     
-    @EnvironmentObject var authInfo: AuthInfo
+    @EnvironmentObject var authInfo: AuthInfoModel
     @EnvironmentObject var appModel: AppModel
     
     @Namespace var namespace
@@ -381,5 +381,5 @@ struct AuthView: View {
 
 #Preview {
     AuthView()
-        .environmentObject(AuthInfo())
+        .environmentObject(AuthInfoModel())
 }

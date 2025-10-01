@@ -23,7 +23,7 @@ struct SideBar: View {
     @State var displayStats = false
     @State var displayLeaderboard = false
     
-    @EnvironmentObject var authInfo: AuthInfo
+    @EnvironmentObject var authInfo: AuthInfoModel
     @EnvironmentObject var appModel: AppModel
     
     @AppStorage("authState") var authState: AuthState = .NO_ACCOUNT

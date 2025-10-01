@@ -12,7 +12,7 @@ struct TimeTrialView: View {
     @EnvironmentObject var deviceModel: DeviceModel
     @EnvironmentObject var appModel: AppModel
     @EnvironmentObject var gameModel: GameModel
-    @EnvironmentObject var authInfo: AuthInfo
+    @EnvironmentObject var authInfo: AuthInfoModel
     
     @State var difficultyIndex = 1
     @State var timeIndex = 0

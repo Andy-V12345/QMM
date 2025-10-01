@@ -21,7 +21,7 @@ struct EndGameView: View {
     
     @EnvironmentObject var gameModel: GameModel
     @EnvironmentObject var appModel: AppModel
-    @EnvironmentObject var authInfo: AuthInfo
+    @EnvironmentObject var authInfo: AuthInfoModel
     
     let hapticFeedback = UIImpactFeedbackGenerator(style: .medium)
     

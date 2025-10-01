@@ -19,6 +19,10 @@
 		D87282872E8D920C00C36890 /* MissedQuestionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D872827C2E8D920C00C36890 /* MissedQuestionsView.swift */; };
 		D87282882E8D920C00C36890 /* StatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D872827D2E8D920C00C36890 /* StatsView.swift */; };
 		D87282892E8D920C00C36890 /* TimeTrialView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D872827E2E8D920C00C36890 /* TimeTrialView.swift */; };
+		D872828D2E8DA69900C36890 /* DeviceModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D872828C2E8DA69900C36890 /* DeviceModel.swift */; };
+		D872828F2E8DA6EF00C36890 /* AuthInfoModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D872828E2E8DA6EF00C36890 /* AuthInfoModel.swift */; };
+		D87282922E8DA76700C36890 /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D87282912E8DA76700C36890 /* AppModel.swift */; };
+		D87282942E8DA8EC00C36890 /* GameModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D87282932E8DA8EC00C36890 /* GameModel.swift */; };
 		D886E8D22C3AD8350054DD61 /* AuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D886E8D12C3AD8350054DD61 /* AuthService.swift */; };
 		D886E8D42C3ADA290054DD61 /* LoadingSpinner.swift in Sources */ = {isa = PBXBuildFile; fileRef = D886E8D32C3ADA290054DD61 /* LoadingSpinner.swift */; };
 		D8BAFEF62A09A12400D49C49 /* QuickMentalMathApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8BAFEF52A09A12400D49C49 /* QuickMentalMathApp.swift */; };
@@ -64,6 +68,10 @@
 		D872827C2E8D920C00C36890 /* MissedQuestionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MissedQuestionsView.swift; sourceTree = "<group>"; };
 		D872827D2E8D920C00C36890 /* StatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsView.swift; sourceTree = "<group>"; };
 		D872827E2E8D920C00C36890 /* TimeTrialView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeTrialView.swift; sourceTree = "<group>"; };
+		D872828C2E8DA69900C36890 /* DeviceModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceModel.swift; sourceTree = "<group>"; };
+		D872828E2E8DA6EF00C36890 /* AuthInfoModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthInfoModel.swift; sourceTree = "<group>"; };
+		D87282912E8DA76700C36890 /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
+		D87282932E8DA8EC00C36890 /* GameModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameModel.swift; sourceTree = "<group>"; };
 		D886E8D12C3AD8350054DD61 /* AuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthService.swift; sourceTree = "<group>"; };
 		D886E8D32C3ADA290054DD61 /* LoadingSpinner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingSpinner.swift; sourceTree = "<group>"; };
 		D88D273D2A2D8B2C00E0EA63 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
@@ -140,6 +148,17 @@
 			path = Components;
 			sourceTree = "<group>";
 		};
+		D872828B2E8DA67F00C36890 /* Classes */ = {
+			isa = PBXGroup;
+			children = (
+				D87282932E8DA8EC00C36890 /* GameModel.swift */,
+				D87282912E8DA76700C36890 /* AppModel.swift */,
+				D872828E2E8DA6EF00C36890 /* AuthInfoModel.swift */,
+				D872828C2E8DA69900C36890 /* DeviceModel.swift */,
+			);
+			path = Classes;
+			sourceTree = "<group>";
+		};
 		D886E8CF2C3AD7530054DD61 /* Services */ = {
 			isa = PBXGroup;
 			children = (
@@ -171,6 +190,7 @@
 		D8BAFEF42A09A12400D49C49 /* QuickMentalMath */ = {
 			isa = PBXGroup;
 			children = (
+				D872828B2E8DA67F00C36890 /* Classes */,
 				D872828A2E8DA44600C36890 /* Components */,
 				D872827F2E8D920C00C36890 /* Views */,
 				D886E8CF2C3AD7530054DD61 /* Services */,
@@ -341,15 +361,19 @@
 			files = (
 				D87282802E8D920C00C36890 /* AuthView.swift in Sources */,
 				D87282812E8D920C00C36890 /* EndGameView.swift in Sources */,
+				D872828D2E8DA69900C36890 /* DeviceModel.swift in Sources */,
 				D87282822E8D920C00C36890 /* ExtraOptionsView.swift in Sources */,
 				D87282832E8D920C00C36890 /* ForgotPasswordView.swift in Sources */,
+				D87282942E8DA8EC00C36890 /* GameModel.swift in Sources */,
 				D87282842E8D920C00C36890 /* GameView.swift in Sources */,
 				D87282852E8D920C00C36890 /* HomeView.swift in Sources */,
+				D872828F2E8DA6EF00C36890 /* AuthInfoModel.swift in Sources */,
 				D87282862E8D920C00C36890 /* LeaderboardView.swift in Sources */,
 				D87282872E8D920C00C36890 /* MissedQuestionsView.swift in Sources */,
 				D87282882E8D920C00C36890 /* StatsView.swift in Sources */,
 				D87282892E8D920C00C36890 /* TimeTrialView.swift in Sources */,
 				D8ED276D2A11453300092F56 /* QuestionSlider.swift in Sources */,
+				D87282922E8DA76700C36890 /* AppModel.swift in Sources */,
 				D863BB622BF8049600A8825C /* TimeSelector.swift in Sources */,
 				D8BAFEF82A09A12400D49C49 /* ContentView.swift in Sources */,
 				D84ED7E22C44AA0B0043995D /* LeaderboardEntry.swift in Sources */,

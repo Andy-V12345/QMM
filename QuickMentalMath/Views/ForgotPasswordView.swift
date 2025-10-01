@@ -29,7 +29,7 @@ struct ForgotPasswordView: View {
     
     @State var forgotPasswordState: ForgotPasswordState = .SEND
     
-    @EnvironmentObject var authInfo: AuthInfo
+    @EnvironmentObject var authInfo: AuthInfoModel
     
     @Environment(\.dismiss) var dismiss
         

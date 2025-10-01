@@ -23,26 +23,9 @@ extension View {
     }
 }
 
-class AppModel: ObservableObject {
-    @Published var path: NavigationPath
-    
-    init(path: NavigationPath) {
-        self.path = path
-    }
-}
-
-enum DeviceType {
-    case SMALL, NORMAL, LARGE
-}
-
-class DeviceModel: ObservableObject {
-    @Published var type: DeviceType = .NORMAL
-}
-
-
 struct ContentView: View {
     
-    @StateObject var authInfo = AuthInfo()
+    @StateObject var authInfo = AuthInfoModel()
     @StateObject var appModel = AppModel(path: NavigationPath())
     @StateObject private var gameModel = GameModel()
     @StateObject private var deviceModel = DeviceModel()
@@ -93,10 +76,8 @@ struct ContentView: View {
                 })
         }
         .onChange(of: scenePhase) { phase in
-            print(phase)
             switch phase {
             case .active:
-                print("active")
                 authInfo.user = User(id: id, username: username, jwtToken: jwtToken)
                 authInfo.authState = authState
                 

@@ -13,7 +13,7 @@ struct StatsView: View {
     
     @State var accuracy: Double = 0
         
-    @EnvironmentObject var authInfo: AuthInfo
+    @EnvironmentObject var authInfo: AuthInfoModel
     
     var body: some View {
         GeometryReader { screen in
