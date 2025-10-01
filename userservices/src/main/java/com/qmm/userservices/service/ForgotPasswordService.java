@@ -25,6 +25,9 @@ public class ForgotPasswordService {
     @Autowired
     private JavaMailSender mailSender;
 
+    public ForgotPasswordService() {
+    }
+
     public AppUser getByResetPasswordToken(String token) {
         return appUserRepository.findByResetPasswordToken(token);
     }
