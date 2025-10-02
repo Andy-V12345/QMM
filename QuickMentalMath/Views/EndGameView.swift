@@ -10,11 +10,7 @@ import SwiftUI
 struct EndGameView: View {
     
     @State var percentage: Double = 0
-    @State var uiPercentage: Double = 0
     
-    @State var isGoHome = false
-    @State var isRedo = false
-    @State var isReviewing = false
     @State var newHighScore = false
     @State var newTtHighScore = false
     @State var rotation: CGFloat = 0.0
@@ -48,16 +44,6 @@ struct EndGameView: View {
                             .bold()
                             
                             Spacer()
-                            
-                            Button(action: {
-                                gameModel.reset()
-                                appModel.path = NavigationPath([AuthState.UNAUTHORIZED, authInfo.authState])
-                            }, label: {
-                                Image(systemName: "house")
-                                    .font(.title2)
-                                    .foregroundStyle(Color("darkPurple"))
-                                    .bold()
-                            })
                         }
                                                 
                         VStack(spacing: 20) {
@@ -113,7 +99,7 @@ struct EndGameView: View {
                             VStack(spacing: 20) {
                                 VStack(spacing: 15) {
                                     HStack {
-                                        Text("Performance")
+                                        Text("Accuracy")
                                             .foregroundStyle(Color("darkPurple"))
                                         
                                         Spacer()
@@ -149,7 +135,7 @@ struct EndGameView: View {
                             .clipped()
                             .background(
                                 ZStack {
-                                    RoundedRectangle(cornerRadius: 10)
+                                    RoundedRectangle(cornerRadius: 20)
                                         .fill(.white)
                                         .shadow(color: Color("lighterPurple"), radius: 3)
                                 }
@@ -171,32 +157,43 @@ struct EndGameView: View {
                                 .background(
                                     Color.white
                                 )
-                                .roundedCorner(10, corners: .allCorners)
+                                .roundedCorner(20, corners: .allCorners)
                                 .clipped()
                                 .shadow(color: Color("lighterPurple"), radius: 3)
                             }
                         } //: VStack
                     }
                     
-                    HStack {
-                        Button(action: {
-                            gameModel.playAgain()
-                            appModel.path.removeLast()
-                        }, label: {
+                    Spacer()
+                            
+                    VStack(spacing: 30) {
+                        Button(action: {}, label: {
                             HStack {
                                 Image(systemName: "arrow.left")
                                 
                                 Text("Play again")
                             }
                         })
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 20)
+                        .raisedButton(action: {
+                            //                        gameModel.playAgain()
+                            //                        appModel.path.removeLast()
+                        })
+                        .font(.title2)
+                        .fontWeight(.heavy)
+                        .foregroundStyle(Color("darkPurple"))
                         
-                        Spacer()
+                        Button(action: {
+                            gameModel.reset()
+                            appModel.path = NavigationPath([AuthState.UNAUTHORIZED, authInfo.authState])
+                        }, label: {
+                            Text("Back to home")
+                                .font(.title3)
+                                .foregroundStyle(Color("darkPurple"))
+                                .bold()
+                        })
                     }
-                    .font(.title2)
-                    .fontWeight(.heavy)
-                    .foregroundStyle(Color("darkPurple"))
-                    
-                    Spacer()
                 } //: Parent VStack
                 .padding(20)
             } //: ZStack
@@ -256,4 +253,18 @@ struct EndGameView: View {
         }
     } // body
     
+}
+
+#Preview {
+    
+    let missed = [
+        MissedQuestion(question: "5 + 5", userAns: "8", correctAns: "10"),
+        MissedQuestion(question: "8 + 5", userAns: "8", correctAns: "13"),
+        MissedQuestion(question: "5 + 5", userAns: "8", correctAns: "10")
+    ]
+    let gameModel = GameModel(mode: "+", difficulty: "easy", totQuestions: 15, score: 10, missedQuestions: [])
+    EndGameView()
+        .environmentObject(AuthInfoModel())
+        .environmentObject(AppModel(path: NavigationPath()))
+        .environmentObject(gameModel)
 }

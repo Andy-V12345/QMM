@@ -26,13 +26,16 @@ struct MissedQuestionsView: View {
                 ForEach(0 ..< missedQuestions.count) { i in
                     HStack(spacing: 0) {
                         Text("\(missedQuestions[i].question) = \(missedQuestions[i].correctAns)")
+                            .foregroundStyle(Color("lightPurple"))
+                            .bold()
                         
                         Spacer()
                         
                         Text("Your answer: \(missedQuestions[i].userAns)")
+                            .foregroundStyle(Color("darkPurple"))
+                            .bold()
                     }
                     .frame(maxWidth: .infinity)
-                    .foregroundColor(Color("lightPurple"))
                     
                     Divider()
                 }
@@ -46,5 +49,6 @@ struct MissedQuestionsView: View {
 
 #Preview {
     MissedQuestionsView(missedQuestions: [MissedQuestion(question: "5 + 5", userAns: "1", correctAns: "10"), MissedQuestion(question: "5 + 5", userAns: "1", correctAns: "10")])
+        .padding(20)
 }
 

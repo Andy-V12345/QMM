@@ -18,6 +18,16 @@ class GameModel: ObservableObject {
     @Published var questionCount = 1
     @Published var tmpMode = ""
     
+    init() {}
+    
+    init(mode: String, difficulty: String, totQuestions: Int, score: Int, missedQuestions: [MissedQuestion] = []) {
+        self.mode = mode
+        self.difficulty = difficulty
+        self.score = score
+        self.totQuestions = totQuestions
+        self.missedQuestions = missedQuestions
+    }
+    
     var modes: [String] = ["+", "-", "x", "÷", "time"]
     var difficulties: [String] = ["easy", "medium", "hard", "decimals"]
     var times: [CGFloat] = [60, 120, 180, 1000]
