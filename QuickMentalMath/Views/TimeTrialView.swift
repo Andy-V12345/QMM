@@ -24,6 +24,14 @@ struct TimeTrialView: View {
     @AppStorage("username") var username = ""
     @AppStorage("id") var id = 0
     
+    func handleStart() {
+        gameModel.setTime(timeIndex: 0)
+        gameModel.setMode(modeIndex: 4)
+        gameModel.setDifficulty(difficultyIndex: 1)
+        
+        appModel.path.append(AppState.GAME)
+    }
+    
     var body: some View {
         GeometryReader { metrics in
             ZStack {
@@ -118,6 +126,7 @@ struct TimeTrialView: View {
                                             .roundedCorner(10, corners: .allCorners)
                                             .animation(.easeInOut(duration: 0.25), value: difficultyIndex)
                                     })
+                                    .disabled(true)
                                     
                                     Divider()
                                     
@@ -182,6 +191,7 @@ struct TimeTrialView: View {
                                             .roundedCorner(10, corners: .allCorners)
                                             .animation(.easeInOut(duration: 0.25), value: timeIndex)
                                     })
+                                    .disabled(true)
                                     
                                     Divider()
                                     
@@ -250,33 +260,24 @@ struct TimeTrialView: View {
                             
                         }
                         
-                        HStack {
-                            Spacer()
-                            
-                            VStack(alignment: .trailing, spacing: 10) {
-                                Text("Are you ready?")
-                                    .foregroundStyle(Color("lightPurple"))
-                                    .fontWeight(.bold)
-                                    .font(.title3)
+                        Button(action: {}, label: {
+                            HStack {
+                                Text("Start")
                                 
-                                Button {
-                                    gameModel.setTime(timeIndex: 0)
-                                    gameModel.setMode(modeIndex: 4)
-                                    gameModel.setDifficulty(difficultyIndex: 1)
-                                    
-                                    appModel.path.append(AppState.GAME)
-                                } label: {
-                                    HStack {
-                                        Text("Start")
-                                        
-                                        Image(systemName: "arrow.right")
-                                    }
-                                    .foregroundStyle(Color("darkPurple"))
-                                    .font(.title2)
-                                    .fontWeight(.heavy)
-                                } //: Start Button
+                                Image(systemName: "arrow.right")
                             }
-                        } //: HStack
+                            .foregroundStyle(Color("darkPurple"))
+                            .font(.title2)
+                            .fontWeight(.heavy)
+                        })
+                        .roundedCorner(12, corners: .allCorners)
+                        .padding(15)
+                        .frame(maxWidth: .infinity)
+                        .raisedButton(backgroundColor: Color("lighterPurple"), shadowColor: Color("lightPurple"), shadowOffset: 11,
+                                      action: {
+                            handleStart()
+                        })
+                        //: Start Button
                         
                         
                         

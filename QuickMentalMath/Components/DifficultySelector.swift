@@ -9,6 +9,9 @@ import SwiftUI
 
 struct DifficultySelector: View {
     
+    let buttonRadius: CGFloat = 10
+    let shadowOffset: CGFloat = 3
+    
     @Binding var difficultyIndex: Int
     
     @EnvironmentObject private var device: DeviceModel
@@ -16,61 +19,57 @@ struct DifficultySelector: View {
     var body: some View {
         VStack(spacing: device.type == .SMALL ? 8 : 15) {
             Button(action: {
-                difficultyIndex = 0
             }, label: {
                 Text("Easy")
                     .foregroundStyle(difficultyIndex == 0 ? .white : Color("lightGreen"))
-                    .padding(.vertical, 10)
-                    .padding(.horizontal, 15)
-                    .frame(maxWidth: .infinity)
-                    .background(difficultyIndex == 0 ? Color("lightGreen") : .white)
-                    .roundedCorner(10, corners: .allCorners)
-                    .animation(.easeInOut(duration: 0.25), value: difficultyIndex)
+            })
+            .padding(.vertical, 10)
+            .padding(.horizontal, 15)
+            .frame(maxWidth: .infinity)
+            .raisedButton(cornerRadius: buttonRadius, backgroundColor: difficultyIndex == 0 ? Color("lightGreen") : Color("offWhite"), shadowColor: Color.gray.opacity(0.3), shadowOffset: shadowOffset, action: {
+                difficultyIndex = 0
             })
             
             Divider()
             
             Button(action: {
-                difficultyIndex = 1
             }, label: {
                 Text("Medium")
                     .foregroundStyle(difficultyIndex == 1 ? .white : Color("lightYellow"))
-                    .padding(.vertical, 10)
-                    .padding(.horizontal, 15)
-                    .frame(maxWidth: .infinity)
-                    .background(difficultyIndex == 1 ? Color("lightYellow") : .white)
-                    .roundedCorner(10, corners: .allCorners)
-                    .animation(.easeInOut(duration: 0.25), value: difficultyIndex)
+            })
+            .padding(.vertical, 10)
+            .padding(.horizontal, 15)
+            .frame(maxWidth: .infinity)
+            .raisedButton(cornerRadius: buttonRadius, backgroundColor: difficultyIndex == 1 ? Color("lightYellow") : Color("offWhite"), shadowColor: Color.gray.opacity(0.3), shadowOffset: shadowOffset, action: {
+                difficultyIndex = 1
             })
             
             Divider()
             
             Button(action: {
-                difficultyIndex = 2
             }, label: {
                 Text("Hard")
                     .foregroundStyle(difficultyIndex == 2 ? .white : Color("lightOrange"))
-                    .padding(.vertical, 10)
-                    .padding(.horizontal, 15)
-                    .frame(maxWidth: .infinity)
-                    .background(difficultyIndex == 2 ? Color("lightOrange") : .white)
-                    .roundedCorner(10, corners: .allCorners)
-                    .animation(.easeInOut(duration: 0.25), value: difficultyIndex)
+            })
+            .padding(.vertical, 10)
+            .padding(.horizontal, 15)
+            .frame(maxWidth: .infinity)
+            .raisedButton(cornerRadius: buttonRadius, backgroundColor: difficultyIndex == 2 ? Color("lightOrange") : Color("offWhite"), shadowColor: Color.gray.opacity(0.3), shadowOffset: shadowOffset, action: {
+                difficultyIndex = 2
             })
             
             Divider()
             
             Button(action: {
-                difficultyIndex = 3
             }, label: {
                 Text("Decimals")
                     .foregroundStyle(difficultyIndex == 3 ? .white : Color("lightRed"))
-                    .padding(.vertical, 10)
-                    .padding(.horizontal, 15)
-                    .frame(maxWidth: .infinity)
-                    .background(difficultyIndex == 3 ? Color("lightRed") : .white)
-                    .roundedCorner(10, corners: .allCorners)
-                    .animation(.easeInOut(duration: 0.25), value: difficultyIndex)
+            })
+            .padding(.vertical, 10)
+            .padding(.horizontal, 15)
+            .frame(maxWidth: .infinity)
+            .raisedButton(cornerRadius: buttonRadius, backgroundColor: difficultyIndex == 3 ? Color("lightRed") : Color("offWhite"), shadowColor: Color.gray.opacity(0.3), shadowOffset: shadowOffset, action: {
+                difficultyIndex = 3
             })
             
         }

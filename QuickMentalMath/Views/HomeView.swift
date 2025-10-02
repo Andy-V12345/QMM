@@ -216,12 +216,7 @@ struct HomeView: View {
                     }
                                                             
                     HStack {
-                        Spacer()
-                        
-                        Button(action: {
-                            game.setMode(modeIndex: modeIndex)
-                            appModel.path.append(AppState.SETTINGS)
-                        }, label: {
+                        Button(action: {}, label: {
                             HStack {
                                 Text("Next")
                                 
@@ -230,12 +225,20 @@ struct HomeView: View {
                             .font(.title2)
                             .foregroundStyle(Color("darkPurple"))
                             .fontWeight(.heavy)
-                            .roundedCorner(12, corners: .allCorners)
                         })
-                        .opacity(modeIndex == -1 ? 0.4 : 1)
+                        .roundedCorner(12, corners: .allCorners)
+                        .padding(15)
+                        .frame(maxWidth: .infinity)
+                        .raisedButton(impactStrength: .heavy, backgroundColor: Color("lighterPurple"), shadowColor: Color("lightPurple"), shadowOffset: 11,
+                                      action: {
+                            game.setMode(modeIndex: modeIndex)
+                            appModel.path.append(AppState.SETTINGS)
+                        })
+                        .opacity(modeIndex == -1 ? 0.5 : 1)
                         .disabled(modeIndex == -1)
+
                     }
-                    .padding(.trailing, 25)
+                    .padding(.horizontal, 20)
                     
                     Spacer()
                     

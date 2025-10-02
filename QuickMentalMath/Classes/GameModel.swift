@@ -10,7 +10,8 @@ import SwiftUI
 class GameModel: ObservableObject {
     @Published var mode = ""
     @Published var difficulty = ""
-    @Published var time: CGFloat = 0
+    @Published var startTime: CGFloat = 0
+    @Published var timeLeft: CGFloat = 0
     @Published var totQuestions = 0
     @Published var score = 0
     @Published var missedQuestions: [MissedQuestion] = []
@@ -21,8 +22,6 @@ class GameModel: ObservableObject {
     var difficulties: [String] = ["easy", "medium", "hard", "decimals"]
     var times: [CGFloat] = [60, 120, 180, 1000]
     
-    
-    
     func setMode(modeIndex: Int) {
         mode = modes[modeIndex]
     }
@@ -32,7 +31,8 @@ class GameModel: ObservableObject {
     }
     
     func setTime(timeIndex: Int) {
-        time = times[timeIndex]
+        startTime = times[timeIndex]
+        timeLeft = times[timeIndex]
     }
     
     func reset() {
@@ -40,7 +40,8 @@ class GameModel: ObservableObject {
         missedQuestions.removeAll()
         questionCount = 1
         mode = ""
-        time = 0
+        startTime = 0
+        timeLeft = 0
         totQuestions = 0
         difficulty = ""
     }
@@ -48,6 +49,7 @@ class GameModel: ObservableObject {
     func playAgain() {
         score = 0
         missedQuestions.removeAll()
+        timeLeft = startTime
         questionCount = 1
     }
     

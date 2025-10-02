@@ -22,6 +22,14 @@ struct ExtraOptionsView: View {
     
     @Environment(\.presentationMode) var presentationMode
     
+    func handleStart() {
+        gameModel.setTime(timeIndex: timeIndex)
+        gameModel.setDifficulty(difficultyIndex: difficultyIndex)
+        gameModel.totQuestions = Int(round(progress))
+        
+        appModel.path.append(AppState.GAME)
+    }
+    
     var body: some View {
         GeometryReader { metrics in
             ZStack {
@@ -92,26 +100,25 @@ struct ExtraOptionsView: View {
                             .shadow(radius: 2)
                         }
                         
-                        HStack {
-                            Spacer()
                             
-                            Button {
-                                gameModel.setTime(timeIndex: timeIndex)
-                                gameModel.setDifficulty(difficultyIndex: difficultyIndex)
-                                gameModel.totQuestions = Int(round(progress))
+                        Button(action: {}, label: {
+                            HStack {
+                                Text("Start")
                                 
-                                appModel.path.append(AppState.GAME)
-                            } label: {
-                                HStack {
-                                    Text("Start")
-                                    
-                                    Image(systemName: "arrow.right")
-                                }
-                                .foregroundStyle(Color("darkPurple"))
-                                .font(.title2)
-                                .fontWeight(.heavy)
-                            } //: Start Button
-                        }
+                                Image(systemName: "arrow.right")
+                            }
+                            .foregroundStyle(Color("darkPurple"))
+                            .font(.title2)
+                            .fontWeight(.heavy)
+                        })
+                        .roundedCorner(12, corners: .allCorners)
+                        .padding(15)
+                        .frame(maxWidth: .infinity)
+                        .raisedButton(impactStrength: .heavy, backgroundColor: Color("lighterPurple"), shadowColor: Color("lightPurple"), shadowOffset: 11,
+                                      action: {
+                            handleStart()
+                        })
+                        //: Start Button
                         
                         Spacer()
                     } //: VStack

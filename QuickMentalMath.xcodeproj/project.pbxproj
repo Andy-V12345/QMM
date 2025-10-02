@@ -23,6 +23,10 @@
 		D872828F2E8DA6EF00C36890 /* AuthInfoModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D872828E2E8DA6EF00C36890 /* AuthInfoModel.swift */; };
 		D87282922E8DA76700C36890 /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D87282912E8DA76700C36890 /* AppModel.swift */; };
 		D87282942E8DA8EC00C36890 /* GameModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D87282932E8DA8EC00C36890 /* GameModel.swift */; };
+		D87282C02E8DAE2100C36890 /* ViewExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D87282BF2E8DAE1D00C36890 /* ViewExtensions.swift */; };
+		D87283102E8E043B00C36890 /* InGameStats.swift in Sources */ = {isa = PBXBuildFile; fileRef = D872830F2E8E042600C36890 /* InGameStats.swift */; };
+		D87283142E8E40C600C36890 /* RollingNumber.swift in Sources */ = {isa = PBXBuildFile; fileRef = D87283132E8E40C600C36890 /* RollingNumber.swift */; };
+		D87283162E8E428F00C36890 /* CollectionExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D87283152E8E427700C36890 /* CollectionExtensions.swift */; };
 		D886E8D22C3AD8350054DD61 /* AuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D886E8D12C3AD8350054DD61 /* AuthService.swift */; };
 		D886E8D42C3ADA290054DD61 /* LoadingSpinner.swift in Sources */ = {isa = PBXBuildFile; fileRef = D886E8D32C3ADA290054DD61 /* LoadingSpinner.swift */; };
 		D8BAFEF62A09A12400D49C49 /* QuickMentalMathApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8BAFEF52A09A12400D49C49 /* QuickMentalMathApp.swift */; };
@@ -72,6 +76,10 @@
 		D872828E2E8DA6EF00C36890 /* AuthInfoModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthInfoModel.swift; sourceTree = "<group>"; };
 		D87282912E8DA76700C36890 /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
 		D87282932E8DA8EC00C36890 /* GameModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameModel.swift; sourceTree = "<group>"; };
+		D87282BF2E8DAE1D00C36890 /* ViewExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewExtensions.swift; sourceTree = "<group>"; };
+		D872830F2E8E042600C36890 /* InGameStats.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InGameStats.swift; sourceTree = "<group>"; };
+		D87283132E8E40C600C36890 /* RollingNumber.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RollingNumber.swift; sourceTree = "<group>"; };
+		D87283152E8E427700C36890 /* CollectionExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionExtensions.swift; sourceTree = "<group>"; };
 		D886E8D12C3AD8350054DD61 /* AuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthService.swift; sourceTree = "<group>"; };
 		D886E8D32C3ADA290054DD61 /* LoadingSpinner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingSpinner.swift; sourceTree = "<group>"; };
 		D88D273D2A2D8B2C00E0EA63 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
@@ -137,6 +145,7 @@
 		D872828A2E8DA44600C36890 /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				D872830F2E8E042600C36890 /* InGameStats.swift */,
 				D8E279212BB8E36D009B029E /* DifficultySelector.swift */,
 				D8ED276C2A11453300092F56 /* QuestionSlider.swift */,
 				D863BB612BF8049600A8825C /* TimeSelector.swift */,
@@ -144,6 +153,7 @@
 				D8F7B7BA2C3FB0CE005CFCF0 /* SideBar.swift */,
 				D8F7B7BE2C444413005CFCF0 /* StatsBar.swift */,
 				D84ED7E12C44AA0B0043995D /* LeaderboardEntry.swift */,
+				D87283132E8E40C600C36890 /* RollingNumber.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -157,6 +167,15 @@
 				D872828C2E8DA69900C36890 /* DeviceModel.swift */,
 			);
 			path = Classes;
+			sourceTree = "<group>";
+		};
+		D87282BE2E8DAE0C00C36890 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				D87283152E8E427700C36890 /* CollectionExtensions.swift */,
+				D87282BF2E8DAE1D00C36890 /* ViewExtensions.swift */,
+			);
+			path = Extensions;
 			sourceTree = "<group>";
 		};
 		D886E8CF2C3AD7530054DD61 /* Services */ = {
@@ -190,6 +209,7 @@
 		D8BAFEF42A09A12400D49C49 /* QuickMentalMath */ = {
 			isa = PBXGroup;
 			children = (
+				D87282BE2E8DAE0C00C36890 /* Extensions */,
 				D872828B2E8DA67F00C36890 /* Classes */,
 				D872828A2E8DA44600C36890 /* Components */,
 				D872827F2E8D920C00C36890 /* Views */,
@@ -293,7 +313,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1430;
-				LastUpgradeCheck = 1430;
+				LastUpgradeCheck = 2600;
 				TargetAttributes = {
 					D8BAFEF12A09A12400D49C49 = {
 						CreatedOnToolsVersion = 14.3;
@@ -360,6 +380,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D87282802E8D920C00C36890 /* AuthView.swift in Sources */,
+				D87283162E8E428F00C36890 /* CollectionExtensions.swift in Sources */,
 				D87282812E8D920C00C36890 /* EndGameView.swift in Sources */,
 				D872828D2E8DA69900C36890 /* DeviceModel.swift in Sources */,
 				D87282822E8D920C00C36890 /* ExtraOptionsView.swift in Sources */,
@@ -377,7 +398,10 @@
 				D863BB622BF8049600A8825C /* TimeSelector.swift in Sources */,
 				D8BAFEF82A09A12400D49C49 /* ContentView.swift in Sources */,
 				D84ED7E22C44AA0B0043995D /* LeaderboardEntry.swift in Sources */,
+				D87283142E8E40C600C36890 /* RollingNumber.swift in Sources */,
+				D87282C02E8DAE2100C36890 /* ViewExtensions.swift in Sources */,
 				D886E8D22C3AD8350054DD61 /* AuthService.swift in Sources */,
+				D87283102E8E043B00C36890 /* InGameStats.swift in Sources */,
 				D8BAFEF62A09A12400D49C49 /* QuickMentalMathApp.swift in Sources */,
 				D8F7B7BF2C444413005CFCF0 /* StatsBar.swift in Sources */,
 				D886E8D42C3ADA290054DD61 /* LoadingSpinner.swift in Sources */,
@@ -452,9 +476,12 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 94VBY346GX;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -472,6 +499,7 @@
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
@@ -510,9 +538,12 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = 94VBY346GX;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -523,6 +554,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 			};
@@ -536,10 +568,12 @@
 				CODE_SIGN_ENTITLEMENTS = QuickMentalMath/QuickMentalMath.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"QuickMentalMath/Preview Content\"";
-				DEVELOPMENT_TEAM = 94VBY346GX;
+				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = QuickMentalMath/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = QMM;
@@ -580,10 +614,12 @@
 				CODE_SIGN_ENTITLEMENTS = QuickMentalMath/QuickMentalMath.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"QuickMentalMath/Preview Content\"";
-				DEVELOPMENT_TEAM = 94VBY346GX;
+				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = QuickMentalMath/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = QMM;
@@ -619,11 +655,10 @@
 		D8BAFF1B2A09A12500D49C49 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 94VBY346GX;
+				DEAD_CODE_STRIPPING = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
@@ -642,11 +677,10 @@
 		D8BAFF1C2A09A12500D49C49 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 94VBY346GX;
+				DEAD_CODE_STRIPPING = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
@@ -665,10 +699,9 @@
 		D8BAFF1E2A09A12500D49C49 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 94VBY346GX;
+				DEAD_CODE_STRIPPING = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
@@ -687,10 +720,9 @@
 		D8BAFF1F2A09A12500D49C49 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 94VBY346GX;
+				DEAD_CODE_STRIPPING = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
 				MACOSX_DEPLOYMENT_TARGET = 13.0;

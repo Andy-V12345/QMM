@@ -51,7 +51,92 @@ struct AuthView: View {
     @AppStorage("jwtToken") var jwtToken = ""
     @AppStorage("username") var username = ""
     @AppStorage("id") var id = 0
-
+    
+    private func handleButtonClick() {
+        authViewState = .LOADING
+        
+        if authMode == .LOGIN {
+            if validateEmail(email: email) {
+                Task {
+                    let res = await authInfo.login(email: email, password: password)
+                    if res == "INVALID_CREDS"  {
+                        errorTitle = "Invalid credentials"
+                        errorMsg = "The email and password you entered were incorrect. Please try again!"
+                        authViewState = .ERROR
+                    }
+                    else if res == "ERROR_DECODING" || res == "UNKNOWN_ERROR" {
+                        errorTitle = "Error signing in"
+                        errorMsg = "Something went wrong on our end. Please try again!"
+                        authViewState = .ERROR
+                    }
+                    else {
+                        jwtToken = authInfo.user!.jwtToken
+                        username = authInfo.user!.username
+                        id = authInfo.user!.id
+                        authState = .AUTHORIZED
+                        authViewState = .DEFAULT
+                        
+                        email = ""
+                        password = ""
+                        usernameText = ""
+                        
+                        appModel.path.append(authState)
+                    }
+                }
+            }
+            else {
+                errorTitle = "Invalid email"
+                errorMsg = "Please enter a valid email."
+                authViewState = .ERROR
+            }
+        }
+        else {
+            if validateEmail(email: email) {
+                Task {
+                    let res = await authInfo.signUp(email: email, username: usernameText, password: password)
+                    
+                    if res == "EMAIL_TAKEN" {
+                        errorTitle = "Error signing up"
+                        errorMsg = "The email you entered is already taken. Please use another one!"
+                        authViewState = .ERROR
+                    }
+                    else if res == "USERNAME_TAKEN" {
+                        errorTitle = "Error signing up"
+                        errorMsg = "The username you entered is already taken. Please use another one!"
+                        authViewState = .ERROR
+                    }
+                    else if res == "INVALID_PASSWORD" {
+                        errorTitle = "Error signing up"
+                        errorMsg = "The password you entered is too short. Passwords must be at least 6 characters long."
+                        authViewState = .ERROR
+                    }
+                    else if res == "UNKNOWN_ERROR" {
+                        errorTitle = "Error signing up"
+                        errorMsg = "Something went wrong on our end. Please try again!"
+                        authViewState = .ERROR
+                    }
+                    else {
+                        jwtToken = authInfo.user!.jwtToken
+                        username = authInfo.user!.username
+                        id = authInfo.user!.id
+                        authState = .AUTHORIZED
+                        authViewState = .DEFAULT
+                        
+                        email = ""
+                        password = ""
+                        usernameText = ""
+                        
+                        appModel.path.append(authState)
+                    }
+                }
+            }
+            else {
+                errorTitle = "Invalid email"
+                errorMsg = "Please enter a valid email."
+                authViewState = .ERROR
+            }
+        }
+    }
     
     var body: some View {
         GeometryReader { metrics in
@@ -167,120 +252,30 @@ struct AuthView: View {
                             
                         } //: TextFields VStack
                         
-                        HStack { // Continue button
-                            Spacer()
-                            
-                            Button(action: {
-                                authViewState = .LOADING
-                                
-                                if authMode == .LOGIN {
-                                    if validateEmail(email: email) {
-                                        Task {
-                                            let res = await authInfo.login(email: email, password: password)
-                                            if res == "INVALID_CREDS"  {
-                                                errorTitle = "Invalid credentials"
-                                                errorMsg = "The email and password you entered were incorrect. Please try again!"
-                                                authViewState = .ERROR
-                                            }
-                                            else if res == "ERROR_DECODING" || res == "UNKNOWN_ERROR" {
-                                                errorTitle = "Error signing in"
-                                                errorMsg = "Something went wrong on our end. Please try again!"
-                                                authViewState = .ERROR
-                                            }
-                                            else {
-                                                jwtToken = authInfo.user!.jwtToken
-                                                username = authInfo.user!.username
-                                                id = authInfo.user!.id
-                                                authState = .AUTHORIZED
-                                                authViewState = .DEFAULT
-                                                
-                                                email = ""
-                                                password = ""
-                                                usernameText = ""
-                                                
-                                                appModel.path.append(authState)
-                                            }
-                                        }
-                                    }
-                                    else {
-                                        errorTitle = "Invalid email"
-                                        errorMsg = "Please enter a valid email."
-                                        authViewState = .ERROR
-                                    }
+                        Button(action: {}, label: {
+                            HStack {
+                                if authViewState == .DEFAULT || authViewState == .ERROR {
+                                    Text("CONTINUE")
+                                        .font(.subheadline)
+                                        .fontWeight(.heavy)
+                                    
+                                    Image(systemName: "arrow.right")
                                 }
-                                else {
-                                    if validateEmail(email: email) {
-                                        Task {
-                                            let res = await authInfo.signUp(email: email, username: usernameText, password: password)
-                                            
-                                            if res == "EMAIL_TAKEN" {
-                                                errorTitle = "Error signing up"
-                                                errorMsg = "The email you entered is already taken. Please use another one!"
-                                                authViewState = .ERROR
-                                            }
-                                            else if res == "USERNAME_TAKEN" {
-                                                errorTitle = "Error signing up"
-                                                errorMsg = "The username you entered is already taken. Please use another one!"
-                                                authViewState = .ERROR
-                                            }
-                                            else if res == "INVALID_PASSWORD" {
-                                                errorTitle = "Error signing up"
-                                                errorMsg = "The password you entered is too short. Passwords must be at least 6 characters long."
-                                                authViewState = .ERROR
-                                            }
-                                            else if res == "UNKNOWN_ERROR" {
-                                                errorTitle = "Error signing up"
-                                                errorMsg = "Something went wrong on our end. Please try again!"
-                                                authViewState = .ERROR
-                                            }
-                                            else {
-                                                jwtToken = authInfo.user!.jwtToken
-                                                username = authInfo.user!.username
-                                                id = authInfo.user!.id
-                                                authState = .AUTHORIZED
-                                                authViewState = .DEFAULT
-                                                
-                                                email = ""
-                                                password = ""
-                                                usernameText = ""
-                                                
-                                                appModel.path.append(authState)
-                                            }
-                                        }
-                                    }
-                                    else {
-                                        errorTitle = "Invalid email"
-                                        errorMsg = "Please enter a valid email."
-                                        authViewState = .ERROR
-                                    }
+                                else if authViewState == .LOADING {
+                                    LoadingSpinner(size: 15, color: Color.white, width: 3)
                                 }
-                            }, label: {
-                                HStack {
-                                    if authViewState == .DEFAULT || authViewState == .ERROR {
-                                        Text("CONTINUE")
-                                            .font(.subheadline)
-                                            .fontWeight(.heavy)
-                                        
-                                        Image(systemName: "arrow.right")
-                                    }
-                                    else if authViewState == .LOADING {
-                                        LoadingSpinner(size: 15, color: Color.white, width: 3)
-                                    }
-                                }
-                            })
-                            .bold()
-                            .foregroundStyle(.white)
-                            .padding(.vertical, 16)
-                            .frame(width: 160)
-                            .background(
-                                Capsule().fill(Color("lighterPurple"))
-                                    .shadow(color: Color("lightPurple"), radius: 6, y: 2)
-                            )
-                            .disabled(authViewState == .LOADING || ((authMode == .SIGNUP && usernameText.isEmpty) || email.isEmpty || password.isEmpty))
-                            .opacity(authViewState == .LOADING || ((authMode == .SIGNUP && usernameText.isEmpty) || email.isEmpty || password.isEmpty) ? 0.5 : 1)
-                            .matchedGeometryEffect(id: "button", in: namespace)
-                           
-                        } //: HStack
+                            }
+                        })
+                        .bold()
+                        .foregroundStyle(.white)
+                        .padding(.vertical, 16)
+                        .frame(maxWidth: .infinity)
+                        .raisedButton(cornerRadius: 20, backgroundColor: Color("lighterPurple"), shadowColor: Color("lightPurple"), shadowOffset: 8, action: {
+                            handleButtonClick()
+                        })
+                        .disabled(authViewState == .LOADING || ((authMode == .SIGNUP && usernameText.isEmpty) || email.isEmpty || password.isEmpty))
+                        .opacity(authViewState == .LOADING || ((authMode == .SIGNUP && usernameText.isEmpty) || email.isEmpty || password.isEmpty) ? 0.5 : 1)
+                        .matchedGeometryEffect(id: "button", in: namespace)
                     }
                     
                     Spacer()
