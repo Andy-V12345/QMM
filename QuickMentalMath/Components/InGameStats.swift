@@ -52,8 +52,12 @@ struct InGameStats: View {
     }
     
     var progress: CGFloat {
+        if startTime > 180 {
+            return 1
+        }
+        
         // progress goes from 0 (start) to 1 (complete)
-        max(0, min(1, 1 - timeLeft / startTime))
+        return max(0, min(1, 1 - timeLeft / startTime))
     }
     
     let font = Font.title2.bold()
@@ -73,12 +77,19 @@ struct InGameStats: View {
                     .foregroundColor(Color("darkPurple"))
             })
             
-            HStack(spacing: 2) {
-                RollingNumber(number: timeLeftString, color: color, font: font, digitWidth: digitWidth, digitHeight: digitHeight)
-                
-                Text("s")
+            if startTime > 180 {
+                Text("∞")
                     .font(font)
                     .foregroundStyle(color)
+            }
+            else {
+                HStack(spacing: 2) {
+                    RollingNumber(number: timeLeftString, color: color, font: font, digitWidth: digitWidth, digitHeight: digitHeight)
+                    
+                    Text("s")
+                        .font(font)
+                        .foregroundStyle(color)
+                }
             }
             
             Spacer()

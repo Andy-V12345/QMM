@@ -164,6 +164,10 @@ struct GameView: View {
             .onAppear() {
                 isGameOver = false
                 topSize = gameModel.difficulty == "decimals" ? 0.6 : 0.65
+                
+                if gameModel.startTime > 180 { // No time limit
+                    timer.upstream.connect().cancel()
+                }
             }
             .onChange(of: isGameOver, perform: { new in
                 if new {

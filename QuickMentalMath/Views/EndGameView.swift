@@ -45,7 +45,7 @@ struct EndGameView: View {
                             
                             Spacer()
                         }
-                                                
+                        
                         VStack(spacing: 20) {
                             if newHighScore && screen.size.width > 0 {
                                 ZStack {
@@ -165,7 +165,7 @@ struct EndGameView: View {
                     }
                     
                     Spacer()
-                            
+                    
                     VStack(spacing: 30) {
                         Button(action: {}, label: {
                             HStack {
@@ -175,10 +175,10 @@ struct EndGameView: View {
                             }
                         })
                         .frame(maxWidth: .infinity)
-                        .padding(.vertical, 20)
+                        .padding(.vertical, 15)
                         .raisedButton(action: {
-                            //                        gameModel.playAgain()
-                            //                        appModel.path.removeLast()
+                            gameModel.playAgain()
+                            appModel.path.removeLast()
                         })
                         .font(.title2)
                         .fontWeight(.heavy)
@@ -201,7 +201,7 @@ struct EndGameView: View {
                 withAnimation(.linear(duration: 0.85)) {
                     if gameModel.mode == "time" {
                         percentage = Double((Float(gameModel.score) / Float(gameModel.questionCount - 1)) * 100)
-
+                        
                     }
                     else {
                         percentage = Double((Float(gameModel.score) / Float(gameModel.totQuestions)) * 100)
@@ -209,7 +209,7 @@ struct EndGameView: View {
                 }
                 
                 if authInfo.authState == .AUTHORIZED && authInfo.user != nil {
-
+                    
                     switch gameModel.mode {
                     case "+":
                         authInfo.user?.stats?.additionScore += gameModel.score
@@ -226,7 +226,7 @@ struct EndGameView: View {
                     default:
                         break
                     }
-
+                    
                     if gameModel.score > (authInfo.user?.stats!.highScore)! {
                         newHighScore = true
                     }
@@ -241,9 +241,9 @@ struct EndGameView: View {
                             rotation = 360
                         }
                     }
-
+                    
                     authInfo.user?.stats?.highScore = max((authInfo.user?.stats!.highScore)!, gameModel.score)
-
+                    
                     Task {
                         let statsRequest = UserStatsRequest(userStats: (authInfo.user?.stats)!)
                         let _ = await authInfo.updateUserStats(statsRequest: statsRequest)
