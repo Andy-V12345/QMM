@@ -9,72 +9,79 @@ import SwiftUI
 
 struct TimeSelector: View {
     
-    let buttonRadius: CGFloat = 10
+    let buttonRadius: CGFloat = 15
     let shadowOffset: CGFloat = 3
     
     @Binding var timeIndex: Int
-    @EnvironmentObject private var device: DeviceModel
+    
+    let metrics: GeometryProxy
         
     var body: some View {
-        VStack(spacing: device.type == .SMALL ? 8 : 15) {
+        VStack(spacing: metrics.size.height < 736 ? 12 : 15) {
             Button(action: {}, label: {
-                Text("1 Min")
-                    .font(device.type == .SMALL ? .subheadline : .headline)
+                Text("1 min")
                     .foregroundStyle(timeIndex == 0 ? .white : Color("darkPurple"))
-                    .fontWeight(.medium)
             })
-            .padding(.vertical, 10)
+            .padding(.vertical, metrics.size.height < 736 ? 8 : 10)
             .padding(.horizontal, 15)
             .frame(maxWidth: .infinity)
-            .raisedButton(cornerRadius: buttonRadius, backgroundColor: timeIndex == 0 ? Color("darkPurple") : Color("offWhite"), shadowColor: Color.gray.opacity(0.4), shadowOffset: shadowOffset, action: {
+            .raisedButton(cornerRadius: buttonRadius, backgroundColor: timeIndex == 0 ? Color("darkPurple") : Color("offWhite"), shadowColor: timeIndex == 0 ? Color("darkerPurple") :  Color.gray.opacity(0.2), shadowOffset: shadowOffset, action: {
                 timeIndex = 0
             })
             
             Divider()
             
             Button(action: {}, label: {
-                Text("2 Min")
-                    .font(device.type == .SMALL ? .subheadline : .headline)
+                Text("2 min")
                     .foregroundStyle(timeIndex == 1 ? .white : Color("darkPurple"))
-                    .fontWeight(.medium)
             })
-            .padding(.vertical, 10)
+            .padding(.vertical, metrics.size.height < 736 ? 8 : 10)
             .padding(.horizontal, 15)
             .frame(maxWidth: .infinity)
-            .raisedButton(cornerRadius: buttonRadius, backgroundColor: timeIndex == 1 ? Color("darkPurple") : Color("offWhite"), shadowColor: Color.gray.opacity(0.4), shadowOffset: shadowOffset, action: {
+            .raisedButton(cornerRadius: buttonRadius, backgroundColor: timeIndex == 1 ? Color("darkPurple") : Color("offWhite"), shadowColor: timeIndex == 1 ? Color("darkerPurple") :  Color.gray.opacity(0.2), shadowOffset: shadowOffset, action: {
                 timeIndex = 1
             })
             
             Divider()
             
             Button(action: {}, label: {
-                Text("3 Min")
-                    .font(device.type == .SMALL ? .subheadline : .headline)
+                Text("3 min")
                     .foregroundStyle(timeIndex == 2 ? .white : Color("darkPurple"))
-                    .fontWeight(.medium)
             })
-            .padding(.vertical, 10)
+            .padding(.vertical, metrics.size.height < 736 ? 8 : 10)
             .padding(.horizontal, 15)
             .frame(maxWidth: .infinity)
-            .raisedButton(cornerRadius: buttonRadius, backgroundColor: timeIndex == 2 ? Color("darkPurple") : Color("offWhite"), shadowColor: Color.gray.opacity(0.4), shadowOffset: shadowOffset, action: {
+            .raisedButton(cornerRadius: buttonRadius, backgroundColor: timeIndex == 2 ? Color("darkPurple") : Color("offWhite"), shadowColor: timeIndex == 2 ? Color("darkerPurple") :  Color.gray.opacity(0.2), shadowOffset: shadowOffset, action: {
                 timeIndex = 2
             })
             
             Divider()
             
             Button(action: {}, label: {
-                Text("No Limit")
-                    .font(device.type == .SMALL ? .subheadline : .headline)
+                Text("no limit")
                     .foregroundStyle(timeIndex == 3 ? .white : Color("darkPurple"))
-                    .fontWeight(.medium)
             })
-            .padding(.vertical, 10)
+            .padding(.vertical, metrics.size.height < 736 ? 8 : 10)
             .padding(.horizontal, 15)
             .frame(maxWidth: .infinity)
-            .raisedButton(cornerRadius: buttonRadius, backgroundColor: timeIndex == 3 ? Color("darkPurple") : Color("offWhite"), shadowColor: Color.gray.opacity(0.4), shadowOffset: shadowOffset, action: {
+            .raisedButton(cornerRadius: buttonRadius, backgroundColor: timeIndex == 3 ? Color("darkPurple") : Color("offWhite"), shadowColor: timeIndex == 3 ? Color("darkerPurple") :  Color.gray.opacity(0.2), shadowOffset: shadowOffset, action: {
                 timeIndex = 3
             })
             
+            Divider()
+            
+            Text("time limit")
+                .font(metrics.size.height < 736 && metrics.size.width < 390 ? .subheadline : .headline)
+                .fontWeight(.heavy)
+                .foregroundColor(Color("lightPurple"))
         }
+        .font(metrics.size.height < 736 ? .subheadline : .headline)
+        .bold()
+        .padding(metrics.size.height < 736 && metrics.size.width < 390 ? 12 : 15)
+        .background(.white)
+        .roundedCorner(20, corners: .allCorners)
+        .clipped()
+        .shadow(radius: 2)
+
     }
 }

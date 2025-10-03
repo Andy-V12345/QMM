@@ -35,7 +35,7 @@ struct LeaderboardView: View {
             ZStack {
                 Color.white.ignoresSafeArea()
                 
-                VStack(spacing: 25) {
+                VStack(spacing: 20) {
                     HStack {
                         Button(action: {
                             Task {
@@ -50,7 +50,7 @@ struct LeaderboardView: View {
                         
                         Spacer()
                         
-                        Text("Time Trial Leaderboard")
+                        Text("leaderboard")
                             .font(.title2)
                             .bold()
                             .foregroundStyle(Color("darkPurple"))
@@ -66,138 +66,17 @@ struct LeaderboardView: View {
                                 .foregroundStyle(Color("darkPurple"))
                         })
                     }
-                    .padding(.horizontal, 20)
                     
                     if viewState == .DEFAULT {
-                        
-                        VStack(spacing: 20) {
-                            
-                            HStack(alignment: .bottom) {
-                                VStack {
-                                    Image("secondPlace")
-                                        .resizable()
-                                        .scaledToFit()
-                                        .frame(height: 80)
-                                    
-                                    VStack(spacing: 5) {
-                                        Text(leaderboard![1].username)
-                                            .foregroundStyle(Color("darkPurple"))
-                                            .lineLimit(1)
-                                        
-                                        Text("\(leaderboard![1].ttHighScore)")
-                                            .font(.subheadline)
-                                            .foregroundStyle(Color("lightPurple"))
-                                    }
-                                    .bold()
-                                    
-                                    ZStack {
-                                        Rectangle()
-                                            .fill(Color("lightPurple"))
-                                            .roundedCorner(10, corners: [.topLeft, .topRight])
-                                        
-                                        VStack {
-                                            Text("2nd")
-                                                .font(.title3)
-                                                .foregroundStyle(.white)
-                                                .bold()
-                                            
-                                            Spacer()
-                                        }
-                                        .padding(.top, 15)
-                                    }
-                                    .frame(height: 75)
-                                        
+                        ScrollView {
+                            LazyVStack(spacing: 20) {
+                                ForEach(0..<leaderboard!.count) { i in
+                                    LeaderboardEntry(rank: i+1, username: leaderboard![i].username, score: leaderboard![i].ttHighScore)
                                 }
-                                .frame(maxWidth: .infinity)
-                                
-                                VStack {
-                                    Image("firstPlace")
-                                        .resizable()
-                                        .scaledToFit()
-                                        .frame(height: 80)
-                                    
-                                    VStack(spacing: 5) {
-                                        Text(leaderboard![0].username)
-                                            .foregroundStyle(Color("darkPurple"))
-                                            .lineLimit(1)
-
-                                        
-                                        Text("\(leaderboard![0].ttHighScore)")
-                                            .font(.subheadline)
-                                            .foregroundStyle(Color("lightPurple"))
-                                    }
-                                    .bold()
-                                    
-                                    ZStack {
-                                        Rectangle()
-                                            .fill(Color("lightPurple"))
-                                            .roundedCorner(10, corners: [.topLeft, .topRight])
-                                        
-                                        VStack {
-                                            Text("1st")
-                                                .font(.title3)
-                                                .foregroundStyle(.white)
-                                                .bold()
-                                            
-                                            Spacer()
-                                        }
-                                        .padding(.top, 15)
-                                    }
-                                    .frame(height: 100)
-                                }
-                                .frame(maxWidth: .infinity)
-
-                                
-                                VStack {
-                                    Image("thirdPlace")
-                                        .resizable()
-                                        .scaledToFit()
-                                        .frame(height: 80)
-                                    
-                                    VStack(spacing: 5) {
-                                        Text(leaderboard![2].username)
-                                            .foregroundStyle(Color("darkPurple"))
-                                            .lineLimit(1)
-
-                                        
-                                        Text("\(leaderboard![2].ttHighScore)")
-                                            .font(.subheadline)
-                                            .foregroundStyle(Color("lightPurple"))
-                                    }
-                                    .bold()
-                                    
-                                    ZStack {
-                                        Rectangle()
-                                            .fill(Color("lightPurple"))
-                                            .roundedCorner(10, corners: [.topLeft, .topRight])
-                                        
-                                        VStack {
-                                            Text("3rd")
-                                                .font(.title3)
-                                                .foregroundStyle(.white)
-                                                .bold()
-                                            
-                                            Spacer()
-                                        }
-                                        .padding(.top, 15)
-                                    }
-                                    .frame(height: 75)
-                                }
-                                .frame(maxWidth: .infinity)
-
                             }
-                            .padding(.horizontal, 20)
-                            
-                            ScrollView {
-                                VStack(spacing: 10) {
-                                    ForEach(3..<leaderboard!.count) { i in
-                                        LeaderboardEntry(rank: i+1, username: leaderboard![i].username, score: leaderboard![i].ttHighScore)
-                                    }
-                                }
-                                .padding(20)
-                            }
-                            .scrollIndicators(.hidden)
+                            .padding(.bottom, 20)
                         }
+                        .scrollIndicators(.hidden)
                     }
                     else if viewState == .LOADING {
                         Spacer()
@@ -222,16 +101,16 @@ struct LeaderboardView: View {
                                     .padding(.horizontal, 12)
                                     .background(
                                         RoundedRectangle(cornerRadius: 6)
-                                            .stroke(Color("lightPurple"), lineWidth: 3)
+                                            .stroke(Color("errorRed"), lineWidth: 3)
                                     )
                             })
                         }
-                        .foregroundStyle(Color("lightPurple"))
+                        .foregroundStyle(Color("errorRed"))
                         
                         Spacer()
                     }
                 }
-                .padding(.vertical, 25)
+                .padding(20)
             }
             .onAppear {
                 Task {

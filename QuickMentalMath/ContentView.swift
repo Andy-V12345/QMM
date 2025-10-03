@@ -12,7 +12,6 @@ struct ContentView: View {
     @StateObject var authInfo = AuthInfoModel()
     @StateObject var appModel = AppModel(path: NavigationPath())
     @StateObject private var gameModel = GameModel()
-    @StateObject private var deviceModel = DeviceModel()
     
     @Environment(\.scenePhase) var scenePhase
     
@@ -88,7 +87,6 @@ struct ContentView: View {
         .environmentObject(authInfo)
         .environmentObject(appModel)
         .environmentObject(gameModel)
-        .environmentObject(deviceModel)
     }
     
 }

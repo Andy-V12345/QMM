@@ -13,7 +13,7 @@ enum ForgotPasswordState {
 
 struct ForgotPasswordView: View {
     
-    let buttonHeight: CGFloat = 60
+    let buttonHeight: CGFloat = 50
     let buttonCornerRadius: CGFloat = 10
     let buttonShadowOffset: CGFloat = 6
     
@@ -118,11 +118,11 @@ struct ForgotPasswordView: View {
                 if forgotPasswordState == .SEND {
                     VStack(spacing: 40) {
                         VStack(spacing: 20) {
-                            Text("Forgot Password")
+                            Text("forgot password")
                                 .font(.largeTitle)
                                 .bold()
                                 .foregroundColor(Color("darkPurple"))
-                            Text("Enter your email and we'll send you a verification code.")
+                            Text("enter your email and we'll send you a verification code.")
                                 .foregroundColor(Color("lightPurple"))
                                 .frame(width: 300)
                                 .multilineTextAlignment(.center)
@@ -131,7 +131,7 @@ struct ForgotPasswordView: View {
                                 Image(systemName: "envelope")
                                     .bold()
                                 
-                                TextField(text: $email, prompt: Text("Email").fontWeight(.regular), label: {
+                                TextField(text: $email, prompt: Text("email").fontWeight(.regular), label: {
                                     Text(email)
                                 })
                                 .foregroundStyle(.black)
@@ -159,7 +159,7 @@ struct ForgotPasswordView: View {
                                     .bold()
                             }
                             else {
-                                Text("Send Link")
+                                Text("send link")
                                     .foregroundColor(.white)
                                     .font(.title2)
                                     .bold()
@@ -178,11 +178,11 @@ struct ForgotPasswordView: View {
                 else if forgotPasswordState == .VERIFY {
                     VStack(spacing: 40) {
                         VStack(spacing: 20) {
-                            Text("Verify Code")
+                            Text("verify code")
                                 .font(.largeTitle)
                                 .bold()
                                 .foregroundColor(Color("darkPurple"))
-                            Text("Enter your the verification code we sent to your email.")
+                            Text("enter the verification code we sent to your email.")
                                 .foregroundColor(Color("lightPurple"))
                                 .frame(width: 300)
                                 .multilineTextAlignment(.center)
@@ -191,7 +191,7 @@ struct ForgotPasswordView: View {
                                 Image(systemName: "checkmark.seal")
                                     .bold()
                                 
-                                TextField(text: $token, prompt: Text("Verification code").fontWeight(.regular), label: {
+                                TextField(text: $token, prompt: Text("verification code").fontWeight(.regular), label: {
                                     Text(token)
                                 })
                                 .foregroundStyle(.black)
@@ -219,7 +219,7 @@ struct ForgotPasswordView: View {
                                     .bold()
                             }
                             else {
-                                Text("Verify Token")
+                                Text("verify token")
                                     .foregroundColor(.white)
                                     .font(.title2)
                                     .bold()
@@ -239,11 +239,11 @@ struct ForgotPasswordView: View {
                 else {
                     VStack(spacing: 40) {
                         VStack(spacing: 20) {
-                            Text("Reset Password")
+                            Text("reset password")
                                 .font(.largeTitle)
                                 .bold()
                                 .foregroundColor(Color("darkPurple"))
-                            Text("Enter your new password. It must be at least 6 characters.")
+                            Text("enter your new password. it must be at least 6 characters.")
                                 .foregroundColor(Color("lightPurple"))
                                 .frame(width: 300)
                                 .multilineTextAlignment(.center)
@@ -252,7 +252,7 @@ struct ForgotPasswordView: View {
                                 Image(systemName: "lock")
                                     .bold()
                                 
-                                SecureField(text: $password, prompt: Text("New password").fontWeight(.regular), label: {
+                                SecureField(text: $password, prompt: Text("new password").fontWeight(.regular), label: {
                                     Text(password)
                                 })
                                 .foregroundStyle(.black)
@@ -280,7 +280,7 @@ struct ForgotPasswordView: View {
                                     .bold()
                             }
                             else {
-                                Text("Reset Password")
+                                Text("reset password")
                                     .foregroundColor(.white)
                                     .font(.title2)
                                     .bold()
@@ -302,7 +302,7 @@ struct ForgotPasswordView: View {
                 Button(action: {
                     dismiss()
                 }, label: {
-                    Text("Cancel")
+                    Text("cancel")
                         .font(.headline)
                         .foregroundStyle(Color("lightPurple"))
                 })

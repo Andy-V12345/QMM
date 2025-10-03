@@ -67,7 +67,7 @@ struct SideBar: View {
                     
                     VStack(alignment: .leading, spacing: 20) {
                         VStack {
-                            Text("Your Profile")
+                            Text("your profile")
                                 .frame(maxWidth: .infinity, alignment: .leading)
                                 .bold()
                                 .font(.title)
@@ -80,31 +80,53 @@ struct SideBar: View {
                             .overlay(.white)
                         
                         VStack(spacing: 25) {
-                            Button(action: {
-                                displayStats = true
-                            }, label: {
+                            Button(action: {}, label: {
                                 HStack(spacing: 10) {
                                     Image(systemName: "rosette")
                                         .font(.title3)
                                     
-                                    Text("Your stats")
+                                    Text("your stats")
                                         .frame(maxWidth: .infinity, alignment: .leading)
                                 }
                             })
+                            .padding(.vertical, 8)
+                            .padding(.horizontal, 10)
+                            .frame(maxWidth: .infinity)
+                            .raisedButton(cornerRadius: 20, backgroundColor: Color("offWhite"), shadowColor: Color.gray.opacity(0.4), shadowOffset: 4, action: {
+                                displayStats = true
+                            })
                             
-                            Button(action: {
-                                displayLeaderboard = true
-                            }, label: {
+                            Button(action: {}, label: {
                                 HStack(spacing: 10) {
-                                    Image(systemName: "medal")
+                                    Image(systemName: "trophy.fill")
                                         .font(.title3)
                                     
-                                    Text("Time trial leaderboard")
+                                    Text("time trial leaderboard")
                                         .frame(maxWidth: .infinity, alignment: .leading)
                                 }
                             })
+                            .padding(.vertical, 8)
+                            .padding(.horizontal, 10)
+                            .frame(maxWidth: .infinity)
+                            .raisedButton(cornerRadius: 20, backgroundColor: Color("offWhite"), shadowColor: Color.gray.opacity(0.4), shadowOffset: 4, action: {
+                                displayLeaderboard = true
+                            })
                             
-                            Button(action: {
+                            Spacer()
+                            
+                            Button(action: {}, label: {
+                                HStack(spacing: 10) {
+                                    Image(systemName: "figure.walk.departure")
+                                        .font(.title3)
+                                    
+                                    Text("sign out")
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                }
+                            })
+                            .padding(.vertical, 8)
+                            .padding(.horizontal, 10)
+                            .frame(maxWidth: .infinity)
+                            .raisedButton(cornerRadius: 20, backgroundColor: Color("offWhite"), shadowColor: Color.gray.opacity(0.4), shadowOffset: 4, action: {
                                 authInfo.user = nil
                                 authInfo.authState = .UNAUTHORIZED
                                 jwtToken = ""
@@ -112,37 +134,29 @@ struct SideBar: View {
                                 id = 0
                                 authState = authInfo.authState
                                 appModel.path.removeLast()
-                            }, label: {
-                                HStack(spacing: 10) {
-                                    Image(systemName: "figure.walk.departure")
-                                        .font(.title3)
-                                    
-                                    Text("Sign out")
-                                        .frame(maxWidth: .infinity, alignment: .leading)
-                                }
+                            })
+                            
+                            Button(action: {}, label: {
+                                Text("delete account")
+                                    .fontWeight(.semibold)
+                                    .foregroundStyle(.white)
+                                
+                            })
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 8)
+                            .raisedButton(cornerRadius: 20, backgroundColor: Color("errorRed"), shadowColor: Color("darkErrorRed"), shadowOffset: 5, action: {
+                                isDeleteAlert = true
                             })
                         } //: Button VStack
-                        .foregroundStyle(.white)
+                        .foregroundStyle(Color("darkPurple"))
                         .font(.headline)
                         .bold()
                         
-                        Spacer()
                         
-                        Button(action: {
-                            isDeleteAlert = true
-                        }, label: {
-                            Text("Delete Account")
-                                .frame(maxWidth: .infinity)
-                                .fontWeight(.semibold)
-                                .padding()
-                                .foregroundStyle(.red)
-                                .background(RoundedRectangle(cornerRadius: 15).fill(.white))
-                            
-                        })
                     } //: VStack
                     .padding(.top, 80)
                     .padding(.bottom, 40)
-                    .padding(.horizontal, 25)
+                    .padding(.horizontal, 20)
                     .foregroundStyle(.white)
                 }
                 .frame(width: sideBarWidth)
@@ -161,7 +175,7 @@ struct SideBar: View {
         }
         .ignoresSafeArea(edges: .all)
         .preferredColorScheme(.light)
-        .sheet(isPresented: $displayStats, content: {
+        .fullScreenCover(isPresented: $displayStats, content: {
             StatsView()
         })
         .fullScreenCover(isPresented: $displayLeaderboard, content: {
@@ -185,7 +199,6 @@ struct SideBar: View {
         }
         .alert("Are You Sure?", isPresented: $isDeleteAlert) {
             Button(role: .destructive) {
-                // TODO: DELETE ACCOUNT
                 if usernameText.trimmingCharacters(in: .whitespacesAndNewlines) != "" && usernameText == authInfo.user?.username {
                     isLoading = true
                     

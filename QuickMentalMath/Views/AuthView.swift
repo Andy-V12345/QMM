@@ -156,13 +156,13 @@ struct AuthView: View {
                         
                         VStack {
                             
-                            Text(authMode == .LOGIN ? "Sign In" : "Sign Up")
+                            Text(authMode == .LOGIN ? "sign in" : "sign up")
                                 .frame(maxWidth: .infinity, alignment: .leading)
                                 .font(.largeTitle)
                                 .fontWeight(.heavy)
                                 .foregroundStyle(Color("darkPurple"))
                             
-                            Text("Please sign in to continue")
+                            Text(authMode == .LOGIN ? "please sign in to continue" : "please sign up to continue")
                                 .frame(maxWidth: .infinity, alignment: .leading)
                                 .font(.body)
                                 .foregroundStyle(Color("lightPurple"))
@@ -175,7 +175,7 @@ struct AuthView: View {
                                 Image(systemName: "envelope")
                                     .bold()
                                 
-                                TextField(text: $email, prompt: Text("Email").fontWeight(.regular), label: {
+                                TextField(text: $email, prompt: Text("email").fontWeight(.regular), label: {
                                     Text(email)
                                 })
                                 .foregroundStyle(.black)
@@ -197,7 +197,7 @@ struct AuthView: View {
                                     Image(systemName: "person")
                                         .bold()
                                     
-                                    TextField(text: $usernameText, prompt: Text("Username").fontWeight(.regular), label: {
+                                    TextField(text: $usernameText, prompt: Text("username").fontWeight(.regular), label: {
                                         Text(usernameText)
                                     })
                                     .foregroundStyle(.black)
@@ -220,7 +220,7 @@ struct AuthView: View {
                                 Image(systemName: "lock")
                                     .bold()
                                 
-                                SecureField(text: $password, prompt: Text("Password").fontWeight(.regular), label: {
+                                SecureField(text: $password, prompt: Text("password").fontWeight(.regular), label: {
                                     Text(password)
                                 })
                                 .foregroundStyle(.black)
@@ -231,7 +231,7 @@ struct AuthView: View {
                                 Button(action: {
                                     displayForgotPassword = true
                                 }, label: {
-                                    Text("FORGOT")
+                                    Text("forgot")
                                         .font(.caption)
                                         .fontWeight(.heavy)
                                         .foregroundStyle(Color("lightPurple"))
@@ -255,20 +255,20 @@ struct AuthView: View {
                         Button(action: {}, label: {
                             HStack {
                                 if authViewState == .DEFAULT || authViewState == .ERROR {
-                                    Text("CONTINUE")
-                                        .font(.subheadline)
+                                    Text("continue")
+                                        .font(.headline)
                                         .fontWeight(.heavy)
                                     
                                     Image(systemName: "arrow.right")
                                 }
                                 else if authViewState == .LOADING {
-                                    LoadingSpinner(size: 15, color: Color.white, width: 3)
+                                    LoadingSpinner(size: 15, color: Color("darkPurple"), width: 3)
                                 }
                             }
                         })
                         .bold()
-                        .foregroundStyle(.white)
-                        .padding(.vertical, 16)
+                        .foregroundStyle(Color("darkPurple"))
+                        .frame(height: 50)
                         .frame(maxWidth: .infinity)
                         .raisedButton(cornerRadius: 20, backgroundColor: Color("lighterPurple"), shadowColor: Color("lightPurple"), shadowOffset: 8, action: {
                             handleButtonClick()
@@ -284,7 +284,7 @@ struct AuthView: View {
                         HStack { // Don't have an account button
                             Spacer()
                             
-                            Text(authMode == .LOGIN ? "Don't have an account?" : "Already have an account?")
+                            Text(authMode == .LOGIN ? "don't have an account?" : "already have an account?")
                                 .foregroundStyle(Color.gray)
                             
                             Button(action: {
@@ -295,7 +295,7 @@ struct AuthView: View {
                                     password = ""
                                 }
                             }, label: {
-                                Text(authMode == .LOGIN ? "Create one" : "Sign in")
+                                Text(authMode == .LOGIN ? "create one" : "sign in")
                             })
                             .foregroundStyle(Color("lightPurple"))
                             
@@ -328,7 +328,7 @@ struct AuthView: View {
                             appModel.path.append(authState)
                         }, label: {
                             HStack {
-                                Text("Continue without an account")
+                                Text("continue without an account")
                                 
                                 Image(systemName: "arrow.right")
                             }

@@ -11,6 +11,12 @@ class AuthInfoModel: ObservableObject {
     @Published var user: User? = nil
     @Published var authState: AuthState = .UNAUTHORIZED
     
+    init() {}
+    
+    init(user: User) {
+        self.user = user
+    }
+    
     @MainActor
     func signUp(email: String, username: String, password: String) async -> String {
         

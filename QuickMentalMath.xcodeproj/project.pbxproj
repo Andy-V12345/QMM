@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D823EE752E8FD2370074C071 /* StatPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D823EE742E8FD2370074C071 /* StatPanel.swift */; };
 		D84ED7E22C44AA0B0043995D /* LeaderboardEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = D84ED7E12C44AA0B0043995D /* LeaderboardEntry.swift */; };
 		D863BB622BF8049600A8825C /* TimeSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = D863BB612BF8049600A8825C /* TimeSelector.swift */; };
 		D87282802E8D920C00C36890 /* AuthView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D87282752E8D920C00C36890 /* AuthView.swift */; };
@@ -29,6 +30,8 @@
 		D87283162E8E428F00C36890 /* CollectionExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D87283152E8E427700C36890 /* CollectionExtensions.swift */; };
 		D886E8D22C3AD8350054DD61 /* AuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D886E8D12C3AD8350054DD61 /* AuthService.swift */; };
 		D886E8D42C3ADA290054DD61 /* LoadingSpinner.swift in Sources */ = {isa = PBXBuildFile; fileRef = D886E8D32C3ADA290054DD61 /* LoadingSpinner.swift */; };
+		D88AD2C12E8FAB450036BF62 /* ConfettiSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = D88AD2C02E8FAB450036BF62 /* ConfettiSwiftUI */; };
+		D89C3C462E8FB2CD00C265A1 /* KeyPadButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D89C3C452E8FB2CD00C265A1 /* KeyPadButton.swift */; };
 		D8BAFEF62A09A12400D49C49 /* QuickMentalMathApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8BAFEF52A09A12400D49C49 /* QuickMentalMathApp.swift */; };
 		D8BAFEF82A09A12400D49C49 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8BAFEF72A09A12400D49C49 /* ContentView.swift */; };
 		D8BAFEFA2A09A12500D49C49 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D8BAFEF92A09A12500D49C49 /* Assets.xcassets */; };
@@ -37,9 +40,7 @@
 		D8BAFF122A09A12500D49C49 /* QuickMentalMathUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8BAFF112A09A12500D49C49 /* QuickMentalMathUITests.swift */; };
 		D8BAFF142A09A12500D49C49 /* QuickMentalMathUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8BAFF132A09A12500D49C49 /* QuickMentalMathUITestsLaunchTests.swift */; };
 		D8E279222BB8E36D009B029E /* DifficultySelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8E279212BB8E36D009B029E /* DifficultySelector.swift */; };
-		D8ED276D2A11453300092F56 /* QuestionSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8ED276C2A11453300092F56 /* QuestionSlider.swift */; };
 		D8F7B7BB2C3FB0CE005CFCF0 /* SideBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8F7B7BA2C3FB0CE005CFCF0 /* SideBar.swift */; };
-		D8F7B7BF2C444413005CFCF0 /* StatsBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8F7B7BE2C444413005CFCF0 /* StatsBar.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -60,6 +61,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		D823EE742E8FD2370074C071 /* StatPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatPanel.swift; sourceTree = "<group>"; };
 		D84ED7E12C44AA0B0043995D /* LeaderboardEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeaderboardEntry.swift; sourceTree = "<group>"; };
 		D863BB612BF8049600A8825C /* TimeSelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeSelector.swift; sourceTree = "<group>"; };
 		D87282752E8D920C00C36890 /* AuthView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthView.swift; sourceTree = "<group>"; };
@@ -83,6 +85,7 @@
 		D886E8D12C3AD8350054DD61 /* AuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthService.swift; sourceTree = "<group>"; };
 		D886E8D32C3ADA290054DD61 /* LoadingSpinner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingSpinner.swift; sourceTree = "<group>"; };
 		D88D273D2A2D8B2C00E0EA63 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		D89C3C452E8FB2CD00C265A1 /* KeyPadButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyPadButton.swift; sourceTree = "<group>"; };
 		D8BAFEF22A09A12400D49C49 /* QuickMentalMath.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = QuickMentalMath.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D8BAFEF52A09A12400D49C49 /* QuickMentalMathApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickMentalMathApp.swift; sourceTree = "<group>"; };
 		D8BAFEF72A09A12400D49C49 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -95,9 +98,7 @@
 		D8BAFF112A09A12500D49C49 /* QuickMentalMathUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickMentalMathUITests.swift; sourceTree = "<group>"; };
 		D8BAFF132A09A12500D49C49 /* QuickMentalMathUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickMentalMathUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		D8E279212BB8E36D009B029E /* DifficultySelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DifficultySelector.swift; sourceTree = "<group>"; };
-		D8ED276C2A11453300092F56 /* QuestionSlider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuestionSlider.swift; sourceTree = "<group>"; };
 		D8F7B7BA2C3FB0CE005CFCF0 /* SideBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideBar.swift; sourceTree = "<group>"; };
-		D8F7B7BE2C444413005CFCF0 /* StatsBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsBar.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -105,6 +106,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D88AD2C12E8FAB450036BF62 /* ConfettiSwiftUI in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -145,15 +147,15 @@
 		D872828A2E8DA44600C36890 /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				D89C3C452E8FB2CD00C265A1 /* KeyPadButton.swift */,
 				D872830F2E8E042600C36890 /* InGameStats.swift */,
 				D8E279212BB8E36D009B029E /* DifficultySelector.swift */,
-				D8ED276C2A11453300092F56 /* QuestionSlider.swift */,
 				D863BB612BF8049600A8825C /* TimeSelector.swift */,
 				D886E8D32C3ADA290054DD61 /* LoadingSpinner.swift */,
 				D8F7B7BA2C3FB0CE005CFCF0 /* SideBar.swift */,
-				D8F7B7BE2C444413005CFCF0 /* StatsBar.swift */,
 				D84ED7E12C44AA0B0043995D /* LeaderboardEntry.swift */,
 				D87283132E8E40C600C36890 /* RollingNumber.swift */,
+				D823EE742E8FD2370074C071 /* StatPanel.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -337,6 +339,9 @@
 				Base,
 			);
 			mainGroup = D8BAFEE92A09A12400D49C49;
+			packageReferences = (
+				D88AD2BF2E8FAB450036BF62 /* XCRemoteSwiftPackageReference "ConfettiSwiftUI" */,
+			);
 			productRefGroup = D8BAFEF32A09A12400D49C49 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -382,6 +387,7 @@
 				D87282802E8D920C00C36890 /* AuthView.swift in Sources */,
 				D87283162E8E428F00C36890 /* CollectionExtensions.swift in Sources */,
 				D87282812E8D920C00C36890 /* EndGameView.swift in Sources */,
+				D89C3C462E8FB2CD00C265A1 /* KeyPadButton.swift in Sources */,
 				D872828D2E8DA69900C36890 /* DeviceModel.swift in Sources */,
 				D87282822E8D920C00C36890 /* ExtraOptionsView.swift in Sources */,
 				D87282832E8D920C00C36890 /* ForgotPasswordView.swift in Sources */,
@@ -393,7 +399,6 @@
 				D87282872E8D920C00C36890 /* MissedQuestionsView.swift in Sources */,
 				D87282882E8D920C00C36890 /* StatsView.swift in Sources */,
 				D87282892E8D920C00C36890 /* TimeTrialView.swift in Sources */,
-				D8ED276D2A11453300092F56 /* QuestionSlider.swift in Sources */,
 				D87282922E8DA76700C36890 /* AppModel.swift in Sources */,
 				D863BB622BF8049600A8825C /* TimeSelector.swift in Sources */,
 				D8BAFEF82A09A12400D49C49 /* ContentView.swift in Sources */,
@@ -403,8 +408,8 @@
 				D886E8D22C3AD8350054DD61 /* AuthService.swift in Sources */,
 				D87283102E8E043B00C36890 /* InGameStats.swift in Sources */,
 				D8BAFEF62A09A12400D49C49 /* QuickMentalMathApp.swift in Sources */,
-				D8F7B7BF2C444413005CFCF0 /* StatsBar.swift in Sources */,
 				D886E8D42C3ADA290054DD61 /* LoadingSpinner.swift in Sources */,
+				D823EE752E8FD2370074C071 /* StatPanel.swift in Sources */,
 				D8F7B7BB2C3FB0CE005CFCF0 /* SideBar.swift in Sources */,
 				D8E279222BB8E36D009B029E /* DifficultySelector.swift in Sources */,
 			);
@@ -778,6 +783,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		D88AD2BF2E8FAB450036BF62 /* XCRemoteSwiftPackageReference "ConfettiSwiftUI" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/simibac/ConfettiSwiftUI.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.0.3;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		D88AD2C02E8FAB450036BF62 /* ConfettiSwiftUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D88AD2BF2E8FAB450036BF62 /* XCRemoteSwiftPackageReference "ConfettiSwiftUI" */;
+			productName = ConfettiSwiftUI;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = D8BAFEEA2A09A12400D49C49 /* Project object */;
 }

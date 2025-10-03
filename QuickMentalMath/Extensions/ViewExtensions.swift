@@ -32,7 +32,7 @@ struct RaisedButtonStyle: ViewModifier {
 
     func body(content: Content) -> some View {
         content
-            .background(RoundedRectangle(cornerRadius: 10).fill(backgroundColor))
+            .background(RoundedRectangle(cornerRadius: cornerRadius).fill(backgroundColor))
             .clipped()
             .offset(x: 0, y: isPressed ? shadowOffset : 0)
             .shadow(color: isToggled == true ? toggleColor! : shadowColor, radius: 0, x: 0, y: isPressed ? 0 : shadowOffset + 2)

@@ -12,28 +12,26 @@ struct StatsView: View {
     @Environment(\.dismiss) var dismiss
     
     @State var accuracy: Double = 0
-        
+    
     @EnvironmentObject var authInfo: AuthInfoModel
+    
+    @State var additionPercent: Double = 0
+    @State var subtractionPercent: Double = 0
+    @State var multiplicationPercent: Double = 0
+    @State var divisionPercent: Double = 0
     
     var body: some View {
         GeometryReader { screen in
             ZStack {
                 Color.white.ignoresSafeArea()
                 
-                VStack(spacing: 30) {
+                VStack(spacing: 25) {
                     HStack {
-                        VStack {
-                            Text("\(authInfo.user?.username ?? "")")
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .foregroundStyle(Color("darkPurple"))
-                                .font(.title2)
-                            
-                            Text("Your stats")
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .foregroundStyle(Color("lightPurple"))
-                                .font(.largeTitle)
-                        } //: Title VStack
-                        .bold()
+                        Text("your stats")
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .foregroundStyle(Color("darkPurple"))
+                            .font(.largeTitle)
+                            .bold()
                         
                         Spacer()
                         
@@ -48,77 +46,31 @@ struct StatsView: View {
                     }
                     
                     if authInfo.user != nil && authInfo.user?.stats != nil {
-                        HStack(spacing: 10) {
-                            VStack(alignment: .leading, spacing: 10) {
-                                Text("Your high score: \(authInfo.user?.stats?.highScore ?? 0)")
-                                    .frame(maxWidth: .infinity)
-                                    .padding(21)
-                                    .background(
-                                        RoundedRectangle(cornerRadius: 10, style: .continuous)
-                                            .fill(.white)
-                                        
-                                    )
-                                    .clipped()
-                                    .shadow(color: Color("lighterPurple"), radius: 3)
-                                
-                                
-                                Text("Time trial best: \(authInfo.user?.stats?.ttHighScore ?? 0)")
-                                    .frame(maxWidth: .infinity)
-                                    .padding(21)
-                                    .background(
-                                        RoundedRectangle(cornerRadius: 10, style: .continuous)
-                                            .fill(.white)
-                                    )
-                                    .clipped()
-                                    .shadow(color: Color("lighterPurple"), radius: 3)
-                            }
-                            .foregroundStyle(Color("darkPurple"))
-                            .bold()
-                            .font(.headline)
-                            
-                            ZStack {
-                                Circle()
-                                    .stroke(Color.gray.opacity(0.2),
-                                            style: StrokeStyle(lineWidth: 7))
-                                    .overlay() {
-                                        VStack(spacing: 3) {
-                                            Text("\(Int(accuracy * 100))%")
-                                                .foregroundStyle(Color("darkPurple"))
-                                                .font(.title3)
-                                                .bold()
-                                            
-                                            Text("ACCURACY")
-                                                .font(.caption2)
-                                                .foregroundStyle(Color("lighterPurple"))
-                                                .bold()
-                                        }
-                                    }
-                                Circle()
-                                    .trim(from: 0, to: accuracy)
-                                    .stroke(Color("lightPurple"),
-                                            style: StrokeStyle(lineWidth: 7, lineCap: .round)
-                                    )
-                                    .rotationEffect(Angle(degrees: -90))
-                            }
-                            .frame(width: 100, height: 100)
-                            .padding(20)
-                            .background(
-                                RoundedRectangle(cornerRadius: 10, style: .continuous)
-                                    .fill(.white)
-                                
-                            )
-                            .clipped()
-                            .shadow(color: Color("lighterPurple"), radius: 3)
-                        } //: HStack
                         
-                        VStack(spacing: screen.size.height < 750 ? 30 : 40) {
-                            StatsBar(percentage: authInfo.user?.stats?.additionTot == 0 ? 0 : (Double((authInfo.user?.stats!.additionScore)!) / Double((authInfo.user?.stats!.additionTot)!)) * 100, imgName: "plus", color: Color("pastelPurple"), mode: "Addition")
+                        VStack(alignment: .leading, spacing: 15) {
+                            Text("overview")
+                                .font(.title3)
+                                .fontWeight(.semibold)
+                                .foregroundStyle(Color("lightPurple"))
                             
-                            StatsBar(percentage: authInfo.user?.stats?.subtractionTot == 0 ? 0 : (Double((authInfo.user?.stats!.subtractionScore)!) / Double((authInfo.user?.stats!.subtractionTot)!)) * 100, imgName: "minus", color: Color("pastelBlue"), mode: "Subtraction")
+                            StatPanel(imageName: "bolt.fill", imageColor: Color("lightYellow"), value: String(authInfo.user?.stats?.highScore ?? 0), label: "high score", borderColor: Color.gray, progress: nil)
                             
-                            StatsBar(percentage: authInfo.user?.stats?.multiplicationTot == 0 ? 0 : (Double((authInfo.user?.stats!.multiplicationScore)!) / Double((authInfo.user?.stats!.multiplicationTot)!)) * 100, imgName: "multiply", color: Color("pastelRed"), mode: "Multiplication")
+                            StatPanel(imageName: "timer", imageColor: Color("correctGreen"), value: String(authInfo.user?.stats?.ttHighScore ?? 0), label: "time trial best", borderColor: Color.gray, progress: nil)
+                        }
+                        
+                        VStack(alignment: .leading, spacing: 15) {
+                            Text("by section")
+                                .font(.title3)
+                                .fontWeight(.semibold)
+                                .foregroundStyle(Color("lightPurple"))
                             
-                            StatsBar(percentage: authInfo.user?.stats?.divisionTot == 0 ? 0 : (Double((authInfo.user?.stats!.divisionScore)!) / Double((authInfo.user?.stats!.divisionTot)!)) * 100, imgName: "divide", color: Color("pastelGreen"), mode: "Division")
+                            StatPanel(imageName: "plus.circle.fill", imageColor: Color("pastelPurple"), value: "\(Int(additionPercent * 100))%", label: "addition", borderColor: Color("pastelPurple"), progress: additionPercent)
+                            
+                            StatPanel(imageName: "minus.circle.fill", imageColor: Color("pastelBlue"), value: "\(Int(subtractionPercent * 100))%", label: "subtraction", borderColor: Color("pastelBlue"), progress: subtractionPercent)
+                            
+                            StatPanel(imageName: "multiply.circle.fill", imageColor: Color("pastelRed"), value: "\(Int(multiplicationPercent * 100))%", label: "multiplication", borderColor: Color("pastelRed"), progress: multiplicationPercent)
+                            
+                            StatPanel(imageName: "divide.circle.fill", imageColor: Color("pastelGreen"), value: "\(Int(divisionPercent * 100))%", label: "division", borderColor: Color("pastelGreen"), progress: divisionPercent)
                         }
                     }
                     else {
@@ -129,16 +81,25 @@ struct StatsView: View {
                     
                     Spacer()
                 } //: Parent VStack
-                .padding(.horizontal, 20)
-                .padding(.vertical, 25)
+                .padding(20)
             } //: ZStack
             .onAppear {
-                let totQuestions = (authInfo.user?.stats!.additionTot)! + (authInfo.user?.stats!.subtractionTot)! + (authInfo.user?.stats!.multiplicationTot)! + (authInfo.user?.stats!.divisionTot)!
+                additionPercent = authInfo.user?.stats?.additionTot == 0 ? 0 : Double((authInfo.user?.stats!.additionScore)!) / Double((authInfo.user?.stats!.additionTot)!)
                 
-                let totCorrect = (authInfo.user?.stats!.additionScore)! + (authInfo.user?.stats!.subtractionScore)! + (authInfo.user?.stats!.multiplicationScore)! + (authInfo.user?.stats!.divisionScore)!
+                subtractionPercent = authInfo.user?.stats?.subtractionTot == 0 ? 0 : Double((authInfo.user?.stats!.subtractionScore)!) / Double((authInfo.user?.stats!.subtractionTot)!)
                 
-                accuracy = totQuestions > 0 ? Double(totCorrect) / Double(totQuestions) : 0
+                multiplicationPercent = authInfo.user?.stats?.multiplicationTot == 0 ? 0 : Double((authInfo.user?.stats!.multiplicationScore)!) / Double((authInfo.user?.stats!.multiplicationTot)!)
+                
+                divisionPercent = authInfo.user?.stats?.divisionTot == 0 ? 0 : Double((authInfo.user?.stats!.divisionScore)!) / Double((authInfo.user?.stats!.divisionTot)!)
             }
         }
     }
+}
+
+#Preview {
+    let userStats = UserStats(id: 0, additionScore: 20, additionTot: 40, subtractionScore: 10, subtractionTot: 30, multiplicationScore: 0, multiplicationTot: 0, divisionScore: 10, divisionTot: 50, highScore: 45, ttHighScore: 100)
+    
+    let user = User(id: 0, username: "Andyv123", jwtToken: "dfafdsaf", stats: userStats)
+    
+    return StatsView().environmentObject(AuthInfoModel(user: user))
 }

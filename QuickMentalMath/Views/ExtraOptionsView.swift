@@ -11,13 +11,23 @@ import SwiftUI
 struct ExtraOptionsView: View {
     
     @State var progress = 10.0
+    var progressString: Binding<String> {
+        Binding(
+            get: { String(Int(progress)) },
+            set: { newValue in
+                if let newValueAsDouble = Double(newValue) {
+                    self.progress = newValueAsDouble
+                }
+            }
+        )
+    }
+    
     @State var showGame = false
     
     @State var timeIndex = 0
     @State var difficultyIndex = 0
     
     @EnvironmentObject private var gameModel: GameModel
-    @EnvironmentObject private var deviceModel: DeviceModel
     @EnvironmentObject private var appModel: AppModel
     
     @Environment(\.presentationMode) var presentationMode
@@ -36,74 +46,76 @@ struct ExtraOptionsView: View {
                 Color.white
                     .clipShape(RoundedRectangle(cornerRadius: 30))
                 
-                VStack(spacing: 10) {
-                    HStack {
-                        Button(action: {
-                            appModel.path.removeLast()
-                        }, label: {
-                            Image(systemName: "chevron.left")
-                                .foregroundStyle(Color("darkPurple"))
-                        })
-                        .font(.title3)
-                        .bold()
-                        
-                        Spacer()
-                    }
-                    
-                    VStack(spacing: 40) {
-                        
-                        
-                        VStack(spacing: 10) {
-                            QuestionSlider(value: $progress, in: 10...100)
-                                .frame(width: metrics.size.height * 0.18, height: metrics.size.height * 0.18)
-                            Text("Number of Questions")
-                                .font(metrics.size.height < 736 && metrics.size.width < 390 ? .headline : .title3)
-                                .foregroundColor(Color("lightPurple"))
-                                .bold()
-                        }
-                        
+                VStack(spacing: 20) {
+                    VStack(spacing: 5) {
                         HStack(spacing: 20) {
+                            Button(action: {}, label: {
+                                Image(systemName: "minus")
+                            })
+                            .font(.subheadline)
+                            .foregroundStyle(Color("darkPurple"))
+                            .bold()
+                            .padding(.horizontal, 6)
+                            .frame(height: 25)
+                            .raisedButton(impactStrength: .soft, cornerRadius: 10, backgroundColor: Color("lighterPurple"), shadowColor: Color("lightPurple"), shadowOffset: 3, action: {
+                                progress -= 1
+                            })
                             
-                            VStack(spacing: metrics.size.height < 736 && metrics.size.width < 390 ? 8 : 15) {
-                                DifficultySelector(difficultyIndex: $difficultyIndex)
-                                    .environmentObject(deviceModel)
-                                
-                                Divider()
-                                
-                                Text("Difficulty")
-                                    .font(metrics.size.height < 736 && metrics.size.width < 390 ? .subheadline : .headline)
-                                    .fontWeight(.heavy)
-                                    .foregroundColor(Color("lightPurple"))
-                            }
-                            .padding(metrics.size.height < 736 && metrics.size.width < 390 ? 8 : 15)
-                            .background(.white)
-                            .roundedCorner(10, corners: .allCorners)
-                            .clipped()
-                            .shadow(radius: 2)
+                            RollingNumber(number: progressString, color: Color("darkPurple"), digitWidth: 22, digitHeight: 38)
                             
-                            VStack(spacing: metrics.size.height < 736 && metrics.size.width < 390 ? 8 : 15) {
-                                
-                                TimeSelector(timeIndex: $timeIndex)
-                                    .environmentObject(deviceModel)
-                                
-                                Divider()
-                                
-                                Text("Time Limit")
-                                    .font(metrics.size.height < 736 && metrics.size.width < 390 ? .subheadline : .headline)
-                                    .fontWeight(.heavy)
-                                    .foregroundColor(Color("lightPurple"))
-                            }
-                            .padding(metrics.size.height < 736 && metrics.size.width < 390 ? 8 : 15)
-                            .background(.white)
-                            .roundedCorner(10, corners: .allCorners)
-                            .clipped()
-                            .shadow(radius: 2)
+                            Button(action: {}, label: {
+                                Image(systemName: "plus")
+                            })
+                            .font(.subheadline)
+                            .foregroundStyle(Color("darkPurple"))
+                            .bold()
+                            .padding(.horizontal, 6)
+                            .frame(height: 25)
+                            .raisedButton(impactStrength: .soft, cornerRadius: 10, backgroundColor: Color("lighterPurple"), shadowColor: Color("lightPurple"), shadowOffset: 3, action: {
+                                progress += 1
+                            })
                         }
                         
-                            
+                        Slider(value: $progress, in: 10...99)
+                            .tint(Color("darkPurple"))
+
+                        Text("number of problems")
+                            .font(metrics.size.height < 736 ? .subheadline : .headline)
+                            .fontWeight(.heavy)
+                            .foregroundStyle(Color("lightPurple"))
+
+                        
+                    }
+                    .padding(15)
+                    .background(.white)
+                    .roundedCorner(20, corners: .allCorners)
+                    .clipped()
+                    .shadow(radius: 2)
+
+//                    VStack(spacing: 10) {
+//                        QuestionSlider(value: $progress, in: 10...100)
+//                            .frame(width: metrics.size.height * 0.18, height: metrics.size.height * 0.18)
+//                        Text("number of questions")
+//                            .font(metrics.size.height < 736 && metrics.size.width < 390 ? .headline : .title3)
+//                            .foregroundColor(Color("lightPurple"))
+//                            .bold()
+//                    }
+//                    .onChange(of: progress, perform: { _ in
+//                        UIImpactFeedbackGenerator(style: .soft).impactOccurred()
+//                    })
+                    
+                    HStack(spacing: 20) {
+                        DifficultySelector(difficultyIndex: $difficultyIndex, metrics: metrics)
+                        
+                        TimeSelector(timeIndex: $timeIndex, metrics: metrics)
+                    }
+                                            
+                    Spacer()
+                    
+                    VStack(spacing: 35) {
                         Button(action: {}, label: {
                             HStack {
-                                Text("Start")
+                                Text("start")
                                 
                                 Image(systemName: "arrow.right")
                             }
@@ -111,22 +123,25 @@ struct ExtraOptionsView: View {
                             .font(.title2)
                             .fontWeight(.heavy)
                         })
-                        .roundedCorner(12, corners: .allCorners)
                         .padding(15)
                         .frame(maxWidth: .infinity)
-                        .raisedButton(impactStrength: .heavy, backgroundColor: Color("lighterPurple"), shadowColor: Color("lightPurple"), shadowOffset: 11,
+                        .raisedButton(impactStrength: .heavy, cornerRadius: 20, backgroundColor: Color("lighterPurple"), shadowColor: Color("lightPurple"), shadowOffset: 11,
                                       action: {
                             handleStart()
                         })
                         //: Start Button
                         
-                        Spacer()
-                    } //: VStack
-                    
-                    
+                        Button(action: {
+                            appModel.path.removeLast()
+                        }, label: {
+                            Text("back to home")
+                                .foregroundStyle(Color("darkPurple"))
+                        })
+                        .font(.body)
+                        .fontWeight(.heavy)
+                    }
                 } //: VStack
-                .padding(.horizontal, 20)
-                .padding(.top, 20)
+                .padding(20)
                 
             } // ZStack
             
@@ -138,7 +153,6 @@ struct ExtraOptionsView: View {
 #Preview {
     ExtraOptionsView()
         .environmentObject(GameModel())
-        .environmentObject(DeviceModel())
         .environmentObject(AppModel(path: NavigationPath()))
 }
 

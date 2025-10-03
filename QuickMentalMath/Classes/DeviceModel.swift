@@ -1,16 +1,16 @@
+////
+////  DeviceModel.swift
+////  QuickMentalMath
+////
+////  Created by Andy Vu on 10/1/25.
+////
 //
-//  DeviceModel.swift
-//  QuickMentalMath
+//import SwiftUI
 //
-//  Created by Andy Vu on 10/1/25.
+//enum DeviceType {
+//    case SMALL, NORMAL, LARGE
+//}
 //
-
-import SwiftUI
-
-enum DeviceType {
-    case SMALL, NORMAL, LARGE
-}
-
-class DeviceModel: ObservableObject {
-    @Published var type: DeviceType = .NORMAL
-}
+//class DeviceModel: ObservableObject {
+//    @Published var type: DeviceType = .NORMAL
+//}
