@@ -28,6 +28,7 @@
 		D87283102E8E043B00C36890 /* InGameStats.swift in Sources */ = {isa = PBXBuildFile; fileRef = D872830F2E8E042600C36890 /* InGameStats.swift */; };
 		D87283142E8E40C600C36890 /* RollingNumber.swift in Sources */ = {isa = PBXBuildFile; fileRef = D87283132E8E40C600C36890 /* RollingNumber.swift */; };
 		D87283162E8E428F00C36890 /* CollectionExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D87283152E8E427700C36890 /* CollectionExtensions.swift */; };
+		D87EFEB32E91AFBC00D5F4A5 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D87EFEB22E91AFBC00D5F4A5 /* Launch Screen.storyboard */; };
 		D886E8D22C3AD8350054DD61 /* AuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D886E8D12C3AD8350054DD61 /* AuthService.swift */; };
 		D886E8D42C3ADA290054DD61 /* LoadingSpinner.swift in Sources */ = {isa = PBXBuildFile; fileRef = D886E8D32C3ADA290054DD61 /* LoadingSpinner.swift */; };
 		D88AD2C12E8FAB450036BF62 /* ConfettiSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = D88AD2C02E8FAB450036BF62 /* ConfettiSwiftUI */; };
@@ -82,6 +83,7 @@
 		D872830F2E8E042600C36890 /* InGameStats.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InGameStats.swift; sourceTree = "<group>"; };
 		D87283132E8E40C600C36890 /* RollingNumber.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RollingNumber.swift; sourceTree = "<group>"; };
 		D87283152E8E427700C36890 /* CollectionExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionExtensions.swift; sourceTree = "<group>"; };
+		D87EFEB22E91AFBC00D5F4A5 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		D886E8D12C3AD8350054DD61 /* AuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthService.swift; sourceTree = "<group>"; };
 		D886E8D32C3ADA290054DD61 /* LoadingSpinner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingSpinner.swift; sourceTree = "<group>"; };
 		D88D273D2A2D8B2C00E0EA63 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
@@ -222,6 +224,7 @@
 				D8BAFEF92A09A12500D49C49 /* Assets.xcassets */,
 				D8BAFEFB2A09A12500D49C49 /* QuickMentalMath.entitlements */,
 				D8BAFEFC2A09A12500D49C49 /* Preview Content */,
+				D87EFEB22E91AFBC00D5F4A5 /* Launch Screen.storyboard */,
 			);
 			path = QuickMentalMath;
 			sourceTree = "<group>";
@@ -358,6 +361,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D87EFEB32E91AFBC00D5F4A5 /* Launch Screen.storyboard in Resources */,
 				D8BAFEFE2A09A12500D49C49 /* Preview Assets.xcassets in Resources */,
 				D8BAFEFA2A09A12500D49C49 /* Assets.xcassets in Resources */,
 			);
