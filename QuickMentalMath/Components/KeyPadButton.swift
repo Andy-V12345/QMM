@@ -19,14 +19,28 @@ struct KeyPadButton: View {
     
     @Binding var isGameOver: Bool
     
-    @State var isIpad: Bool
-    
+    @EnvironmentObject var device: DeviceModel
+        
     let mediumHaptic = UIImpactFeedbackGenerator(style: .medium)
     let rigidHaptic = UIImpactFeedbackGenerator(style: .rigid)
     let heavyHaptic = UIImpactFeedbackGenerator(style: .heavy)
         
     func checkAnswer() -> Bool {
         return answer.isEqual(to: Double(input)!)
+    }
+    
+    func isDisabled(id: String, input: String, difficulty: String) -> Bool {
+        if Int(id) == 10 { // delete button
+            return input == "f"
+        }
+        else if (Int(id) == 11 && gameModel.difficulty != "decimals") || Int(id) == 12 { // check answer button
+            let isNumeric = Double(input) != nil
+            
+            return !isNumeric
+        }
+        else {
+            return false
+        }
     }
     
     func newQuestion(mode: String) {
@@ -160,6 +174,7 @@ struct KeyPadButton: View {
                 heavyHaptic.impactOccurred()
                 rigidHaptic.impactOccurred()
                 gameModel.missedQuestions.append(MissedQuestion(question: "\(String(format: "%.2f", num1)) \(gameModel.mode == "time" ? gameModel.tmpMode : gameModel.mode) \(String(format: "%.2f", num2))", userAns: "\(input)", correctAns: "\(String(format: "%.2f", answer))"))
+                gameModel.numIncorrect += 1
             }
             
             gameModel.questionCount += 1
@@ -187,6 +202,7 @@ struct KeyPadButton: View {
                     heavyHaptic.impactOccurred()
                     rigidHaptic.impactOccurred()
                     gameModel.missedQuestions.append(MissedQuestion(question: "\(String(format: "%.0f", num1)) \(gameModel.mode == "time" ? gameModel.tmpMode : gameModel.mode) \(String(format: "%.0f", num2))", userAns: "\(input)", correctAns: "\(String(format: "%.0f", answer))"))
+                    gameModel.numIncorrect += 1
                 }
                 
                 gameModel.questionCount += 1
@@ -246,53 +262,39 @@ struct KeyPadButton: View {
             Button(action: {}, label: {
                 if Int(id) == 10 {
                     Image(systemName: "delete.left")
-                        .font(isIpad ? .title : .title3)
-                        .bold()
-                        .foregroundColor(Color.red)
-                        .padding()
+                        .foregroundColor(Color("errorRed"))
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
                 else if Int(id) == 12 {
                     Image(systemName: "checkmark")
-                        .font(isIpad ? .title : .title3)
-                        .bold()
-                        .foregroundColor(Color.green)
-                        .padding()
+                        .foregroundColor(Color("correctGreen"))
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
                 else if Int(id) == 11 {
                     if gameModel.difficulty != "decimals" {
                         Image(systemName: "checkmark")
-                            .font(isIpad ? .title : .title3)
-                            .bold()
-                            .foregroundColor(Color.green)
-                            .padding()
+                            .foregroundStyle(Color("correctGreen"))
                             .frame(maxWidth: .infinity, maxHeight: .infinity)
                     }
                     else {
                         Text(".")
-                            .font(isIpad ? .title : .title3)
-                            .bold()
-                            .foregroundColor(Color("darkPurple"))
-                            .padding()
                             .frame(maxWidth: .infinity, maxHeight: .infinity)
                     }
                     
                 }
                 else {
                     Text(id)
-                        .font(isIpad ? .title : .title3)
-                        .bold()
-                        .foregroundColor(Color("darkPurple"))
-                        .padding()
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
             })
-            .raisedButton(impactStrength: .soft, backgroundColor: Color("offWhite"), shadowColor: Color.gray.opacity(0.2), shadowOffset: 2, action: {
+            .font(device.valueByDevice(small: .title2, normal: .title2, ipad: .largeTitle))
+            .foregroundColor(Color("darkPurple"))
+            .bold()
+            .raisedButton(impactStrength: .soft, backgroundColor: Color("offWhite"), shadowColor: Color.gray.opacity(0.2), shadowOffset: device.valueByDevice(small: 2, normal: 2, ipad: 6), action: {
                 handleButtonClick()
             })
-            .disabled((input == "f" || input == ".") && (Int(id) == 10 || (Int(id) == 11 && gameModel.difficulty != "decimals") || Int(id) == 12) ? true : false)
-            .opacity((input == "f" || input == ".") && (Int(id) == 10 || (Int(id) == 11 && gameModel.difficulty != "decimals") || Int(id) == 12) ? 0.4 : 1)
+            .disabled(isDisabled(id: id, input: input, difficulty: gameModel.difficulty))
+            .opacity(isDisabled(id: id, input: input, difficulty: gameModel.difficulty) ? 0.4 : 1)
             .onAppear {
                 if gameModel.mode == "time" {
                     newQuestion(mode: randomMode())

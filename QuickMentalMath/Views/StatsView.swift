@@ -14,6 +14,7 @@ struct StatsView: View {
     @State var accuracy: Double = 0
     
     @EnvironmentObject var authInfo: AuthInfoModel
+    @EnvironmentObject var device: DeviceModel
     
     @State var additionPercent: Double = 0
     @State var subtractionPercent: Double = 0
@@ -53,9 +54,9 @@ struct StatsView: View {
                                 .fontWeight(.semibold)
                                 .foregroundStyle(Color("lightPurple"))
                             
-                            StatPanel(imageName: "bolt.fill", imageColor: Color("lightYellow"), value: String(authInfo.user?.stats?.highScore ?? 0), label: "high score", borderColor: Color.gray, progress: nil)
+                            StatPanel(imageName: "bolt.fill", imageColor: Color("gold"), value: String(authInfo.user?.stats?.highScore ?? 0), label: "high score", borderColor: Color("gold"), progress: nil)
                             
-                            StatPanel(imageName: "timer", imageColor: Color("correctGreen"), value: String(authInfo.user?.stats?.ttHighScore ?? 0), label: "time trial best", borderColor: Color.gray, progress: nil)
+                            StatPanel(imageName: "timer", imageColor: Color("correctGreen"), value: String(authInfo.user?.stats?.ttHighScore ?? 0), label: "time trial best", borderColor: Color("correctGreen"), progress: nil)
                         }
                         
                         VStack(alignment: .leading, spacing: 15) {
@@ -81,7 +82,7 @@ struct StatsView: View {
                     
                     Spacer()
                 } //: Parent VStack
-                .padding(20)
+                .padding(device.valueByDevice(small: 15, normal: 20, ipad: 30))
             } //: ZStack
             .onAppear {
                 additionPercent = authInfo.user?.stats?.additionTot == 0 ? 0 : Double((authInfo.user?.stats!.additionScore)!) / Double((authInfo.user?.stats!.additionTot)!)
@@ -101,5 +102,9 @@ struct StatsView: View {
     
     let user = User(id: 0, username: "Andyv123", jwtToken: "dfafdsaf", stats: userStats)
     
-    return StatsView().environmentObject(AuthInfoModel(user: user))
+    return (
+        GeometryReader { screen in
+            StatsView().environmentObject(AuthInfoModel(user: user)).environmentObject(DeviceModel(screen: screen))
+        }
+    )
 }

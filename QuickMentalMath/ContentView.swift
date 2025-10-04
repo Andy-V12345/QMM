@@ -11,7 +11,8 @@ struct ContentView: View {
     
     @StateObject var authInfo = AuthInfoModel()
     @StateObject var appModel = AppModel(path: NavigationPath())
-    @StateObject private var gameModel = GameModel()
+    @StateObject var gameModel = GameModel()
+    @StateObject var deviceModel = DeviceModel()
     
     @Environment(\.scenePhase) var scenePhase
     
@@ -21,72 +22,78 @@ struct ContentView: View {
     @AppStorage("id") var id = 0
     
     var body: some View {
-        NavigationStack(path: $appModel.path) {
-            EmptyView()
-                .navigationDestination(for: AuthState.self, destination: { state in
-                    if state == .UNAUTHORIZED {
-                        AuthView()
-                            .navigationBarBackButtonHidden()
-                    }
-                    else if state == .AUTHORIZED {
-                        HomeView()
-                            .navigationBarBackButtonHidden()
-                    }
-                    else if state == .NO_ACCOUNT {
-                        HomeView()
-                            .navigationBarBackButtonHidden()
-                    }
-                })
-                .navigationDestination(for: AppState.self, destination: { state in
-                    if state == .SETTINGS {
-                        if gameModel.mode == "time" {
-                            TimeTrialView()
+        GeometryReader { screen in
+            NavigationStack(path: $appModel.path) {
+                EmptyView()
+                    .navigationDestination(for: AuthState.self, destination: { state in
+                        if state == .UNAUTHORIZED {
+                            AuthView()
                                 .navigationBarBackButtonHidden()
+                        }
+                        else if state == .AUTHORIZED {
+                            HomeView()
+                                .navigationBarBackButtonHidden()
+                        }
+                        else if state == .NO_ACCOUNT {
+                            HomeView()
+                                .navigationBarBackButtonHidden()
+                        }
+                    })
+                    .navigationDestination(for: AppState.self, destination: { state in
+                        if state == .SETTINGS {
+                            if gameModel.mode == "time" {
+                                TimeTrialView()
+                                    .navigationBarBackButtonHidden()
+                            }
+                            else {
+                                ExtraOptionsView()
+                                    .navigationBarBackButtonHidden()
+                            }
+                        }
+                        else if state == .GAME {
+                            GameView()
+                                .navigationBarBackButtonHidden()
+                        }
+                        else if state == .END {
+                            EndGameView()
+                                .navigationBarBackButtonHidden()
+                        }
+                    })
+            }
+            .onChange(of: scenePhase) { phase in
+                switch phase {
+                case .active:
+                    authInfo.user = User(id: id, username: username, jwtToken: jwtToken)
+                    authInfo.authState = authState
+                    
+                    Task {
+                        if authInfo.authState == .UNAUTHORIZED {
+                            appModel.path = NavigationPath([authInfo.authState])
+                        }
+                        else if authInfo.authState == .NO_ACCOUNT {
+                            appModel.path = NavigationPath([AuthState.UNAUTHORIZED, authInfo.authState])
                         }
                         else {
-                            ExtraOptionsView()
-                                .navigationBarBackButtonHidden()
+                            await authInfo.loadUserStats()
+                            appModel.path = NavigationPath([AuthState.UNAUTHORIZED, authInfo.authState])
                         }
                     }
-                    else if state == .GAME {
-                        GameView()
-                            .navigationBarBackButtonHidden()
-                    }
-                    else if state == .END {
-                        EndGameView()
-                            .navigationBarBackButtonHidden()
-                    }
-                })
-        }
-        .onChange(of: scenePhase) { phase in
-            switch phase {
-            case .active:
-                authInfo.user = User(id: id, username: username, jwtToken: jwtToken)
-                authInfo.authState = authState
-                
-                Task {
-                    if authInfo.authState == .UNAUTHORIZED {
-                        appModel.path = NavigationPath([authInfo.authState])
-                    }
-                    else if authInfo.authState == .NO_ACCOUNT {
-                        appModel.path = NavigationPath([AuthState.UNAUTHORIZED, authInfo.authState])
-                    }
-                    else {
-                        await authInfo.loadUserStats()
-                        appModel.path = NavigationPath([AuthState.UNAUTHORIZED, authInfo.authState])
-                    }
+                case .background:
+                    break
+                case .inactive:
+                    break
+                @unknown default:
+                    break
                 }
-            case .background:
-                break
-            case .inactive:
-                break
-            @unknown default:
-                break
             }
+            .onAppear {
+                deviceModel.setScreen(screen: screen)
+            }
+            .environmentObject(authInfo)
+            .environmentObject(appModel)
+            .environmentObject(gameModel)
+            .environmentObject(deviceModel)
         }
-        .environmentObject(authInfo)
-        .environmentObject(appModel)
-        .environmentObject(gameModel)
     }
     
 }

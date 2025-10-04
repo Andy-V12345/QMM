@@ -14,6 +14,7 @@ class GameModel: ObservableObject {
     @Published var timeLeft: CGFloat = 0
     @Published var totQuestions = 0
     @Published var score = 0
+    @Published var numIncorrect = 0
     @Published var missedQuestions: [MissedQuestion] = []
     @Published var questionCount = 1
     @Published var tmpMode = ""
@@ -47,6 +48,7 @@ class GameModel: ObservableObject {
     
     func reset() {
         score = 0
+        numIncorrect = 0
         missedQuestions.removeAll()
         questionCount = 1
         mode = ""
@@ -58,6 +60,7 @@ class GameModel: ObservableObject {
     
     func playAgain() {
         score = 0
+        numIncorrect = 0
         missedQuestions.removeAll()
         timeLeft = startTime
         questionCount = 1

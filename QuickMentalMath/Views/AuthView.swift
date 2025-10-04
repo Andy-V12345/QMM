@@ -139,10 +139,8 @@ struct AuthView: View {
     }
     
     var body: some View {
-        GeometryReader { metrics in
-                        
+        GeometryReader { _ in
             ZStack {
-                
                 Color.white.ignoresSafeArea()
                     .onTapGesture {
                         isEmailFocused = false
@@ -256,7 +254,6 @@ struct AuthView: View {
                             HStack {
                                 if authViewState == .DEFAULT || authViewState == .ERROR {
                                     Text("continue")
-                                        .font(.headline)
                                         .fontWeight(.heavy)
                                     
                                     Image(systemName: "arrow.right")
@@ -265,12 +262,13 @@ struct AuthView: View {
                                     LoadingSpinner(size: 15, color: Color("darkPurple"), width: 3)
                                 }
                             }
+                            .font(.title3)
                         })
                         .bold()
                         .foregroundStyle(Color("darkPurple"))
-                        .frame(height: 50)
+                        .frame(height: 55)
                         .frame(maxWidth: .infinity)
-                        .raisedButton(cornerRadius: 20, backgroundColor: Color("lighterPurple"), shadowColor: Color("lightPurple"), shadowOffset: 8, action: {
+                        .raisedButton(cornerRadius: 20, backgroundColor: Color("lighterPurple"), shadowColor: Color("lightPurple"), shadowOffset: 9, action: {
                             handleButtonClick()
                         })
                         .disabled(authViewState == .LOADING || ((authMode == .SIGNUP && usernameText.isEmpty) || email.isEmpty || password.isEmpty))

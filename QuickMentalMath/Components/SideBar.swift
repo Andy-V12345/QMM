@@ -82,8 +82,9 @@ struct SideBar: View {
                         VStack(spacing: 25) {
                             Button(action: {}, label: {
                                 HStack(spacing: 10) {
-                                    Image(systemName: "rosette")
+                                    Image(systemName: "chart.bar.xaxis")
                                         .font(.title3)
+                                        .foregroundStyle(Color("correctGreen"))
                                     
                                     Text("your stats")
                                         .frame(maxWidth: .infinity, alignment: .leading)
@@ -92,7 +93,7 @@ struct SideBar: View {
                             .padding(.vertical, 8)
                             .padding(.horizontal, 10)
                             .frame(maxWidth: .infinity)
-                            .raisedButton(cornerRadius: 20, backgroundColor: Color("offWhite"), shadowColor: Color.gray.opacity(0.4), shadowOffset: 4, action: {
+                            .raisedButton(cornerRadius: 20, backgroundColor: Color("offWhite"), shadowColor: Color("lightGray"), shadowOffset: 4, action: {
                                 displayStats = true
                             })
                             
@@ -100,6 +101,7 @@ struct SideBar: View {
                                 HStack(spacing: 10) {
                                     Image(systemName: "trophy.fill")
                                         .font(.title3)
+                                        .foregroundStyle(Color("gold"))
                                     
                                     Text("time trial leaderboard")
                                         .frame(maxWidth: .infinity, alignment: .leading)
@@ -108,7 +110,7 @@ struct SideBar: View {
                             .padding(.vertical, 8)
                             .padding(.horizontal, 10)
                             .frame(maxWidth: .infinity)
-                            .raisedButton(cornerRadius: 20, backgroundColor: Color("offWhite"), shadowColor: Color.gray.opacity(0.4), shadowOffset: 4, action: {
+                            .raisedButton(cornerRadius: 20, backgroundColor: Color("offWhite"), shadowColor: Color("lightGray"), shadowOffset: 4, action: {
                                 displayLeaderboard = true
                             })
                             
@@ -118,6 +120,7 @@ struct SideBar: View {
                                 HStack(spacing: 10) {
                                     Image(systemName: "figure.walk.departure")
                                         .font(.title3)
+                                        .foregroundStyle(Color("errorRed"))
                                     
                                     Text("sign out")
                                         .frame(maxWidth: .infinity, alignment: .leading)
@@ -126,7 +129,7 @@ struct SideBar: View {
                             .padding(.vertical, 8)
                             .padding(.horizontal, 10)
                             .frame(maxWidth: .infinity)
-                            .raisedButton(cornerRadius: 20, backgroundColor: Color("offWhite"), shadowColor: Color.gray.opacity(0.4), shadowOffset: 4, action: {
+                            .raisedButton(cornerRadius: 20, backgroundColor: Color("offWhite"), shadowColor: Color("lightGray"), shadowOffset: 4, action: {
                                 authInfo.user = nil
                                 authInfo.authState = .UNAUTHORIZED
                                 jwtToken = ""

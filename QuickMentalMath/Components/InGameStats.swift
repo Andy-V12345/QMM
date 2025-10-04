@@ -15,6 +15,7 @@ struct InGameStats: View {
     @Binding var isGameOver: Bool
     @Binding var timeLeft: CGFloat
     @Binding var numCorrect: Int
+    @Binding var numIncorrect: Int
     
     var numCorrectString: Binding<String> {
         Binding(
@@ -25,6 +26,14 @@ struct InGameStats: View {
                 }
             }
         )
+    }
+    
+    var numIncorrectString: Binding<String> {
+        Binding(get: { String(Int(numIncorrect)) }, set: { newValue in
+            if let intValue = Int(newValue) {
+                numIncorrect = Int(intValue)
+            }
+        })
     }
     
     var timeLeftString: Binding<String> {
@@ -81,7 +90,11 @@ struct InGameStats: View {
             
             Spacer()
             
-            RollingNumber(number: numCorrectString, color: Color("correctGreen"), font: font, digitWidth: digitWidth, digitHeight: digitHeight)
+            HStack(spacing: 20) {
+                RollingNumber(number: numCorrectString, color: Color("correctGreen"), font: font, digitWidth: digitWidth, digitHeight: digitHeight)
+                
+                RollingNumber(number: numIncorrectString, color: Color("errorRed"), font: font, digitWidth: digitWidth, digitHeight: digitHeight)
+            }
         }
         .padding(.horizontal, 20)
         .background(

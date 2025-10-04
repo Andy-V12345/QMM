@@ -20,42 +20,41 @@ struct EndGameView: View {
     @EnvironmentObject var gameModel: GameModel
     @EnvironmentObject var appModel: AppModel
     @EnvironmentObject var authInfo: AuthInfoModel
-        
+    @EnvironmentObject var device: DeviceModel
+    
     var body: some View {
-        GeometryReader { screen in
-            ZStack {
-                Color.white.ignoresSafeArea()
+        ZStack {
+            Color.white.ignoresSafeArea()
+            
+            VStack(spacing: device.valueByDevice(small: 20, normal: 20, ipad: 30)) {
+                Text("your results")
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .font(.largeTitle)
+                    .foregroundStyle(Color("darkPurple"))
+                    .bold()
                 
-                VStack(spacing: 20) {
-                    Text("your results")
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .font(.largeTitle)
-                        .foregroundStyle(Color("darkPurple"))
-                        .bold()
-                    
-                    
-                    if newHighScore || newTtHighScore {
-                        VStack {
-                            Text("\(newHighScore ? (authInfo.user?.stats!.highScore ?? 0) : (authInfo.user?.stats!.ttHighScore ?? 0))")
-                                .font(.largeTitle)
-                                .fontWeight(.bold)
-                                .foregroundStyle(Color("darkPurple"))
-                            
-                            Text("new high score")
-                                .foregroundStyle(Color("lightPurple"))
-                                .fontWeight(.medium)
-                        }
-                        .padding(.bottom, 10)
-                        .confettiCannon(trigger: $confettiTrigger, num: 50, colors: [Color("darkPurple"), Color("lightPurple"), Color("lighterPurple")], openingAngle: Angle(degrees: 0), closingAngle: Angle(degrees: 360), radius: 200, repetitions: 4, repetitionInterval: 0.3)
-
-//                        .confettiCannon(trigger: $confettiTrigger, num: 30, colors: [Color("darkPurple"), Color("lightPurple"), Color("lighterPurple")], hapticFeedback: true)
-                        .zIndex(1000)
-                        .onAppear {
-                            confettiTrigger += 1
-                        }
-                                      
+                
+                if newHighScore || newTtHighScore {
+                    VStack {
+                        Text("\(newHighScore ? (authInfo.user?.stats!.highScore ?? 0) : (authInfo.user?.stats!.ttHighScore ?? 0))")
+                            .font(device.valueByDevice(small: .largeTitle, normal: .largeTitle, ipad: Font.system(size: 60)))
+                            .fontWeight(.bold)
+                            .foregroundStyle(Color("darkPurple"))
+                        
+                        Text("new high score")
+                            .foregroundStyle(Color("lightPurple"))
+                            .fontWeight(.medium)
+                            .font(device.valueByDevice(small: .body, normal: .body, ipad: .title2))
                     }
-
+                    .padding(.bottom, 10)
+                    .confettiCannon(trigger: $confettiTrigger, num: 50, colors: [Color("darkPurple"), Color("lightPurple"), Color("lighterPurple")], openingAngle: Angle(degrees: 0), closingAngle: Angle(degrees: 360), radius: 200, repetitions: 4, repetitionInterval: 0.3)
+                    .zIndex(1000)
+                    .onAppear {
+                        confettiTrigger += 1
+                    }
+                }
+                
+                VStack(spacing: device.valueByDevice(small: 15, normal: 20, ipad: 20)) {
                     VStack(spacing: 20) {
                         VStack(spacing: 15) {
                             HStack {
@@ -89,8 +88,8 @@ struct EndGameView: View {
                         }
                         .foregroundStyle(Color("darkPurple"))
                     } //: Performance VStack
-                    .font(.headline)
-                    .padding(20)
+                    .font(device.valueByDevice(small: .body, normal: .body, ipad: .title2))
+                    .padding(device.valueByDevice(small: 15, normal: 20, ipad: 20))
                     .bold()
                     .clipped()
                     .background(
@@ -108,11 +107,11 @@ struct EndGameView: View {
                                 .foregroundStyle(Color("darkPurple"))
                                 .frame(maxWidth: .infinity, alignment: .leading)
                             
-                            MissedQuestionsView(missedQuestions: gameModel.missedQuestions)
+                            MissedQuestionsDisplay(missedQuestions: gameModel.missedQuestions)
                                 .frame(maxHeight: .infinity)
                         } //: Performance VStack
-                        .font(.headline)
-                        .padding(20)
+                        .font(device.valueByDevice(small: .body, normal: .body, ipad: .title2))
+                        .padding(device.valueByDevice(small: 15, normal: 20, ipad: 20))
                         .bold()
                         .background(
                             Color.white
@@ -121,87 +120,86 @@ struct EndGameView: View {
                         .clipped()
                         .shadow(color: Color("lighterPurple"), radius: 3)
                     }
-                    
-                    Spacer()
-                    
-                    VStack(spacing: 35) {
-                        Button(action: {}, label: {
-                            HStack {
-                                Image(systemName: "arrow.left")
-                                
-                                Text("play again")
-                            }
-                        })
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 15)
-                        .raisedButton(cornerRadius: 20, action: {
-                            gameModel.playAgain()
-                            appModel.path.removeLast()
-                        })
-                        .font(.title2)
-                        .fontWeight(.heavy)
+                }
+                
+                Spacer()
+                
+                VStack(spacing: device.valueByDevice(small: 35, normal: 35, ipad: 40)) {
+                    Button(action: {}, label: {
+                        HStack {
+                            Image(systemName: "arrow.left")
+                            
+                            Text("play again")
+                        }
                         .foregroundStyle(Color("darkPurple"))
-                        
-                        Button(action: {
-                            gameModel.reset()
-                            appModel.path = NavigationPath([AuthState.UNAUTHORIZED, authInfo.authState])
-                        }, label: {
-                            Text("back to home")
-                                .font(.body)
-                                .foregroundStyle(Color("darkPurple"))
-                                .fontWeight(.heavy)
-                        })
-                    }
+                        .font(device.valueByDevice(small: .title2, normal: .title2, ipad: .title))
+                        .fontWeight(.heavy)
+                    })
+                    .padding(device.valueByDevice(small: 12, normal: 15, ipad: 15))
+                    .frame(maxWidth: .infinity)
+                    .raisedButton(impactStrength: .heavy, cornerRadius: 20, backgroundColor: Color("lighterPurple"), shadowColor: Color("lightPurple"), shadowOffset: device.valueByDevice(small: 11, normal: 11, ipad: 13),
+                                  action: {
+                        gameModel.playAgain()
+                        appModel.path.removeLast()
+                    })
+                    
+                    Button(action: {
+                        gameModel.reset()
+                        appModel.path = NavigationPath([AuthState.UNAUTHORIZED, authInfo.authState])
+                    }, label: {
+                        Text("back to home")
+                            .foregroundStyle(Color("darkPurple"))
+                    })
+                    .font(device.valueByDevice(small: .headline, normal: .headline, ipad: .title3))
+                    .fontWeight(.heavy)
+                }
+            }
+            .padding(device.valueByDevice(small: 15, normal: 20, ipad: 30))
+        } //: ZStack
+        .onAppear {
+            withAnimation(.linear(duration: 0.85)) {
+                if gameModel.mode == "time" {
+                    percentage = Double((Float(gameModel.score) / Float(gameModel.questionCount - 1)) * 100)
+                    
+                }
+                else {
+                    percentage = Double((Float(gameModel.score) / Float(gameModel.totQuestions)) * 100)
+                }
+            }
+            
+            if authInfo.authState == .AUTHORIZED && authInfo.user != nil {
+                
+                switch gameModel.mode {
+                case "+":
+                    authInfo.user?.stats?.additionScore += gameModel.score
+                    authInfo.user?.stats?.additionTot += gameModel.totQuestions
+                case "-":
+                    authInfo.user?.stats?.subtractionScore += gameModel.score
+                    authInfo.user?.stats?.subtractionTot += gameModel.totQuestions
+                case "x":
+                    authInfo.user?.stats?.multiplicationScore += gameModel.score
+                    authInfo.user?.stats?.multiplicationTot += gameModel.totQuestions
+                case "÷":
+                    authInfo.user?.stats?.divisionScore += gameModel.score
+                    authInfo.user?.stats?.divisionTot += gameModel.totQuestions
+                default:
+                    break
                 }
                 
-                
-                .padding(20)
-            } //: ZStack
-            .onAppear {
-                withAnimation(.linear(duration: 0.85)) {
-                    if gameModel.mode == "time" {
-                        percentage = Double((Float(gameModel.score) / Float(gameModel.questionCount - 1)) * 100)
-                        
-                    }
-                    else {
-                        percentage = Double((Float(gameModel.score) / Float(gameModel.totQuestions)) * 100)
-                    }
+                if gameModel.score > (authInfo.user?.stats!.highScore)! {
+                    newHighScore = true
                 }
                 
-                if authInfo.authState == .AUTHORIZED && authInfo.user != nil {
-                    
-                    switch gameModel.mode {
-                    case "+":
-                        authInfo.user?.stats?.additionScore += gameModel.score
-                        authInfo.user?.stats?.additionTot += gameModel.totQuestions
-                    case "-":
-                        authInfo.user?.stats?.subtractionScore += gameModel.score
-                        authInfo.user?.stats?.subtractionTot += gameModel.totQuestions
-                    case "x":
-                        authInfo.user?.stats?.multiplicationScore += gameModel.score
-                        authInfo.user?.stats?.multiplicationTot += gameModel.totQuestions
-                    case "÷":
-                        authInfo.user?.stats?.divisionScore += gameModel.score
-                        authInfo.user?.stats?.divisionTot += gameModel.totQuestions
-                    default:
-                        break
-                    }
-                    
-                    if gameModel.score > (authInfo.user?.stats!.highScore)! {
-                        newHighScore = true
-                    }
-                    
-                    if gameModel.mode == "time" && gameModel.score > (authInfo.user?.stats!.ttHighScore)! {
-                        newTtHighScore = true
-                        authInfo.user?.stats?.ttHighScore = gameModel.score
-                    }
-                    
-                    authInfo.user?.stats?.highScore = max((authInfo.user?.stats!.highScore)!, gameModel.score)
-                    
-                    Task {
-                        let statsRequest = UserStatsRequest(userStats: (authInfo.user?.stats)!)
-                        let _ = await authInfo.updateUserStats(statsRequest: statsRequest)
-                    }
+                if gameModel.mode == "time" && gameModel.score > (authInfo.user?.stats!.ttHighScore)! {
+                    newTtHighScore = true
+                    authInfo.user?.stats?.ttHighScore = gameModel.score
+                }
+                
+                authInfo.user?.stats?.highScore = max((authInfo.user?.stats!.highScore)!, gameModel.score)
+                
+                Task {
+                    let statsRequest = UserStatsRequest(userStats: (authInfo.user?.stats)!)
+                    let _ = await authInfo.updateUserStats(statsRequest: statsRequest)
                 }
             }
         }
@@ -216,10 +214,13 @@ struct EndGameView: View {
         MissedQuestion(question: "8 + 5", userAns: "8", correctAns: "13"),
         //        MissedQuestion(question: "5 + 5", userAns: "8", correctAns: "10")
     ]
-    let gameModel = GameModel(mode: "+", difficulty: "easy", totQuestions: 15, score: 10, missedQuestions: missed)
+    let gameModel = GameModel(mode: "+", difficulty: "easy", totQuestions: 15, score: 10, missedQuestions: [])
     
-    return EndGameView()
-        .environmentObject(AuthInfoModel())
-        .environmentObject(AppModel(path: NavigationPath()))
-        .environmentObject(gameModel)
+    return GeometryReader { screen in
+        EndGameView()
+            .environmentObject(AuthInfoModel())
+            .environmentObject(AppModel(path: NavigationPath()))
+            .environmentObject(gameModel)
+            .environmentObject(DeviceModel(screen: screen))
+    }
 }

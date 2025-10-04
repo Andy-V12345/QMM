@@ -32,7 +32,7 @@ struct StatPanel: View {
                 
                 Text("\(label)")
                     .foregroundStyle(borderColor)
-                    .fontWeight(.medium)
+                    .fontWeight(.bold)
                     .font(.headline)
             }
             

@@ -1,5 +1,5 @@
 //
-//  MissedQuestionsView.swift
+//  MissedQuestionsDisplay.swift
 //  QuickMentalMath
 //
 //  Created by Andy Vu on 6/9/23.
@@ -14,7 +14,7 @@ struct MissedQuestion: Identifiable {
     var correctAns: String
 }
 
-struct MissedQuestionsView: View {
+struct MissedQuestionsDisplay: View {
     
     @State var missedQuestions: [MissedQuestion]
     
@@ -31,7 +31,7 @@ struct MissedQuestionsView: View {
                         
                         Spacer()
                         
-                        Text("Your answer: \(missedQuestions[i].userAns)")
+                        Text("your answer: \(missedQuestions[i].userAns)")
                             .foregroundStyle(Color("darkPurple"))
                             .bold()
                     }
@@ -48,7 +48,7 @@ struct MissedQuestionsView: View {
 }
 
 #Preview {
-    MissedQuestionsView(missedQuestions: [MissedQuestion(question: "5 + 5", userAns: "1", correctAns: "10"), MissedQuestion(question: "5 + 5", userAns: "1", correctAns: "10")])
+    MissedQuestionsDisplay(missedQuestions: [MissedQuestion(question: "5 + 5", userAns: "1", correctAns: "10"), MissedQuestion(question: "5 + 5", userAns: "1", correctAns: "10")])
         .padding(20)
 }
 

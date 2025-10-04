@@ -160,7 +160,7 @@ struct ForgotPasswordView: View {
                             }
                             else {
                                 Text("send link")
-                                    .foregroundColor(.white)
+                                    .foregroundColor(Color("darkPurple"))
                                     .font(.title2)
                                     .bold()
                                 
@@ -220,7 +220,7 @@ struct ForgotPasswordView: View {
                             }
                             else {
                                 Text("verify token")
-                                    .foregroundColor(.white)
+                                    .foregroundColor(Color("darkPurple"))
                                     .font(.title2)
                                     .bold()
                                 
@@ -281,7 +281,7 @@ struct ForgotPasswordView: View {
                             }
                             else {
                                 Text("reset password")
-                                    .foregroundColor(.white)
+                                    .foregroundColor(Color("darkPurple"))
                                     .font(.title2)
                                     .bold()
                                 
