@@ -7,45 +7,11 @@
 
 import SwiftUI
 
-struct RoundedCorner: Shape {
-    var radius: CGFloat = .infinity
-    var corners: UIRectCorner = .allCorners
-    
-    func path(in rect: CGRect) -> Path {
-        let path = UIBezierPath(roundedRect: rect, byRoundingCorners: corners, cornerRadii: CGSize(width: radius, height: radius))
-        return Path(path.cgPath)
-    }
-}
-
-extension View {
-    func roundedCorner(_ radius: CGFloat, corners: UIRectCorner) -> some View {
-        clipShape(RoundedCorner(radius: radius, corners: corners) )
-    }
-}
-
-class AppModel: ObservableObject {
-    @Published var path: NavigationPath
-    
-    init(path: NavigationPath) {
-        self.path = path
-    }
-}
-
-enum DeviceType {
-    case SMALL, NORMAL, LARGE
-}
-
-class DeviceModel: ObservableObject {
-    @Published var type: DeviceType = .NORMAL
-}
-
-
 struct ContentView: View {
     
-    @StateObject var authInfo = AuthInfo()
+    @StateObject var authInfo = AuthInfoModel()
     @StateObject var appModel = AppModel(path: NavigationPath())
-    @StateObject private var gameModel = GameModel()
-    @StateObject private var deviceModel = DeviceModel()
+    @StateObject var deviceModel = DeviceModel()
     
     @Environment(\.scenePhase) var scenePhase
     
@@ -55,75 +21,88 @@ struct ContentView: View {
     @AppStorage("id") var id = 0
     
     var body: some View {
-        NavigationStack(path: $appModel.path) {
-            EmptyView()
-                .navigationDestination(for: AuthState.self, destination: { state in
-                    if state == .UNAUTHORIZED {
-                        AuthView()
+        GeometryReader { screen in
+            NavigationStack(path: $appModel.path) {
+                VStack(spacing: 10) {
+                    Text("\"math is for the great. quick mental math is for the legends.\"")
+                        .multilineTextAlignment(.center)
+                        .foregroundStyle(Color("vividPurple"))
+                        .fontWeight(.medium)
+                        .italic()
+                        .font(DeviceModel(screen: screen).valueByDevice(small: .title3, normal: .title3, ipad: .title))
+                    
+                    Text("- chatgpt")
+                        .foregroundStyle(Color("darkPurple"))
+                        .fontWeight(.medium)
+                        .font(DeviceModel(screen: screen).valueByDevice(small: .body, normal: .body, ipad: .title3))
+                        .frame(maxWidth: .infinity, alignment: .trailing)
+                }
+                .padding(.horizontal, DeviceModel(screen: screen).valueByDevice(small: 30, normal: 30, ipad: 80))
+                    .navigationDestination(for: AuthState.self, destination: { state in
+                        if state == .UNAUTHORIZED {
+                            AuthView()
+                                .navigationBarBackButtonHidden()
+                        }
+                        else if state == .AUTHORIZED || state == .NO_ACCOUNT {
+                            HomeView()
+                                .navigationBarBackButtonHidden()
+                        }
+                    })
+                    .navigationDestination(for: GameModel.self, destination: { gameModel in
+                        GameView(gameModel: gameModel)
+                            .id(gameModel.id)
                             .navigationBarBackButtonHidden()
-                    }
-                    else if state == .AUTHORIZED {
-                        HomeView()
+                    })
+                    .navigationDestination(for: EndGameModel.self, destination: { endGameModel in
+                        EndGameView(endGameModel: endGameModel)
                             .navigationBarBackButtonHidden()
-                    }
-                    else if state == .NO_ACCOUNT {
-                        HomeView()
-                            .navigationBarBackButtonHidden()
-                    }
-                })
-                .navigationDestination(for: AppState.self, destination: { state in
-                    if state == .SETTINGS {
-                        if gameModel.mode == "time" {
-                            TimeTrialView()
+                    })
+                    .navigationDestination(for: GameConfigsModel.self, destination: { configModel in
+                        
+                        if configModel.mode == .TIME {
+                            TimeTrialView(gameConfigsModel: configModel)
                                 .navigationBarBackButtonHidden()
                         }
                         else {
-                            ExtraOptionsView()
+                            ExtraOptionsView(gameConfigsModel: configModel)
                                 .navigationBarBackButtonHidden()
                         }
-                    }
-                    else if state == .GAME {
-                        GameView()
-                            .navigationBarBackButtonHidden()
-                    }
-                    else if state == .END {
-                        EndGameView()
-                            .navigationBarBackButtonHidden()
-                    }
-                })
-        }
-        .onChange(of: scenePhase) { phase in
-            print(phase)
-            switch phase {
-            case .active:
-                print("active")
-                authInfo.user = User(id: id, username: username, jwtToken: jwtToken)
-                authInfo.authState = authState
-                
-                Task {
-                    if authInfo.authState == .UNAUTHORIZED {
-                        appModel.path = NavigationPath([authInfo.authState])
-                    }
-                    else if authInfo.authState == .NO_ACCOUNT {
-                        appModel.path = NavigationPath([AuthState.UNAUTHORIZED, authInfo.authState])
-                    }
-                    else {
-                        await authInfo.loadUserStats()
-                        appModel.path = NavigationPath([AuthState.UNAUTHORIZED, authInfo.authState])
-                    }
-                }
-            case .background:
-                break
-            case .inactive:
-                break
-            @unknown default:
-                break
+                    })
             }
+            .onChange(of: scenePhase) { phase in
+                switch phase {
+                case .active:
+                    authInfo.user = User(id: id, username: username, jwtToken: jwtToken)
+                    authInfo.authState = authState
+                    
+                    Task {
+                        if authInfo.authState == .UNAUTHORIZED {
+                            appModel.path = NavigationPath([authInfo.authState])
+                        }
+                        else if authInfo.authState == .NO_ACCOUNT {
+                            appModel.path = NavigationPath([AuthState.UNAUTHORIZED, authInfo.authState])
+                        }
+                        else {
+                            await authInfo.loadUserStats()
+                            appModel.path = NavigationPath([AuthState.UNAUTHORIZED, authInfo.authState])
+                        }
+                    }
+                case .background:
+                    break
+                case .inactive:
+                    break
+                @unknown default:
+                    break
+                }
+            }
+            .onAppear {
+                deviceModel.setScreen(screen: screen)
+            }
+            .environmentObject(authInfo)
+            .environmentObject(appModel)
+            .environmentObject(deviceModel)
+            .dynamicTypeSize(.large ... .xxLarge)
         }
-        .environmentObject(authInfo)
-        .environmentObject(appModel)
-        .environmentObject(gameModel)
-        .environmentObject(deviceModel)
     }
     
 }
