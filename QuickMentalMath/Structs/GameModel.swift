@@ -32,24 +32,4 @@ struct GameModel: Hashable {
         self.gameConfigs = gameConfigs
         self.missedQuestions = missedQuestions
     }
-    
-//    func reset() {
-//        score = 0
-//        numIncorrect = 0
-//        missedQuestions.removeAll()
-//        questionCount = 1
-//        mode = ""
-//        startTime = 0
-//        timeLeft = 0
-//        totQuestions = 0
-//        difficulty = ""
-//    }
-//    
-//    func playAgain() {
-//        score = 0
-//        numIncorrect = 0
-//        missedQuestions.removeAll()
-//        timeLeft = startTime
-//        questionCount = 1
-//    }
 }
