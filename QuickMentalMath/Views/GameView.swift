@@ -146,7 +146,7 @@ struct GameView: View {
                 
                 // keypad
                 
-                VStack(spacing: device.valueByDevice(small: 10, normal: 10, ipad: 17)) {
+                VStack(spacing: device.valueByDevice(small: 13, normal: 13, ipad: 20)) {
                     HStack {
                         ForEach(1...3, id: \.self) { index in
                             KeyPadButton(id: String(keyNums[index-1]), input: $input, num1: $num1, num2: $num2, answer: $answer, numCorrect: $numCorrect, numIncorrect: $numIncorrect, isGameOver: $isGameOver, tmpMode: $tmpMode, missedQuestions: $missedQuestions, questionCount: $questionCount, difficulty: difficulty, mode: mode, numQuestions: numQuestions)
