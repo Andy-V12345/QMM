@@ -39,19 +39,20 @@ struct RaisedButtonStyle: ViewModifier {
             .simultaneousGesture(
                 TapGesture()
                     .onEnded {
-                        if isEnabled {
-                            withAnimation(.easeOut(duration: 0.1)) {
-                                isPressed = true
-                            }
-                            
-                            UIImpactFeedbackGenerator(style: impactStrength).impactOccurred()
-                            
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        Task {
+                            if isEnabled {
+                                withAnimation(.easeOut(duration: 0.1)) {
+                                    isPressed = true
+                                }
+                                
+                                UIImpactFeedbackGenerator(style: impactStrength).impactOccurred()
+                                
+                                try? await Task.sleep(nanoseconds: 100_000_000)
                                 
                                 withAnimation(.easeOut(duration: 0.15)) {
                                     isPressed = false
                                 }
-                                
+                                    
                                 action()
                             }
                         }

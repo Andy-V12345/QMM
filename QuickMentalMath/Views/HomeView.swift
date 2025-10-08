@@ -7,10 +7,6 @@
 
 import SwiftUI
 
-enum AppState: Hashable {
-    case HOME, SETTINGS, GAME, END
-}
-
 struct HomeView: View {
     @State var showOptions = false
     
@@ -23,14 +19,13 @@ struct HomeView: View {
     let normalheight: CGFloat = 80
     let iPadHeight: CGFloat = 100
     
-    @State var modeIndex = 0
+    @State var mode: GameMode = .ADDITION
     
     @State var isProfileView = false
     @State var showNoAccountAlert = false
     
     @EnvironmentObject var authInfo: AuthInfoModel
     @EnvironmentObject var appModel: AppModel
-    @EnvironmentObject var game: GameModel
     @EnvironmentObject var device: DeviceModel
     
     @AppStorage("authState") var authState: AuthState = .UNAUTHORIZED
@@ -65,6 +60,7 @@ struct HomeView: View {
                                 Image(systemName: "person.fill")
                                     .font(device.valueByDevice(small: .headline, normal: .title3, ipad: .title2))
                                     .foregroundStyle(.white)
+                                    .dynamicTypeSize(.large)
                             })
                             .frame(width: device.valueByDevice(small: 32, normal: 37, ipad: 40), height: device.valueByDevice(small: 30, normal: 35, ipad: 38))
                             .raisedButton(cornerRadius: 100, shadowOffset: 2, action: {
@@ -96,15 +92,15 @@ struct HomeView: View {
                                 
                             }
                             .frame(maxWidth: .infinity)
-                            .frame(width: modeIndex != 0 ? device.screen!.size.width * 0.7 : device.screen!.size.width * 0.95, height: device.valueByDevice(small: smallHeight, normal: normalheight, ipad: iPadHeight))
+                            .frame(width: mode != .ADDITION ? device.screen!.size.width * 0.7 : device.screen!.size.width * 0.95, height: device.valueByDevice(small: smallHeight, normal: normalheight, ipad: iPadHeight))
                             .background(.white)
                             .roundedCorner(10, corners: [.topRight, .bottomRight])
-                            .shadow(color: modeIndex == 0 ? Color("pastelPurple") : Color.black.opacity(0.2), radius: modeIndex == 0 ? 8 : 3)
+                            .shadow(color: mode == .ADDITION ? Color("pastelPurple") : Color.black.opacity(0.2), radius: mode == .ADDITION ? 8 : 3)
                             .padding(0)
                             .onTapGesture {
-                                modeIndex = 0
+                                mode = .ADDITION
                             }
-                            .animation(.spring(duration: 0.3, bounce: 0.6), value: modeIndex)
+                            .animation(.spring(duration: 0.3, bounce: 0.6), value: mode)
                             
                             HStack {
                                 Spacer()
@@ -125,14 +121,14 @@ struct HomeView: View {
                                         .foregroundStyle(Color("pastelBlue"))
                                 }
                                 .frame(maxWidth: .infinity)
-                                .frame(width: modeIndex != 1 ? device.screen!.size.width * 0.7 : device.screen!.size.width * 0.95, height: device.valueByDevice(small: smallHeight, normal: normalheight, ipad: iPadHeight))
+                                .frame(width: mode != .SUBTRACTION ? device.screen!.size.width * 0.7 : device.screen!.size.width * 0.95, height: device.valueByDevice(small: smallHeight, normal: normalheight, ipad: iPadHeight))
                                 .background(.white)
                                 .roundedCorner(10, corners: [.topLeft, .bottomLeft])
-                                .shadow(color: modeIndex == 1 ? Color("pastelBlue") : Color.black.opacity(0.2), radius: modeIndex == 1 ? 8 : 3)
+                                .shadow(color: mode == .SUBTRACTION ? Color("pastelBlue") : Color.black.opacity(0.2), radius: mode == .SUBTRACTION ? 8 : 3)
                                 .onTapGesture {
-                                    modeIndex = 1
+                                    mode = .SUBTRACTION
                                 }
-                                .animation(.spring(duration: 0.3, bounce: 0.6), value: modeIndex)
+                                .animation(.spring(duration: 0.3, bounce: 0.6), value: mode)
                             }
                             
                             HStack(spacing: 0) {
@@ -151,14 +147,14 @@ struct HomeView: View {
                                     .fontWeight(.semibold)
                             }
                             .frame(maxWidth: .infinity)
-                            .frame(width: modeIndex != 2 ? device.screen!.size.width * 0.7 : device.screen!.size.width * 0.95, height: device.valueByDevice(small: smallHeight, normal: normalheight, ipad: iPadHeight))
+                            .frame(width: mode != .MULTIPLICATION ? device.screen!.size.width * 0.7 : device.screen!.size.width * 0.95, height: device.valueByDevice(small: smallHeight, normal: normalheight, ipad: iPadHeight))
                             .background(.white)
                             .roundedCorner(10, corners: [.topRight, .bottomRight])
-                            .shadow(color: modeIndex == 2 ? Color("pastelRed") : Color.black.opacity(0.2), radius: modeIndex == 2 ? 8 : 3)
+                            .shadow(color: mode == .MULTIPLICATION ? Color("pastelRed") : Color.black.opacity(0.2), radius: mode == .MULTIPLICATION ? 8 : 3)
                             .onTapGesture {
-                                modeIndex = 2
+                                mode = .MULTIPLICATION
                             }
-                            .animation(.spring(duration: 0.3, bounce: 0.6), value: modeIndex)
+                            .animation(.spring(duration: 0.3, bounce: 0.6), value: mode)
                             
                             HStack {
                                 Spacer()
@@ -179,14 +175,14 @@ struct HomeView: View {
                                         .foregroundStyle(Color("pastelGreen"))
                                 }
                                 .frame(maxWidth: .infinity)
-                                .frame(width: modeIndex != 3 ? device.screen!.size.width * 0.7 : device.screen!.size.width * 0.95, height: device.valueByDevice(small: smallHeight, normal: normalheight, ipad: iPadHeight))
+                                .frame(width: mode != .DIVISION ? device.screen!.size.width * 0.7 : device.screen!.size.width * 0.95, height: device.valueByDevice(small: smallHeight, normal: normalheight, ipad: iPadHeight))
                                 .background(.white)
                                 .roundedCorner(10, corners: [.topLeft, .bottomLeft])
-                                .shadow(color: modeIndex == 3 ? Color("pastelGreen") : Color.black.opacity(0.2), radius: modeIndex == 3 ? 8 : 3)
+                                .shadow(color: mode == .DIVISION ? Color("pastelGreen") : Color.black.opacity(0.2), radius: mode == .DIVISION ? 8 : 3)
                                 .onTapGesture {
-                                    modeIndex = 3
+                                    mode = .DIVISION
                                 }
-                                .animation(.spring(duration: 0.3, bounce: 0.6), value: modeIndex)
+                                .animation(.spring(duration: 0.3, bounce: 0.6), value: mode)
                             }
                             
                             HStack(spacing: 0) {
@@ -206,14 +202,14 @@ struct HomeView: View {
                                 
                             }
                             .frame(maxWidth: .infinity)
-                            .frame(width: modeIndex != 4 ? device.screen!.size.width * 0.7 : device.screen!.size.width * 0.95, height: device.valueByDevice(small: smallHeight, normal: normalheight, ipad: iPadHeight))
+                            .frame(width: mode != .TIME ? device.screen!.size.width * 0.7 : device.screen!.size.width * 0.95, height: device.valueByDevice(small: smallHeight, normal: normalheight, ipad: iPadHeight))
                             .background(.white)
                             .roundedCorner(10, corners: [.topRight, .bottomRight])
-                            .shadow(color: modeIndex == 4 ? Color("pastelPink") : Color.black.opacity(0.2), radius: modeIndex == 4 ? 8 : 3)
+                            .shadow(color: mode == .TIME ? Color("pastelPink") : Color.black.opacity(0.2), radius: mode == .TIME ? 8 : 3)
                             .onTapGesture {
-                                modeIndex = 4
+                                mode = .TIME
                             }
-                            .animation(.spring(duration: 0.3, bounce: 0.6), value: modeIndex)
+                            .animation(.spring(duration: 0.3, bounce: 0.6), value: mode)
                         }
                     }
                     
@@ -234,12 +230,8 @@ struct HomeView: View {
                         .frame(maxWidth: .infinity)
                         .raisedButton(impactStrength: .heavy, cornerRadius: 20, backgroundColor: Color("lighterPurple"), shadowColor: Color("lightPurple"), shadowOffset: device.valueByDevice(small: 11, normal: 11, ipad: 13),
                                       action: {
-                            game.setMode(modeIndex: modeIndex)
-                            appModel.path.append(AppState.SETTINGS)
+                            appModel.path.append(GameConfigsModel(mode: mode, difficulty: mode == .TIME ? .MEDIUM : .EASY, timeLimit: .ONE_MIN, numQuestions: 10))
                         })
-                        .opacity(modeIndex == -1 ? 0.5 : 1)
-                        .disabled(modeIndex == -1)
-
                     }
                     .padding(.horizontal, device.valueByDevice(small: 15, normal: 20, ipad: 30))
                 } //: VStack
@@ -279,7 +271,6 @@ struct HomeView: View {
         HomeView()
             .environmentObject(AuthInfoModel())
             .environmentObject(AppModel(path: NavigationPath()))
-            .environmentObject(GameModel())
             .environmentObject(DeviceModel(screen: screen))
     }
 }

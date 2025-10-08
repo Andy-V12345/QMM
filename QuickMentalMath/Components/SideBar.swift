@@ -10,7 +10,7 @@ import SwiftUI
 struct SideBar: View {
     @Binding var isViewingProfile: Bool
     
-    var sideBarWidth = UIScreen.main.bounds.size.width * 0.8
+    var sideBarWidth = UIScreen.main.bounds.size.width * 0.85
     
     @State var isDeleteAlert = false
     @State var deleteError = false
@@ -88,6 +88,7 @@ struct SideBar: View {
                                     
                                     Text("your stats")
                                         .frame(maxWidth: .infinity, alignment: .leading)
+                                        .lineLimit(0)
                                 }
                             })
                             .padding(.vertical, 8)
@@ -100,11 +101,12 @@ struct SideBar: View {
                             Button(action: {}, label: {
                                 HStack(spacing: 10) {
                                     Image(systemName: "trophy.fill")
-                                        .font(.title3)
+                                        .font(.headline)
                                         .foregroundStyle(Color("gold"))
                                     
                                     Text("time trial leaderboard")
                                         .frame(maxWidth: .infinity, alignment: .leading)
+                                        .lineLimit(0)
                                 }
                             })
                             .padding(.vertical, 8)
@@ -119,11 +121,12 @@ struct SideBar: View {
                             Button(action: {}, label: {
                                 HStack(spacing: 10) {
                                     Image(systemName: "figure.walk.departure")
-                                        .font(.title3)
+                                        .font(.headline)
                                         .foregroundStyle(Color("errorRed"))
                                     
                                     Text("sign out")
                                         .frame(maxWidth: .infinity, alignment: .leading)
+                                        .lineLimit(0)
                                 }
                             })
                             .padding(.vertical, 8)

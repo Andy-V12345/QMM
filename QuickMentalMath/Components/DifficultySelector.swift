@@ -12,8 +12,10 @@ struct DifficultySelector: View {
     let buttonRadius: CGFloat = 15
     let shadowOffset: CGFloat = 3
     
-    @Binding var difficultyIndex: Int
+    @Binding var difficulty: GameDifficulty
+    
     let isTimeTrial: Bool
+    
     @EnvironmentObject var device: DeviceModel
             
     var body: some View {
@@ -21,13 +23,13 @@ struct DifficultySelector: View {
             Button(action: {
             }, label: {
                 Text("easy")
-                    .foregroundStyle(difficultyIndex == 0 ? .white : Color("lightGreen"))
+                    .foregroundStyle(difficulty == .EASY ? .white : Color("lightGreen"))
                     .opacity(isTimeTrial ? 0.5 : 1)
             })
             .padding(.vertical, device.valueByDevice(small: 8, normal: 10, ipad: 15))
             .frame(maxWidth: .infinity)
-            .raisedButton(cornerRadius: buttonRadius, backgroundColor: difficultyIndex == 0 ? Color("lightGreen") : Color("offWhite"), shadowColor: difficultyIndex == 0 ? Color("darkGreen") : Color.gray.opacity(0.2), shadowOffset: shadowOffset, action: {
-                difficultyIndex = 0
+            .raisedButton(cornerRadius: buttonRadius, backgroundColor: difficulty == .EASY ? Color("lightGreen") : Color("offWhite"), shadowColor: difficulty == .EASY ? Color("darkGreen") : Color.gray.opacity(0.2), shadowOffset: shadowOffset, action: {
+                difficulty = .EASY
             })
             .allowsHitTesting(!isTimeTrial)
             
@@ -36,12 +38,12 @@ struct DifficultySelector: View {
             Button(action: {
             }, label: {
                 Text("medium")
-                    .foregroundStyle(difficultyIndex == 1 ? .white : Color("lightYellow"))
+                    .foregroundStyle(difficulty == .MEDIUM ? .white : Color("lightOrange"))
             })
             .padding(.vertical, device.valueByDevice(small: 8, normal: 10, ipad: 15))
             .frame(maxWidth: .infinity)
-            .raisedButton(cornerRadius: buttonRadius, backgroundColor: difficultyIndex == 1 ? Color("lightYellow") : Color("offWhite"), shadowColor: difficultyIndex == 1 ? Color("darkYellow") : Color.gray.opacity(0.2), shadowOffset: shadowOffset, action: {
-                difficultyIndex = 1
+            .raisedButton(cornerRadius: buttonRadius, backgroundColor: difficulty == .MEDIUM ? Color("lightOrange") : Color("offWhite"), shadowColor: difficulty == .MEDIUM ? Color("darkOrange") : Color.gray.opacity(0.2), shadowOffset: shadowOffset, action: {
+                difficulty = .MEDIUM
             })
             
             Divider()
@@ -49,13 +51,13 @@ struct DifficultySelector: View {
             Button(action: {
             }, label: {
                 Text("hard")
-                    .foregroundStyle(difficultyIndex == 2 ? .white : Color("lightOrange"))
+                    .foregroundStyle(difficulty == .HARD ? .white : Color("lightRed"))
                     .opacity(isTimeTrial ? 0.5 : 1)
             })
             .padding(.vertical, device.valueByDevice(small: 8, normal: 10, ipad: 15))
             .frame(maxWidth: .infinity)
-            .raisedButton(cornerRadius: buttonRadius, backgroundColor: difficultyIndex == 2 ? Color("lightOrange") : Color("offWhite"), shadowColor: difficultyIndex == 2 ? Color("darkOrange") : Color.gray.opacity(0.2), shadowOffset: shadowOffset, action: {
-                difficultyIndex = 2
+            .raisedButton(cornerRadius: buttonRadius, backgroundColor: difficulty == .HARD ? Color("lightRed") : Color("offWhite"), shadowColor: difficulty == .HARD ? Color("darkRed") : Color.gray.opacity(0.2), shadowOffset: shadowOffset, action: {
+                difficulty = .HARD
             })
             .allowsHitTesting(!isTimeTrial)
 
@@ -65,13 +67,13 @@ struct DifficultySelector: View {
             Button(action: {
             }, label: {
                 Text("decimals")
-                    .foregroundStyle(difficultyIndex == 3 ? .white : Color("lightRed"))
+                    .foregroundStyle(Color("darkPurple"))
                     .opacity(isTimeTrial ? 0.5 : 1)
             })
             .padding(.vertical, device.valueByDevice(small: 8, normal: 10, ipad: 15))
             .frame(maxWidth: .infinity)
-            .raisedButton(cornerRadius: buttonRadius, backgroundColor: difficultyIndex == 3 ? Color("lightRed") : Color("offWhite"), shadowColor: difficultyIndex == 3 ? Color("darkRed") : Color.gray.opacity(0.2), shadowOffset: shadowOffset, action: {
-                difficultyIndex = 3
+            .raisedButton(cornerRadius: buttonRadius, backgroundColor: difficulty == .DECIMALS ? Color("lighterPurple") : Color("offWhite"), shadowColor: difficulty == .DECIMALS ? Color("lightPurple") : Color.gray.opacity(0.2), shadowOffset: shadowOffset, action: {
+                difficulty = .DECIMALS
             })
             .allowsHitTesting(!isTimeTrial)
 
@@ -89,6 +91,6 @@ struct DifficultySelector: View {
         .background(.white)
         .roundedCorner(20, corners: .allCorners)
         .clipped()
-        .shadow(radius: 2)
+        .shadow(color: Color("lighterPurple"), radius: 3)
     }
 }

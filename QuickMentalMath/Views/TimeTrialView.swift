@@ -10,12 +10,13 @@ import SwiftUI
 struct TimeTrialView: View {
     
     @EnvironmentObject var appModel: AppModel
-    @EnvironmentObject var gameModel: GameModel
     @EnvironmentObject var authInfo: AuthInfoModel
     @EnvironmentObject var device: DeviceModel
     
-    @State var difficultyIndex = 1
-    @State var timeIndex = 0
+    @State var difficulty: GameDifficulty
+    @State var timeLimit: TimeLimit
+    @State var mode: GameMode
+    
     @State var displayLeaderboard = false
     @State var showNoAccountAlert = false
     
@@ -27,12 +28,16 @@ struct TimeTrialView: View {
     let buttonRadius: CGFloat = 10
     let shadowOffset: CGFloat = 3
     
+    init(gameConfigsModel: GameConfigsModel) {
+        self.difficulty = gameConfigsModel.difficulty
+        self.mode = gameConfigsModel.mode
+        self.timeLimit = gameConfigsModel.timeLimit
+    }
+    
     func handleStart() {
-        gameModel.setTime(timeIndex: 0)
-        gameModel.setMode(modeIndex: 4)
-        gameModel.setDifficulty(difficultyIndex: 1)
+        let config = GameConfigsModel(mode: self.mode, difficulty: self.difficulty, timeLimit: self.timeLimit, numQuestions: 1000)
         
-        appModel.path.append(AppState.GAME)
+        appModel.path.append(GameModel(gameConfigs: config))
     }
     
     var body: some View {
@@ -68,6 +73,7 @@ struct TimeTrialView: View {
                         Image(systemName: "trophy.fill")
                             .foregroundStyle(.white)
                             .font(device.valueByDevice(small: .subheadline, normal: .headline, ipad: .headline))
+                            .dynamicTypeSize(.large)
                     })
                     .frame(width: device.valueByDevice(small: 32, normal: 37, ipad: 40), height: device.valueByDevice(small: 30, normal: 35, ipad: 38))
                     .raisedButton(cornerRadius: 40, shadowOffset: 2, action: {
@@ -82,9 +88,9 @@ struct TimeTrialView: View {
                 }
                 
                 HStack(spacing: device.valueByDevice(small: 15, normal: 20, ipad: 30)) {
-                    DifficultySelector(difficultyIndex: $difficultyIndex, isTimeTrial: true)
+                    DifficultySelector(difficulty: $difficulty, isTimeTrial: true)
                     
-                    TimeSelector(timeIndex: $timeIndex, isTimeTrial: true)
+                    TimeSelector(timeLimit: $timeLimit, isTimeTrial: true)
                 }
                 
                 Spacer()
@@ -148,10 +154,10 @@ struct TimeTrialView: View {
     }
 }
 
-#Preview {
-    GeometryReader { screen in
-        TimeTrialView()
-            .environmentObject(AppModel(path: NavigationPath()))
-            .environmentObject(DeviceModel(screen: screen))
-    }
-}
+//#Preview {
+//    GeometryReader { screen in
+//        TimeTrialView()
+//            .environmentObject(AppModel(path: NavigationPath()))
+//            .environmentObject(DeviceModel(screen: screen))
+//    }
+//}

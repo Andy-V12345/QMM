@@ -81,12 +81,14 @@ struct SingleDigit: View {
                             .font(font)
                             .foregroundStyle(color)
                             .frame(width: geometry.size.width, height: geometry.size.height, alignment: .center)
+                            .dynamicTypeSize(.large)
                     }
                     else {
                         Text("\(char)")
                             .font(font)
                             .foregroundStyle(color)
                             .frame(width: geometry.size.width, height: geometry.size.height, alignment: .center)
+                            .dynamicTypeSize(.large)
                     }
                 }
             }

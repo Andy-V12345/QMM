@@ -94,6 +94,7 @@ struct StatsView: View {
                 divisionPercent = authInfo.user?.stats?.divisionTot == 0 ? 0 : Double((authInfo.user?.stats!.divisionScore)!) / Double((authInfo.user?.stats!.divisionTot)!)
             }
         }
+        .dynamicTypeSize(.large ... .xxLarge)
     }
 }
 

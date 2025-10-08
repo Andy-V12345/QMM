@@ -14,26 +14,62 @@ struct KeyPadButton: View {
     @Binding var num1: Double
     @Binding var num2: Double
     @Binding var answer: Double
-    
-    @EnvironmentObject var gameModel: GameModel
-    
+    @Binding var numCorrect: Int
+    @Binding var numIncorrect: Int
     @Binding var isGameOver: Bool
+    @Binding var tmpMode: String
+    @Binding var missedQuestions: [MissedQuestion]
+    @Binding var questionCount: Int
     
-    @EnvironmentObject var device: DeviceModel
+    let difficulty: GameDifficulty
+    let mode: GameMode
+    let numQuestions: Int
+    
         
     let mediumHaptic = UIImpactFeedbackGenerator(style: .medium)
     let rigidHaptic = UIImpactFeedbackGenerator(style: .rigid)
     let heavyHaptic = UIImpactFeedbackGenerator(style: .heavy)
+    
+    @EnvironmentObject var device: DeviceModel
         
     func checkAnswer() -> Bool {
         return answer.isEqual(to: Double(input)!)
     }
     
-    func isDisabled(id: String, input: String, difficulty: String) -> Bool {
+    func getBackgroundColor(id: String) -> Color {
+        if id == "10" {
+            return Color("errorRed")
+        }
+        else if (Int(id) == 11 && difficulty != .DECIMALS) || Int(id) == 12 {
+            return Color("correctGreen")
+        }
+        else {
+            return Color("lighterPurple")
+        }
+    }
+    
+    func getShadowColor(id: String) -> Color {
+        if id == "10" {
+            return Color("darkErrorRed")
+        }
+        else if (Int(id) == 11 && difficulty != .DECIMALS) || Int(id) == 12 {
+            return Color("darkGreen")
+        }
+        else {
+            return Color("lightPurple")
+        }
+    }
+    
+    
+    func isDeleteOrCheckButton(id: String) -> Bool {
+        return id == "10" || ((Int(id) == 11 && difficulty != .DECIMALS) || Int(id) == 12)
+    }
+    
+    func isDisabled(id: String, input: String, difficulty: GameDifficulty) -> Bool {
         if Int(id) == 10 { // delete button
             return input == "f"
         }
-        else if (Int(id) == 11 && gameModel.difficulty != "decimals") || Int(id) == 12 { // check answer button
+        else if (Int(id) == 11 && difficulty != .DECIMALS) || Int(id) == 12 { // check answer button
             let isNumeric = Double(input) != nil
             
             return !isNumeric
@@ -44,19 +80,18 @@ struct KeyPadButton: View {
     }
     
     func newQuestion(mode: String) {
-        
         input = "f"
         
         if mode == "+" {
-            if gameModel.difficulty == "easy" {
+            if difficulty == .EASY {
                 num1 = Double(Int.random(in: 0...10))
                 num2 = Double(Int.random(in: 0...10))
             }
-            else if gameModel.difficulty == "medium" {
+            else if difficulty == .MEDIUM {
                 num1 = Double(Int.random(in: 5...50))
                 num2 = Double(Int.random(in: 5...50))
             }
-            else if gameModel.difficulty == "hard" {
+            else if difficulty == .HARD {
                 num1 = Double(Int.random(in: 10...200))
                 num2 = Double(Int.random(in: 10...200))
             }
@@ -67,21 +102,21 @@ struct KeyPadButton: View {
             answer = num1 + num2
         }
         else if mode == "-" {
-            if gameModel.difficulty == "easy" {
+            if difficulty == .EASY {
                 num1 = Double(Int.random(in: 5...10))
                 num2 = Double(Int.random(in: 0...10))
                 while num2 > num1 {
                     num2 = Double(Int.random(in: 0...10))
                 }
             }
-            else if gameModel.difficulty == "medium" {
+            else if difficulty == .MEDIUM {
                 num1 = Double(Int.random(in: 10...30))
                 num2 = Double(Int.random(in: 5...30))
                 while num2 > num1 {
                     num2 = Double(Int.random(in: 5...30))
                 }
             }
-            else if gameModel.difficulty == "hard" {
+            else if difficulty == .HARD {
                 num1 = Double(Int.random(in: 10...500))
                 num2 = Double(Int.random(in: 10...400))
                 while num2 > num1 {
@@ -98,15 +133,15 @@ struct KeyPadButton: View {
             answer = num1 - num2
         }
         else if mode == "x" {
-            if gameModel.difficulty == "easy" {
+            if difficulty == .EASY {
                 num1 = Double(Int.random(in: 1...5))
                 num2 = Double(Int.random(in: 0...5))
             }
-            else if gameModel.difficulty == "medium" {
+            else if difficulty == .MEDIUM {
                 num1 = Double(Int.random(in: 1...12))
                 num2 = Double(Int.random(in: 0...12))
             }
-            else if gameModel.difficulty == "hard" {
+            else if difficulty == .HARD {
                 num1 = Double(Int.random(in: 5...40))
                 num2 = Double(Int.random(in: 5...40))
             }
@@ -117,7 +152,7 @@ struct KeyPadButton: View {
             answer = num1 * num2
         }
         else {
-            if gameModel.difficulty == "easy" {
+            if difficulty == .EASY {
                 num1 = Double(Int.random(in: 10...20))
                 num2 = Double(Int.random(in: 1...10))
                 
@@ -126,7 +161,7 @@ struct KeyPadButton: View {
                     num2 = Double(Int.random(in: 1...10))
                 }
             }
-            else if gameModel.difficulty == "medium" {
+            else if difficulty == .MEDIUM {
                 
                 let choices = Array(1...12)
                 
@@ -137,7 +172,6 @@ struct KeyPadButton: View {
                 
             }
             else {
-                
                 let choices = Array(5...20)
                 
                 let productNums = [choices.randomElement()!, choices.randomElement()!]
@@ -151,8 +185,8 @@ struct KeyPadButton: View {
     
     func randomMode() -> String{
         let modes = ["+", "-", "x", "÷"]
-        gameModel.tmpMode = modes.randomElement()!
-        return gameModel.tmpMode
+        tmpMode = modes.randomElement()!
+        return tmpMode
     }
     
     func handleButtonClick() {
@@ -168,54 +202,56 @@ struct KeyPadButton: View {
             
             if isCorrect {
                 mediumHaptic.impactOccurred()
-                gameModel.score += 1
+                numCorrect += 1
             }
             else {
                 heavyHaptic.impactOccurred()
                 rigidHaptic.impactOccurred()
-                gameModel.missedQuestions.append(MissedQuestion(question: "\(String(format: "%.2f", num1)) \(gameModel.mode == "time" ? gameModel.tmpMode : gameModel.mode) \(String(format: "%.2f", num2))", userAns: "\(input)", correctAns: "\(String(format: "%.2f", answer))"))
-                gameModel.numIncorrect += 1
+                missedQuestions.append(MissedQuestion(question: "\(String(format: "%.2f", num1)) \(mode == .TIME ? tmpMode : mode.rawValue) \(String(format: "%.2f", num2))", userAns: "\(input)", correctAns: "\(String(format: "%.2f", answer))"))
+                numIncorrect += 1
             }
             
-            gameModel.questionCount += 1
+            questionCount += 1
             
-            if gameModel.mode != "time" && gameModel.questionCount > gameModel.totQuestions {
+            if mode != .TIME && questionCount > numQuestions {
                 isGameOver = true
+                return
             }
             
-            if gameModel.mode == "time" {
+            if mode == .TIME {
                 newQuestion(mode: randomMode())
             }
             else {
-                newQuestion(mode: gameModel.mode)
+                newQuestion(mode: mode.rawValue)
             }
         }
         else if Int(id) == 11 {
-            if gameModel.difficulty != "decimals" {
+            if difficulty != .DECIMALS {
                 let isCorrect = checkAnswer()
                 
                 if isCorrect {
                     mediumHaptic.impactOccurred()
-                    gameModel.score += 1
+                    numCorrect += 1
                 }
                 else {
                     heavyHaptic.impactOccurred()
                     rigidHaptic.impactOccurred()
-                    gameModel.missedQuestions.append(MissedQuestion(question: "\(String(format: "%.0f", num1)) \(gameModel.mode == "time" ? gameModel.tmpMode : gameModel.mode) \(String(format: "%.0f", num2))", userAns: "\(input)", correctAns: "\(String(format: "%.0f", answer))"))
-                    gameModel.numIncorrect += 1
+                    missedQuestions.append(MissedQuestion(question: "\(String(format: "%.0f", num1)) \(mode == .TIME ? tmpMode : mode.rawValue) \(String(format: "%.0f", num2))", userAns: "\(input)", correctAns: "\(String(format: "%.0f", answer))"))
+                    numIncorrect += 1
                 }
                 
-                gameModel.questionCount += 1
+                questionCount += 1
                 
-                if gameModel.mode != "time" && gameModel.questionCount > gameModel.totQuestions {
+                if mode != .TIME && questionCount > numQuestions {
                     isGameOver = true
+                    return
                 }
                 
-                if gameModel.mode == "time" {
+                if mode == .TIME {
                     newQuestion(mode: randomMode())
                 }
                 else {
-                    newQuestion(mode: gameModel.mode)
+                    newQuestion(mode: mode.rawValue)
                 }
             }
             else {
@@ -234,24 +270,25 @@ struct KeyPadButton: View {
                 input = id
             }
             else {
-                if input.count < (gameModel.difficulty == "decimals" ? 5 : 4) {
+                if input.count < (difficulty == .DECIMALS ? 5 : 4) {
                     input.append(id)
                 }
             }
             
             if checkAnswer() {
                 mediumHaptic.impactOccurred()
-                gameModel.score += 1
-                gameModel.questionCount += 1
-                if gameModel.mode != "time" && gameModel.questionCount > gameModel.totQuestions {
+                numCorrect += 1
+                questionCount += 1
+                if mode != .TIME && questionCount > numQuestions {
                     isGameOver = true
+                    return
                 }
                 
-                if gameModel.mode == "time" {
+                if mode == .TIME {
                     newQuestion(mode: randomMode())
                 }
                 else {
-                    newQuestion(mode: gameModel.mode)
+                    newQuestion(mode: mode.rawValue)
                 }
             }
         }
@@ -262,18 +299,18 @@ struct KeyPadButton: View {
             Button(action: {}, label: {
                 if Int(id) == 10 {
                     Image(systemName: "delete.left")
-                        .foregroundColor(Color("errorRed"))
+                        .foregroundColor(Color("offWhite"))
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
                 else if Int(id) == 12 {
                     Image(systemName: "checkmark")
-                        .foregroundColor(Color("correctGreen"))
+                        .foregroundColor(Color("offWhite"))
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
                 else if Int(id) == 11 {
-                    if gameModel.difficulty != "decimals" {
+                    if difficulty != .DECIMALS {
                         Image(systemName: "checkmark")
-                            .foregroundStyle(Color("correctGreen"))
+                            .foregroundStyle(Color("offWhite"))
                             .frame(maxWidth: .infinity, maxHeight: .infinity)
                     }
                     else {
@@ -289,18 +326,18 @@ struct KeyPadButton: View {
             })
             .font(device.valueByDevice(small: .title2, normal: .title2, ipad: .largeTitle))
             .foregroundColor(Color("darkPurple"))
-            .bold()
-            .raisedButton(impactStrength: .soft, backgroundColor: Color("offWhite"), shadowColor: Color.gray.opacity(0.2), shadowOffset: device.valueByDevice(small: 2, normal: 2, ipad: 6), action: {
+            .fontWeight(.heavy)
+            .raisedButton(impactStrength: .soft, backgroundColor: getBackgroundColor(id: id), shadowColor: getShadowColor(id: id), shadowOffset: device.valueByDevice(small: 2, normal: 2, ipad: 6), action: {
                 handleButtonClick()
             })
-            .disabled(isDisabled(id: id, input: input, difficulty: gameModel.difficulty))
-            .opacity(isDisabled(id: id, input: input, difficulty: gameModel.difficulty) ? 0.4 : 1)
+            .disabled(isDisabled(id: id, input: input, difficulty: difficulty))
+            .opacity(isDisabled(id: id, input: input, difficulty: difficulty) ? 0.4 : 1)
             .onAppear {
-                if gameModel.mode == "time" {
+                if mode == .TIME {
                     newQuestion(mode: randomMode())
                 }
                 else {
-                    newQuestion(mode: gameModel.mode)
+                    newQuestion(mode: mode.rawValue)
                 }
             }
         }

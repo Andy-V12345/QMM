@@ -87,6 +87,7 @@ struct LeaderboardEntry: View {
         .padding(20)
         .raisedButton(cornerRadius: 20, backgroundColor: backgroundColor, shadowColor: shadowColor, shadowOffset: 6, action: {})
         .allowsHitTesting(false)
+        .dynamicTypeSize(.large)
     }
 }
 

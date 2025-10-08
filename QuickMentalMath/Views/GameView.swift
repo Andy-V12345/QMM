@@ -10,30 +10,48 @@ import SwiftUI
 struct GameView: View {
     
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+    let numSize: CGFloat = 0.11
+    let keyColumns: [GridItem] = Array(repeating: .init(.flexible(), spacing: 0, alignment: .center), count: 3)
+    let keyNums = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 0, 11, 12]
     
-    @State var topSize = 0.65
+    @State var numCorrect: Int
+    @State var numIncorrect: Int
+    @State var numQuestions: Int
+    @State var mode: GameMode
+    @State var difficulty: GameDifficulty
+    @State var timeLimit: TimeLimit
+    @State var missedQuestions: [MissedQuestion]
+    @State var questionCount: Int
+
     
     @State var input: String = "f"
-    
+    @State var timeLeft: CGFloat = 0
     @State var num1: Double = 0
     @State var num2: Double = 0
-    
     @State var answer: Double = 0
+    @State var tmpMode = ""
+    
+    @State var topSize = 0.65
+
     
     @State var isGameOver = false
     @State var showAreYouSure = false
     @State var isTimerPaused = false
     
-    
-    let numSize: CGFloat = 0.11
-    
-    var keyColumns: [GridItem] = Array(repeating: .init(.flexible(), spacing: 0, alignment: .center), count: 3)
-    
-    var keyNums = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 0, 11, 12]
-    
     @EnvironmentObject var appModel: AppModel
-    @EnvironmentObject var gameModel: GameModel
     @EnvironmentObject var device: DeviceModel
+    
+    init(gameModel: GameModel) {
+        self.numCorrect = gameModel.numCorrect
+        self.numIncorrect = gameModel.numIncorrect
+        self.questionCount = gameModel.questionCount
+        self.numQuestions = gameModel.gameConfigs.numQuestions
+        self.timeLimit = gameModel.gameConfigs.timeLimit
+        self.timeLeft = gameModel.gameConfigs.timeLimit.rawValue
+        self.difficulty = gameModel.gameConfigs.difficulty
+        self.mode = gameModel.gameConfigs.mode
+        self.missedQuestions = []
+    }
     
     var body: some View {
         ZStack {
@@ -41,15 +59,26 @@ struct GameView: View {
             
             VStack(spacing: 0) {
                 VStack {
-                    InGameStats(startTime: gameModel.startTime,  showAreYouSure: $showAreYouSure, isTimerPaused: $isTimerPaused, isGameOver: $isGameOver, timeLeft: $gameModel.timeLeft, numCorrect: $gameModel.score, numIncorrect: $gameModel.numIncorrect)
+                    InGameStats(timeLimit: timeLimit.rawValue, showAreYouSure: $showAreYouSure, isTimerPaused: $isTimerPaused, timeLeft: $timeLeft, numCorrect: $numCorrect, numIncorrect: $numIncorrect)
                         .padding(.horizontal, device.valueByDevice(small: 15, normal: 20, ipad: 30))
+                        .onReceive(timer) { time in
+                            if !isTimerPaused {
+                                if timeLeft > 0 {
+                                    timeLeft -= 1
+                                }
+                                else {
+                                    isGameOver = true
+                                    timer.upstream.connect().cancel()
+                                }
+                            }
+                        }
                     
                     Spacer()
                     
                     // numbers display
                     
                     VStack(spacing: 10) {
-                        if gameModel.difficulty != "decimals" {
+                        if difficulty != .DECIMALS {
                             Text(num1 > num2 ? String(Int(num1)) : String(Int(num2)))
                                 .font(.system(size: device.screen!.size.width * numSize, weight: .bold, design: .rounded))
                                 .foregroundColor(Color("darkPurple"))
@@ -65,14 +94,14 @@ struct GameView: View {
                         }
                         
                         HStack {
-                            Text("\(gameModel.mode == "time" ? gameModel.tmpMode : gameModel.mode)")
+                            Text("\(mode == .TIME ? tmpMode : mode.rawValue)")
                                 .font(.system(size: device.screen!.size.width * numSize, weight: .bold, design: .rounded))
                                 .bold()
                                 .foregroundColor(Color("darkPurple"))
                             
                             Spacer()
                             
-                            if gameModel.difficulty != "decimals" {
+                            if difficulty != .DECIMALS {
                                 Text(num1 < num2 ? String(Int(num1)) : String(Int(num2)))
                                     .font(.system(size: device.screen!.size.width * numSize, weight: .bold, design: .rounded))
                                     .bold()
@@ -107,7 +136,7 @@ struct GameView: View {
                         
                         
                     } // VStack
-                    .frame(maxWidth: device.screen!.size.width * (gameModel.difficulty == "decimals" ? 0.6 : 0.55))
+                    .frame(maxWidth: device.screen!.size.width * (difficulty == .DECIMALS ? 0.6 : 0.55))
                     
                     Spacer()
                     
@@ -120,27 +149,27 @@ struct GameView: View {
                 VStack(spacing: device.valueByDevice(small: 10, normal: 10, ipad: 17)) {
                     HStack {
                         ForEach(1...3, id: \.self) { index in
-                            KeyPadButton(id: String(keyNums[index-1]), input: $input, num1: $num1, num2: $num2, answer: $answer, isGameOver: $isGameOver)
+                            KeyPadButton(id: String(keyNums[index-1]), input: $input, num1: $num1, num2: $num2, answer: $answer, numCorrect: $numCorrect, numIncorrect: $numIncorrect, isGameOver: $isGameOver, tmpMode: $tmpMode, missedQuestions: $missedQuestions, questionCount: $questionCount, difficulty: difficulty, mode: mode, numQuestions: numQuestions)
                         }
                     }
                     HStack {
                         ForEach(4...6, id: \.self) { index in
-                            KeyPadButton(id: String(keyNums[index-1]), input: $input, num1: $num1, num2: $num2, answer: $answer, isGameOver: $isGameOver)
+                            KeyPadButton(id: String(keyNums[index-1]), input: $input, num1: $num1, num2: $num2, answer: $answer, numCorrect: $numCorrect, numIncorrect: $numIncorrect, isGameOver: $isGameOver, tmpMode: $tmpMode, missedQuestions: $missedQuestions, questionCount: $questionCount, difficulty: difficulty, mode: mode, numQuestions: numQuestions)
                         }
                     }
                     HStack {
                         ForEach(7...9, id: \.self) { index in
-                            KeyPadButton(id: String(keyNums[index-1]), input: $input, num1: $num1, num2: $num2, answer: $answer, isGameOver: $isGameOver)
+                            KeyPadButton(id: String(keyNums[index-1]), input: $input, num1: $num1, num2: $num2, answer: $answer, numCorrect: $numCorrect, numIncorrect: $numIncorrect, isGameOver: $isGameOver, tmpMode: $tmpMode, missedQuestions: $missedQuestions, questionCount: $questionCount, difficulty: difficulty, mode: mode, numQuestions: numQuestions)
                         }
                     }
                     HStack {
                         ForEach(10...12, id: \.self) { index in
-                            KeyPadButton(id: String(keyNums[index-1]), input: $input, num1: $num1, num2: $num2, answer: $answer, isGameOver: $isGameOver)
+                            KeyPadButton(id: String(keyNums[index-1]), input: $input, num1: $num1, num2: $num2, answer: $answer, numCorrect: $numCorrect, numIncorrect: $numIncorrect, isGameOver: $isGameOver, tmpMode: $tmpMode, missedQuestions: $missedQuestions, questionCount: $questionCount, difficulty: difficulty, mode: mode, numQuestions: numQuestions)
                         }
                     }
                     
-                    if gameModel.difficulty == "decimals" {
-                        KeyPadButton(id: String(keyNums[12]), input: $input, num1: $num1, num2: $num2, answer: $answer, isGameOver: $isGameOver)
+                    if difficulty == .DECIMALS {
+                        KeyPadButton(id: "12", input: $input, num1: $num1, num2: $num2, answer: $answer, numCorrect: $numCorrect, numIncorrect: $numIncorrect, isGameOver: $isGameOver, tmpMode: $tmpMode, missedQuestions: $missedQuestions, questionCount: $questionCount, difficulty: difficulty, mode: mode, numQuestions: numQuestions)
                     }
                 }
                 .frame(height: device.screen!.size.height * (1 - topSize))
@@ -155,23 +184,23 @@ struct GameView: View {
         .frame(maxHeight: .infinity)
         .onAppear() {
             isGameOver = false
-            topSize = gameModel.difficulty == "decimals" ? 0.6 : 0.65
+            topSize = difficulty == .DECIMALS ? 0.6 : 0.65
             
-            if gameModel.startTime > 180 { // No time limit
+            if timeLimit == .NO_LIMIT { // No time limit
                 timer.upstream.connect().cancel()
             }
         }
         .onChange(of: isGameOver, perform: { new in
             if new {
                 timer.upstream.connect().cancel()
-                gameModel.timeLeft = gameModel.startTime
-                appModel.path.append(AppState.END)
+                let config = GameConfigsModel(mode: mode, difficulty: difficulty, timeLimit: timeLimit, numQuestions: numQuestions)
+                let gameModel = GameModel(numCorrect: numCorrect, numIncorrect: numIncorrect, missedQuestions: missedQuestions, questionCount: questionCount, gameConfigs: config)
+                appModel.path.append(EndGameModel(game: gameModel))
             }
         })
         .alert("Are You Sure?", isPresented: $showAreYouSure, actions: {
             Button(role: .none, action: {
                 timer.upstream.connect().cancel()
-                gameModel.reset()
                 appModel.path.removeLast()
                 appModel.path.removeLast()
             }, label: {
@@ -186,41 +215,18 @@ struct GameView: View {
         }, message: {
             Text("You'll lose your current progress!")
         })
-        .onReceive(timer) { time in
-            if !isTimerPaused {
-                if gameModel.timeLeft > 0 {
-                    gameModel.timeLeft -= 1
-                }
-                else {
-                    isGameOver = true
-                    timer.upstream.connect().cancel()
-                }
-            }
-        }
+        
     } // body
-    
-    func convertTime(seconds: CGFloat) -> String {
-        let min = Int(floor(seconds / 60))
-        let sec = Int(seconds) % 60
-        
-        
-        if sec < 10 {
-            return "\(min):0\(sec)"
-        }
-        else {
-            return "\(min):\(sec)"
-        }
-    }
 }
 
-#Preview {
-    GeometryReader { screen in
-        GameView()
-            .environmentObject(GameModel(mode: "+", difficulty: "hard", totQuestions: 10, score: 2))
-            .environmentObject(AppModel(path: NavigationPath()))
-            .environmentObject(DeviceModel(screen: screen))
-    }
-}
+//#Preview {
+//    GeometryReader { screen in
+//        GameView()
+//            .environmentObject(GameModel(mode: "+", difficulty: "hard", totQuestions: 10, score: 2))
+//            .environmentObject(AppModel(path: NavigationPath()))
+//            .environmentObject(DeviceModel(screen: screen))
+//    }
+//}
 
 
 

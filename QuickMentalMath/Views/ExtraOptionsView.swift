@@ -10,35 +10,40 @@ import SwiftUI
 
 struct ExtraOptionsView: View {
     
-    @State var progress = 10.0
-    var progressString: Binding<String> {
+    @State var numQuestions: Double
+    var numQuestionsString: Binding<String> {
         Binding(
-            get: { String(Int(progress)) },
+            get: { String(Int(numQuestions)) },
             set: { newValue in
                 if let newValueAsDouble = Double(newValue) {
-                    self.progress = newValueAsDouble
+                    self.numQuestions = newValueAsDouble
                 }
             }
         )
     }
     
-    @State var showGame = false
+    @State var timeLimit: TimeLimit
+    @State var difficulty: GameDifficulty
+    @State var mode: GameMode
     
-    @State var timeIndex = 0
-    @State var difficultyIndex = 0
-    
-    @EnvironmentObject private var gameModel: GameModel
     @EnvironmentObject private var appModel: AppModel
     @EnvironmentObject private var device: DeviceModel
     
     @Environment(\.presentationMode) var presentationMode
     
+    init(gameConfigsModel: GameConfigsModel) {
+        self.timeLimit = gameConfigsModel.timeLimit
+        self.difficulty = gameConfigsModel.difficulty
+        self.mode = gameConfigsModel.mode
+        self.numQuestions = Double(gameConfigsModel.numQuestions)
+    }
+    
     func handleStart() {
-        gameModel.setTime(timeIndex: timeIndex)
-        gameModel.setDifficulty(difficultyIndex: difficultyIndex)
-        gameModel.totQuestions = Int(round(progress))
+        let configs = GameConfigsModel(mode: self.mode, difficulty: self.difficulty, timeLimit: self.timeLimit, numQuestions: Int(self.numQuestions))
         
-        appModel.path.append(AppState.GAME)
+        appModel.path.append(
+            GameModel(gameConfigs: configs)
+        )
     }
     
     var body: some View {
@@ -58,10 +63,14 @@ struct ExtraOptionsView: View {
                         .padding(.horizontal, device.valueByDevice(small: 6, normal: 6, ipad: 10))
                         .frame(height: device.valueByDevice(small: 25, normal: 25, ipad: 32))
                         .raisedButton(impactStrength: .soft, cornerRadius: 10, backgroundColor: Color("lighterPurple"), shadowColor: Color("lightPurple"), shadowOffset: 3, action: {
-                            progress -= 1
+                            if numQuestions > 10 {
+                                numQuestions -= 1
+                            }
                         })
+                        .disabled(numQuestions == 10)
+                        .opacity(numQuestions == 10 ? 0.3 : 1)
                         
-                        RollingNumber(number: progressString, color: Color("darkPurple"), font: device.valueByDevice(small: nil, normal: nil, ipad: Font.system(size: 55, weight: .bold)), digitWidth: device.valueByDevice(small: 22, normal: 22, ipad: 35), digitHeight: device.valueByDevice(small: 38, normal: 38, ipad: 75))
+                        RollingNumber(number: numQuestionsString, color: Color("darkPurple"), font: device.valueByDevice(small: nil, normal: nil, ipad: Font.system(size: 55, weight: .bold)), digitWidth: device.valueByDevice(small: 22, normal: 22, ipad: 35), digitHeight: device.valueByDevice(small: 40, normal: 40, ipad: 75))
                         
                         Button(action: {}, label: {
                             Image(systemName: "plus")
@@ -72,11 +81,15 @@ struct ExtraOptionsView: View {
                         .padding(.horizontal, device.valueByDevice(small: 6, normal: 6, ipad: 10))
                         .frame(height: device.valueByDevice(small: 25, normal: 25, ipad: 32))
                         .raisedButton(impactStrength: .soft, cornerRadius: 10, backgroundColor: Color("lighterPurple"), shadowColor: Color("lightPurple"), shadowOffset: 3, action: {
-                            progress += 1
+                            if numQuestions < 99 {
+                                numQuestions += 1
+                            }
                         })
+                        .disabled(numQuestions == 99)
+                        .opacity(numQuestions == 99 ? 0.3 : 1)
                     }
                     
-                    Slider(value: $progress, in: 10...99)
+                    Slider(value: $numQuestions, in: 10...99)
                         .tint(Color("darkPurple"))
                     
                     Text("number of problems")
@@ -93,9 +106,9 @@ struct ExtraOptionsView: View {
                 .shadow(radius: 2)
                 
                 HStack(spacing: device.valueByDevice(small: 15, normal: 20, ipad: 30)) {
-                    DifficultySelector(difficultyIndex: $difficultyIndex, isTimeTrial: false)
+                    DifficultySelector(difficulty: $difficulty, isTimeTrial: false)
                     
-                    TimeSelector(timeIndex: $timeIndex, isTimeTrial: false)
+                    TimeSelector(timeLimit: $timeLimit, isTimeTrial: false)
                 }
                 
                 Spacer()
@@ -135,14 +148,14 @@ struct ExtraOptionsView: View {
     }
 }
 
-#Preview {
-    GeometryReader { screen in
-        ExtraOptionsView()
-            .environmentObject(GameModel())
-            .environmentObject(AppModel(path: NavigationPath()))
-            .environmentObject(DeviceModel(screen: screen))
-    }
-}
+//#Preview {
+//    GeometryReader { screen in
+//        ExtraOptionsView()
+//            .environmentObject(GameModel())
+//            .environmentObject(AppModel(path: NavigationPath()))
+//            .environmentObject(DeviceModel(screen: screen))
+//    }
+//}
 
 
 

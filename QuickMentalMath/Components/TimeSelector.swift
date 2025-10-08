@@ -12,34 +12,36 @@ struct TimeSelector: View {
     let buttonRadius: CGFloat = 15
     let shadowOffset: CGFloat = 3
     
-    @Binding var timeIndex: Int
+    @Binding var timeLimit: TimeLimit
+    
     @EnvironmentObject var device: DeviceModel
+    
     let isTimeTrial: Bool
             
     var body: some View {
         VStack(spacing: device.valueByDevice(small: 12, normal: 15, ipad: 20)) {
             Button(action: {}, label: {
                 Text("1 min")
-                    .foregroundStyle(timeIndex == 0 ? .white : Color("darkPurple"))
+                    .foregroundStyle(timeLimit == .ONE_MIN ? .white : Color("darkPurple"))
             })
             .padding(.vertical, device.valueByDevice(small: 8, normal: 10, ipad: 15))
             .frame(maxWidth: .infinity)
-            .raisedButton(cornerRadius: buttonRadius, backgroundColor: timeIndex == 0 ? Color("darkPurple") : Color("offWhite"), shadowColor: timeIndex == 0 ? Color("darkerPurple") :  Color.gray.opacity(0.2), shadowOffset: shadowOffset, action: {
-                timeIndex = 0
+            .raisedButton(cornerRadius: buttonRadius, backgroundColor: timeLimit == .ONE_MIN ? Color("darkPurple") : Color("offWhite"), shadowColor: timeLimit == .ONE_MIN ? Color("darkerPurple") :  Color.gray.opacity(0.2), shadowOffset: shadowOffset, action: {
+                timeLimit = .ONE_MIN
             })
             
             Divider()
             
             Button(action: {}, label: {
                 Text("2 min")
-                    .foregroundStyle(timeIndex == 1 ? .white : Color("darkPurple"))
+                    .foregroundStyle(timeLimit == .TWO_MIN ? .white : Color("darkPurple"))
                     .opacity(isTimeTrial ? 0.5 : 1)
 
             })
             .padding(.vertical, device.valueByDevice(small: 8, normal: 10, ipad: 15))
             .frame(maxWidth: .infinity)
-            .raisedButton(cornerRadius: buttonRadius, backgroundColor: timeIndex == 1 ? Color("darkPurple") : Color("offWhite"), shadowColor: timeIndex == 1 ? Color("darkerPurple") :  Color.gray.opacity(0.2), shadowOffset: shadowOffset, action: {
-                timeIndex = 1
+            .raisedButton(cornerRadius: buttonRadius, backgroundColor: timeLimit == .TWO_MIN ? Color("darkPurple") : Color("offWhite"), shadowColor: timeLimit == .TWO_MIN ? Color("darkerPurple") :  Color.gray.opacity(0.2), shadowOffset: shadowOffset, action: {
+                timeLimit = .TWO_MIN
             })
             .allowsHitTesting(!isTimeTrial)
             
@@ -47,13 +49,13 @@ struct TimeSelector: View {
             
             Button(action: {}, label: {
                 Text("3 min")
-                    .foregroundStyle(timeIndex == 2 ? .white : Color("darkPurple"))
+                    .foregroundStyle(timeLimit == .THREE_MIN ? .white : Color("darkPurple"))
                     .opacity(isTimeTrial ? 0.5 : 1)
             })
             .padding(.vertical, device.valueByDevice(small: 8, normal: 10, ipad: 15))
             .frame(maxWidth: .infinity)
-            .raisedButton(cornerRadius: buttonRadius, backgroundColor: timeIndex == 2 ? Color("darkPurple") : Color("offWhite"), shadowColor: timeIndex == 2 ? Color("darkerPurple") :  Color.gray.opacity(0.2), shadowOffset: shadowOffset, action: {
-                timeIndex = 2
+            .raisedButton(cornerRadius: buttonRadius, backgroundColor: timeLimit == .THREE_MIN ? Color("darkPurple") : Color("offWhite"), shadowColor: timeLimit == .THREE_MIN ? Color("darkerPurple") :  Color.gray.opacity(0.2), shadowOffset: shadowOffset, action: {
+                timeLimit = .THREE_MIN
             })
             .allowsHitTesting(!isTimeTrial)
             
@@ -61,13 +63,13 @@ struct TimeSelector: View {
             
             Button(action: {}, label: {
                 Text("no limit")
-                    .foregroundStyle(timeIndex == 3 ? .white : Color("darkPurple"))
+                    .foregroundStyle(timeLimit == .NO_LIMIT ? .white : Color("darkPurple"))
                     .opacity(isTimeTrial ? 0.5 : 1)
             })
             .padding(.vertical, device.valueByDevice(small: 8, normal: 10, ipad: 15))
             .frame(maxWidth: .infinity)
-            .raisedButton(cornerRadius: buttonRadius, backgroundColor: timeIndex == 3 ? Color("darkPurple") : Color("offWhite"), shadowColor: timeIndex == 3 ? Color("darkerPurple") :  Color.gray.opacity(0.2), shadowOffset: shadowOffset, action: {
-                timeIndex = 3
+            .raisedButton(cornerRadius: buttonRadius, backgroundColor: timeLimit == .NO_LIMIT ? Color("darkPurple") : Color("offWhite"), shadowColor: timeLimit == .NO_LIMIT ? Color("darkerPurple") :  Color.gray.opacity(0.2), shadowOffset: shadowOffset, action: {
+                timeLimit = .NO_LIMIT
             })
             .allowsHitTesting(!isTimeTrial)
             
@@ -83,7 +85,7 @@ struct TimeSelector: View {
         .background(.white)
         .roundedCorner(20, corners: .allCorners)
         .clipped()
-        .shadow(radius: 2)
+        .shadow(color: Color("lighterPurple"), radius: 3)
 
     }
 }

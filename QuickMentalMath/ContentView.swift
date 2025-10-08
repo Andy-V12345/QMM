@@ -11,7 +11,6 @@ struct ContentView: View {
     
     @StateObject var authInfo = AuthInfoModel()
     @StateObject var appModel = AppModel(path: NavigationPath())
-    @StateObject var gameModel = GameModel()
     @StateObject var deviceModel = DeviceModel()
     
     @Environment(\.scenePhase) var scenePhase
@@ -24,38 +23,48 @@ struct ContentView: View {
     var body: some View {
         GeometryReader { screen in
             NavigationStack(path: $appModel.path) {
-                EmptyView()
+                VStack(spacing: 10) {
+                    Text("\"math is for the great. quick mental math is for the legends.\"")
+                        .multilineTextAlignment(.center)
+                        .foregroundStyle(Color("vividPurple"))
+                        .fontWeight(.medium)
+                        .italic()
+                        .font(DeviceModel(screen: screen).valueByDevice(small: .title3, normal: .title3, ipad: .title))
+                    
+                    Text("- chatgpt")
+                        .foregroundStyle(Color("darkPurple"))
+                        .fontWeight(.medium)
+                        .font(DeviceModel(screen: screen).valueByDevice(small: .body, normal: .body, ipad: .title3))
+                        .frame(maxWidth: .infinity, alignment: .trailing)
+                }
+                .padding(.horizontal, DeviceModel(screen: screen).valueByDevice(small: 30, normal: 30, ipad: 80))
                     .navigationDestination(for: AuthState.self, destination: { state in
                         if state == .UNAUTHORIZED {
                             AuthView()
                                 .navigationBarBackButtonHidden()
                         }
-                        else if state == .AUTHORIZED {
-                            HomeView()
-                                .navigationBarBackButtonHidden()
-                        }
-                        else if state == .NO_ACCOUNT {
+                        else if state == .AUTHORIZED || state == .NO_ACCOUNT {
                             HomeView()
                                 .navigationBarBackButtonHidden()
                         }
                     })
-                    .navigationDestination(for: AppState.self, destination: { state in
-                        if state == .SETTINGS {
-                            if gameModel.mode == "time" {
-                                TimeTrialView()
-                                    .navigationBarBackButtonHidden()
-                            }
-                            else {
-                                ExtraOptionsView()
-                                    .navigationBarBackButtonHidden()
-                            }
-                        }
-                        else if state == .GAME {
-                            GameView()
+                    .navigationDestination(for: GameModel.self, destination: { gameModel in
+                        GameView(gameModel: gameModel)
+                            .id(gameModel.id)
+                            .navigationBarBackButtonHidden()
+                    })
+                    .navigationDestination(for: EndGameModel.self, destination: { endGameModel in
+                        EndGameView(endGameModel: endGameModel)
+                            .navigationBarBackButtonHidden()
+                    })
+                    .navigationDestination(for: GameConfigsModel.self, destination: { configModel in
+                        
+                        if configModel.mode == .TIME {
+                            TimeTrialView(gameConfigsModel: configModel)
                                 .navigationBarBackButtonHidden()
                         }
-                        else if state == .END {
-                            EndGameView()
+                        else {
+                            ExtraOptionsView(gameConfigsModel: configModel)
                                 .navigationBarBackButtonHidden()
                         }
                     })
@@ -91,8 +100,8 @@ struct ContentView: View {
             }
             .environmentObject(authInfo)
             .environmentObject(appModel)
-            .environmentObject(gameModel)
             .environmentObject(deviceModel)
+            .dynamicTypeSize(.large ... .xxLarge)
         }
     }
     

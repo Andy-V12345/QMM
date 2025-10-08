@@ -13,8 +13,8 @@ enum ForgotPasswordState {
 
 struct ForgotPasswordView: View {
     
-    let buttonHeight: CGFloat = 50
-    let buttonCornerRadius: CGFloat = 10
+    let buttonHeight: CGFloat = 55
+    let buttonCornerRadius: CGFloat = 20
     let buttonShadowOffset: CGFloat = 6
     
     @State var email: String = ""
@@ -119,10 +119,11 @@ struct ForgotPasswordView: View {
                     VStack(spacing: 40) {
                         VStack(spacing: 20) {
                             Text("forgot password")
+                                .multilineTextAlignment(.center)
                                 .font(.largeTitle)
                                 .bold()
                                 .foregroundColor(Color("darkPurple"))
-                            Text("enter your email and we'll send you a verification code.")
+                            Text("enter your email and we'll send you a verification code")
                                 .foregroundColor(Color("lightPurple"))
                                 .frame(width: 300)
                                 .multilineTextAlignment(.center)
@@ -153,8 +154,7 @@ struct ForgotPasswordView: View {
                         
                         Button(action: {}, label: {
                             if viewState == .LOADING {
-                                LoadingSpinner(size: 15, color: Color.white, width: 3)
-                                    .foregroundColor(.white)
+                                LoadingSpinner(size: 15, color: Color("darkPurple"), width: 3)
                                     .font(.title2)
                                     .bold()
                             }
@@ -179,10 +179,11 @@ struct ForgotPasswordView: View {
                     VStack(spacing: 40) {
                         VStack(spacing: 20) {
                             Text("verify code")
+                                .multilineTextAlignment(.center)
                                 .font(.largeTitle)
                                 .bold()
                                 .foregroundColor(Color("darkPurple"))
-                            Text("enter the verification code we sent to your email.")
+                            Text("enter the verification code we sent to your email")
                                 .foregroundColor(Color("lightPurple"))
                                 .frame(width: 300)
                                 .multilineTextAlignment(.center)
@@ -213,8 +214,7 @@ struct ForgotPasswordView: View {
                         
                         Button(action: {}, label: {
                             if viewState == .LOADING {
-                                LoadingSpinner(size: 15, color: Color.white, width: 3)
-                                    .foregroundColor(.white)
+                                LoadingSpinner(size: 15, color: Color("darkPurple"), width: 3)
                                     .font(.title2)
                                     .bold()
                             }
@@ -240,10 +240,11 @@ struct ForgotPasswordView: View {
                     VStack(spacing: 40) {
                         VStack(spacing: 20) {
                             Text("reset password")
+                                .multilineTextAlignment(.center)
                                 .font(.largeTitle)
                                 .bold()
                                 .foregroundColor(Color("darkPurple"))
-                            Text("enter your new password. it must be at least 6 characters.")
+                            Text("enter your new password. it must be at least 6 characters")
                                 .foregroundColor(Color("lightPurple"))
                                 .frame(width: 300)
                                 .multilineTextAlignment(.center)
@@ -274,8 +275,7 @@ struct ForgotPasswordView: View {
                         
                         Button(action: {}, label: {
                             if viewState == .LOADING {
-                                LoadingSpinner(size: 15, color: Color.white, width: 3)
-                                    .foregroundColor(.white)
+                                LoadingSpinner(size: 15, color: Color("darkPurple"), width: 3)
                                     .font(.title2)
                                     .bold()
                             }
@@ -339,6 +339,7 @@ struct ForgotPasswordView: View {
                 Text("Your password has been reset!")
             })
         } //: ZStack
+        .dynamicTypeSize(.large ... .xxLarge)
     }
 }
 

@@ -336,6 +336,7 @@ struct AuthView: View {
                         
                     }
                     .font(.subheadline)
+                    .dynamicTypeSize(.large)
                     
                 } //: Parent VStack
                 .padding(.top, 80)

@@ -9,10 +9,9 @@ import SwiftUI
 
 struct InGameStats: View {
     
-    @State var startTime: CGFloat
+    @State var timeLimit: CGFloat
     @Binding var showAreYouSure: Bool
     @Binding var isTimerPaused: Bool
-    @Binding var isGameOver: Bool
     @Binding var timeLeft: CGFloat
     @Binding var numCorrect: Int
     @Binding var numIncorrect: Int
@@ -47,15 +46,6 @@ struct InGameStats: View {
         )
     }
     
-    var progress: CGFloat {
-        if startTime > 180 {
-            return 1
-        }
-        
-        // progress goes from 0 (start) to 1 (complete)
-        return max(0, min(1, 1 - timeLeft / startTime))
-    }
-    
     let font = Font.title2.bold()
     let color = Color("darkPurple")
     let digitWidth: CGFloat = 16
@@ -71,12 +61,14 @@ struct InGameStats: View {
                     .font(.headline)
                     .bold()
                     .foregroundColor(Color("darkPurple"))
+                    .dynamicTypeSize(.large)
             })
             
-            if startTime > 180 {
+            if timeLeft > 180 {
                 Text("∞")
                     .font(font)
                     .foregroundStyle(color)
+                    .dynamicTypeSize(.large)
             }
             else {
                 HStack(spacing: 2) {
@@ -85,6 +77,7 @@ struct InGameStats: View {
                     Text("s")
                         .font(font)
                         .foregroundStyle(color)
+                        .dynamicTypeSize(.large)
                 }
             }
             
@@ -103,9 +96,9 @@ struct InGameStats: View {
         .overlay(
             // This overlay draws the “filling” border
             Capsule()
-                .trim(from: 0.0, to: progress)
+                .trim(from: 0.0, to: timeLimit > 180 ? 1 : max(0, min(1, 1 - timeLeft / timeLimit)))
                 .stroke(Color("lightPurple"), lineWidth: 3.5)
-                .animation(.linear(duration: 1), value: progress)
+                .animation(.linear(duration: 1), value: timeLeft)
                 .rotationEffect(Angle(degrees: -180))
 
         )

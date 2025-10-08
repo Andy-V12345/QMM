@@ -111,6 +111,7 @@ struct LeaderboardView: View {
                 }
             }
             .padding(device.valueByDevice(small: 15, normal: 20, ipad: 30))
+            .dynamicTypeSize(.large ... .xxLarge)
         }
         .onAppear {
             Task {
