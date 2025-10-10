@@ -106,7 +106,7 @@ struct ResetPasswordRequest: Codable {
 
 class AuthService {
     
-    static let baseUrl = "http://3.128.27.109/api/v1"
+    static let baseUrl = "https://qmm.andy-vu.com/api/v1"
     
     static func login(email: String, password: String) async -> (User?, String) {
         var request = URLRequest(url: URL(string: baseUrl + "/auth/login")!)
@@ -120,6 +120,7 @@ class AuthService {
             }
             
             if httpResponse?.statusCode == 403 {
+                print(httpResponse)
                 return (nil, "INVALID_CREDS")
             }
             else {
@@ -135,6 +136,7 @@ class AuthService {
             }
         }
         catch {
+            print(error)
             return (nil, "UNKNOWN_ERROR")
         }
     }
