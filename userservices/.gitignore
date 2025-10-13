@@ -28,6 +28,7 @@ target/
 qmm-backend-aws.pem
 quickmentalmath-firebase-adminsdk-fbsvc-9465e845a1.json
 src/main/resources/application.yml
+.env
 
 ### NetBeans ###
 /nbproject/private/
