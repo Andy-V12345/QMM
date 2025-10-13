@@ -15,8 +15,6 @@ public class UserservicesApplication {
             System.setProperty(entry.getKey(), entry.getValue());
         });
 
-		System.out.println(System.getProperty("GOOGLE_APPLICATION_CREDENTIALS"));
-		
 		SpringApplication.run(UserservicesApplication.class, args);
 	}
 
