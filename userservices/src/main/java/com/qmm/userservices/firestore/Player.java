@@ -1,13 +1,17 @@
 package com.qmm.userservices.firestore;
 
 import com.google.cloud.Timestamp;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 @Getter
 @Setter
+@AllArgsConstructor
 public class Player {
     private Long id;
     private String username;
@@ -22,6 +26,9 @@ public class Player {
         this.id = id;
         this.username = username;
         this.status = status;
+        this.num_completed = 0;
+        this.time_joined = Timestamp.now();
+        this.time_last_updated = Timestamp.now();
     }
 
     @Override public String toString(){ return "Player{id=" + id + ", user=" + username + ", status=" + status + "}"; }

@@ -5,10 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 
@@ -19,15 +16,15 @@ import java.util.concurrent.ThreadLocalRandom;
 public class GameSession {
     private final int NUM_QUESTIONS = 20;
 
-    private String id;                         // UUID string
-    private GameStatus status;                 // WAITING, IN_PROGRESS, DONE
-    private List<Player> players = new ArrayList<>();
-    private List<Question> questions = new ArrayList<>();
+    private String id;
+    private GameStatus status;
+    private HashMap<String, Player> players;
+    private List<Question> questions;
 
     private Timestamp time_created;
     private Timestamp time_last_updated;
 
-    private List<String> rankings = new ArrayList<>(); // player IDs in order
+    private List<Long> rankings;
     private Integer players_connected;
     private Integer players_found;
     private Integer max_players;
@@ -38,8 +35,13 @@ public class GameSession {
         this.id = id;
         this.status = status;
         this.max_players = max_players;
-        this.touchCreatedIfNull();
-        this.touchUpdated();
+        this.players = new HashMap<>();
+        this.questions = new ArrayList<>();
+        this.time_created = Timestamp.now();
+        this.time_last_updated = this.time_created;
+        this.rankings = new ArrayList<>();
+        this.players_connected = 0;
+        this.players_found = 0;
         this.generateQuestions();
     }
 
@@ -47,12 +49,9 @@ public class GameSession {
     @Override public boolean equals(Object o){ return o instanceof GameSession gs && Objects.equals(id, gs.id); }
     @Override public int hashCode(){ return Objects.hash(id); }
 
-    public void touchCreatedIfNull() { if (time_created == null) time_created = Timestamp.now(); }
-    public void touchUpdated() { time_last_updated = Timestamp.now(); }
     public void addPlayer(Player player) {
-        this.players.add(player);
+        this.players.put(player.getId().toString(), player);
         this.players_found += 1;
-
     }
 
     private void generateQuestions() {
