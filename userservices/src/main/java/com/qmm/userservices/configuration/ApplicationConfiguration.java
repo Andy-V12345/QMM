@@ -1,5 +1,6 @@
 package com.qmm.userservices.configuration;
 
+import com.google.gson.Gson;
 import com.qmm.userservices.repository.AppUserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -39,5 +40,10 @@ public class ApplicationConfiguration {
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
+    }
+
+    @Bean
+    public Gson gson() {
+        return new Gson();
     }
 }

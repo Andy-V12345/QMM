@@ -7,9 +7,9 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
-public class JoinGameRequest {
-    private String session_id;
-    private Long user_id;
+@AllArgsConstructor
+public class PlayBotRequest {
+    private Long userId;
+    private String username;
 }

@@ -7,9 +7,8 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
-public class FindGameRequest {
-    private Long user_id;
-    private String username;
+@AllArgsConstructor
+public class PresenceResponse {
+    private Boolean ok;
 }
