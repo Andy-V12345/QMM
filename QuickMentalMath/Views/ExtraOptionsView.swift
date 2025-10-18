@@ -104,6 +104,9 @@ struct ExtraOptionsView: View {
                 .roundedCorner(20, corners: .allCorners)
                 .clipped()
                 .shadow(radius: 2)
+                .onChange(of: numQuestions) { _ in
+                    UIImpactFeedbackGenerator(style: .soft).impactOccurred()
+                }
                 
                 HStack(spacing: device.valueByDevice(small: 15, normal: 20, ipad: 30)) {
                     DifficultySelector(difficulty: $difficulty, isTimeTrial: false)
