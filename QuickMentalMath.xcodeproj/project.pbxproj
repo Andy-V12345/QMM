@@ -34,6 +34,9 @@
 		D886E8D22C3AD8350054DD61 /* AuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D886E8D12C3AD8350054DD61 /* AuthService.swift */; };
 		D886E8D42C3ADA290054DD61 /* LoadingSpinner.swift in Sources */ = {isa = PBXBuildFile; fileRef = D886E8D32C3ADA290054DD61 /* LoadingSpinner.swift */; };
 		D88AD2C12E8FAB450036BF62 /* ConfettiSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = D88AD2C02E8FAB450036BF62 /* ConfettiSwiftUI */; };
+		D897986B2EA4157700440837 /* MultiplayerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D897986A2EA4157700440837 /* MultiplayerService.swift */; };
+		D897986D2EA4158700440837 /* FirestoreModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = D897986C2EA4158700440837 /* FirestoreModels.swift */; };
+		D89798702EA4160A00440837 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = D897986F2EA4160A00440837 /* FirebaseFirestore */; };
 		D89C3C462E8FB2CD00C265A1 /* KeyPadButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D89C3C452E8FB2CD00C265A1 /* KeyPadButton.swift */; };
 		D8BAFEF62A09A12400D49C49 /* QuickMentalMathApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8BAFEF52A09A12400D49C49 /* QuickMentalMathApp.swift */; };
 		D8BAFEF82A09A12400D49C49 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8BAFEF72A09A12400D49C49 /* ContentView.swift */; };
@@ -91,6 +94,8 @@
 		D886E8D12C3AD8350054DD61 /* AuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthService.swift; sourceTree = "<group>"; };
 		D886E8D32C3ADA290054DD61 /* LoadingSpinner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingSpinner.swift; sourceTree = "<group>"; };
 		D88D273D2A2D8B2C00E0EA63 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		D897986A2EA4157700440837 /* MultiplayerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiplayerService.swift; sourceTree = "<group>"; };
+		D897986C2EA4158700440837 /* FirestoreModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreModels.swift; sourceTree = "<group>"; };
 		D89C3C452E8FB2CD00C265A1 /* KeyPadButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyPadButton.swift; sourceTree = "<group>"; };
 		D8BAFEF22A09A12400D49C49 /* QuickMentalMath.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = QuickMentalMath.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D8BAFEF52A09A12400D49C49 /* QuickMentalMathApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickMentalMathApp.swift; sourceTree = "<group>"; };
@@ -113,6 +118,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D88AD2C12E8FAB450036BF62 /* ConfettiSwiftUI in Frameworks */,
+				D89798702EA4160A00440837 /* FirebaseFirestore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -136,6 +142,7 @@
 		D80930F32E96220C00FEAEE3 /* Structs */ = {
 			isa = PBXGroup;
 			children = (
+				D897986C2EA4158700440837 /* FirestoreModels.swift */,
 				D80930F12E961CF300FEAEE3 /* EndGameModel.swift */,
 				D87282932E8DA8EC00C36890 /* GameModel.swift */,
 				D80930EF2E96109900FEAEE3 /* GameConfigsModel.swift */,
@@ -198,6 +205,7 @@
 		D886E8CF2C3AD7530054DD61 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				D897986A2EA4157700440837 /* MultiplayerService.swift */,
 				D886E8D12C3AD8350054DD61 /* AuthService.swift */,
 			);
 			path = Services;
@@ -358,6 +366,7 @@
 			mainGroup = D8BAFEE92A09A12400D49C49;
 			packageReferences = (
 				D88AD2BF2E8FAB450036BF62 /* XCRemoteSwiftPackageReference "ConfettiSwiftUI" */,
+				D897986E2EA4160A00440837 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 			);
 			productRefGroup = D8BAFEF32A09A12400D49C49 /* Products */;
 			projectDirPath = "";
@@ -409,6 +418,7 @@
 				D872828D2E8DA69900C36890 /* DeviceModel.swift in Sources */,
 				D87282822E8D920C00C36890 /* ExtraOptionsView.swift in Sources */,
 				D87282832E8D920C00C36890 /* ForgotPasswordView.swift in Sources */,
+				D897986D2EA4158700440837 /* FirestoreModels.swift in Sources */,
 				D87282942E8DA8EC00C36890 /* GameModel.swift in Sources */,
 				D87282842E8D920C00C36890 /* GameView.swift in Sources */,
 				D87282852E8D920C00C36890 /* HomeView.swift in Sources */,
@@ -425,6 +435,7 @@
 				D84ED7E22C44AA0B0043995D /* LeaderboardEntry.swift in Sources */,
 				D87283142E8E40C600C36890 /* RollingNumber.swift in Sources */,
 				D87282C02E8DAE2100C36890 /* ViewExtensions.swift in Sources */,
+				D897986B2EA4157700440837 /* MultiplayerService.swift in Sources */,
 				D886E8D22C3AD8350054DD61 /* AuthService.swift in Sources */,
 				D87283102E8E043B00C36890 /* InGameStats.swift in Sources */,
 				D8BAFEF62A09A12400D49C49 /* QuickMentalMathApp.swift in Sources */,
@@ -815,6 +826,14 @@
 				minimumVersion = 2.0.3;
 			};
 		};
+		D897986E2EA4160A00440837 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 12.4.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -822,6 +841,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = D88AD2BF2E8FAB450036BF62 /* XCRemoteSwiftPackageReference "ConfettiSwiftUI" */;
 			productName = ConfettiSwiftUI;
+		};
+		D897986F2EA4160A00440837 /* FirebaseFirestore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D897986E2EA4160A00440837 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestore;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
