@@ -9,14 +9,12 @@ import io.github.cdimascio.dotenv.Dotenv;
 public class UserservicesApplication {
 
 	public static void main(String[] args) {
-		Dotenv dotenv = Dotenv.configure().load();
+		Dotenv dotenv = Dotenv.configure().ignoreIfMissing().load();
 
 		dotenv.entries().forEach(entry -> {
             System.setProperty(entry.getKey(), entry.getValue());
         });
 
-		System.out.println(System.getProperty("GOOGLE_APPLICATION_CREDENTIALS"));
-		
 		SpringApplication.run(UserservicesApplication.class, args);
 	}
 
