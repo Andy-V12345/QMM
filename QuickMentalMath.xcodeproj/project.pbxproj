@@ -43,6 +43,11 @@
 		D89798782EA4AB6900440837 /* SectionHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = D89798762EA4AB6900440837 /* SectionHeader.swift */; };
 		D897987A2EA5A42C00440837 /* HapticManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D89798792EA5A42C00440837 /* HapticManager.swift */; };
 		D897987C2EA61B1900440837 /* MissedQuestionCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = D897987B2EA61B1900440837 /* MissedQuestionCard.swift */; };
+		D897987E2EA6C16000440837 /* WaitingRoomView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D897987D2EA6C16000440837 /* WaitingRoomView.swift */; };
+		D89798802EA6C21600440837 /* MultiplayerInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D897987F2EA6C21600440837 /* MultiplayerInfoView.swift */; };
+		D89798822EA6C63B00440837 /* RacingProgressBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = D89798812EA6C63B00440837 /* RacingProgressBar.swift */; };
+		D89798852EA6CF6F00440837 /* ConnectingLine.swift in Sources */ = {isa = PBXBuildFile; fileRef = D89798832EA6CF6F00440837 /* ConnectingLine.swift */; };
+		D89798862EA6CF6F00440837 /* ProgressNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = D89798842EA6CF6F00440837 /* ProgressNode.swift */; };
 		D89C3C462E8FB2CD00C265A1 /* KeyPadButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D89C3C452E8FB2CD00C265A1 /* KeyPadButton.swift */; };
 		D8BAFEF62A09A12400D49C49 /* QuickMentalMathApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8BAFEF52A09A12400D49C49 /* QuickMentalMathApp.swift */; };
 		D8BAFEF82A09A12400D49C49 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8BAFEF72A09A12400D49C49 /* ContentView.swift */; };
@@ -108,6 +113,11 @@
 		D89798762EA4AB6900440837 /* SectionHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionHeader.swift; sourceTree = "<group>"; };
 		D89798792EA5A42C00440837 /* HapticManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticManager.swift; sourceTree = "<group>"; };
 		D897987B2EA61B1900440837 /* MissedQuestionCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MissedQuestionCard.swift; sourceTree = "<group>"; };
+		D897987D2EA6C16000440837 /* WaitingRoomView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaitingRoomView.swift; sourceTree = "<group>"; };
+		D897987F2EA6C21600440837 /* MultiplayerInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiplayerInfoView.swift; sourceTree = "<group>"; };
+		D89798812EA6C63B00440837 /* RacingProgressBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RacingProgressBar.swift; sourceTree = "<group>"; };
+		D89798832EA6CF6F00440837 /* ConnectingLine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectingLine.swift; sourceTree = "<group>"; };
+		D89798842EA6CF6F00440837 /* ProgressNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressNode.swift; sourceTree = "<group>"; };
 		D89C3C452E8FB2CD00C265A1 /* KeyPadButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyPadButton.swift; sourceTree = "<group>"; };
 		D8BAFEF22A09A12400D49C49 /* QuickMentalMath.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = QuickMentalMath.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D8BAFEF52A09A12400D49C49 /* QuickMentalMathApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickMentalMathApp.swift; sourceTree = "<group>"; };
@@ -174,6 +184,8 @@
 				D872827B2E8D920C00C36890 /* LeaderboardView.swift */,
 				D872827D2E8D920C00C36890 /* StatsView.swift */,
 				D872827E2E8D920C00C36890 /* TimeTrialView.swift */,
+				D897987D2EA6C16000440837 /* WaitingRoomView.swift */,
+				D897987F2EA6C21600440837 /* MultiplayerInfoView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -181,6 +193,9 @@
 		D872828A2E8DA44600C36890 /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				D89798832EA6CF6F00440837 /* ConnectingLine.swift */,
+				D89798842EA6CF6F00440837 /* ProgressNode.swift */,
+				D89798812EA6C63B00440837 /* RacingProgressBar.swift */,
 				D897987B2EA61B1900440837 /* MissedQuestionCard.swift */,
 				D89798752EA4AB6900440837 /* ModeCard.swift */,
 				D89798762EA4AB6900440837 /* SectionHeader.swift */,
@@ -446,6 +461,8 @@
 				D80930F02E96109900FEAEE3 /* GameConfigsModel.swift in Sources */,
 				D87282862E8D920C00C36890 /* LeaderboardView.swift in Sources */,
 				D87282872E8D920C00C36890 /* MissedQuestionsDisplay.swift in Sources */,
+				D89798852EA6CF6F00440837 /* ConnectingLine.swift in Sources */,
+				D89798862EA6CF6F00440837 /* ProgressNode.swift in Sources */,
 				D89798772EA4AB6900440837 /* ModeCard.swift in Sources */,
 				D89798782EA4AB6900440837 /* SectionHeader.swift in Sources */,
 				D87282882E8D920C00C36890 /* StatsView.swift in Sources */,
@@ -459,10 +476,13 @@
 				D87282C02E8DAE2100C36890 /* ViewExtensions.swift in Sources */,
 				D897986B2EA4157700440837 /* MultiplayerService.swift in Sources */,
 				D89798722EA4394B00440837 /* LastPracticeDisplay.swift in Sources */,
+				D89798822EA6C63B00440837 /* RacingProgressBar.swift in Sources */,
+				D897987E2EA6C16000440837 /* WaitingRoomView.swift in Sources */,
 				D886E8D22C3AD8350054DD61 /* AuthService.swift in Sources */,
 				D87283102E8E043B00C36890 /* InGameStats.swift in Sources */,
 				D8BAFEF62A09A12400D49C49 /* QuickMentalMathApp.swift in Sources */,
 				D886E8D42C3ADA290054DD61 /* LoadingSpinner.swift in Sources */,
+				D89798802EA6C21600440837 /* MultiplayerInfoView.swift in Sources */,
 				D823EE752E8FD2370074C071 /* StatPanel.swift in Sources */,
 				D89798742EA497DA00440837 /* GameStorageExtension.swift in Sources */,
 				D8F7B7BB2C3FB0CE005CFCF0 /* SideBar.swift in Sources */,
