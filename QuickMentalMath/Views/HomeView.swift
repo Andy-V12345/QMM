@@ -9,25 +9,15 @@ import SwiftUI
 
 struct HomeView: View {
     @State var showOptions = false
-    
-    @State var width1: CGFloat = 0
-    @State var width2: CGFloat = 0
-    @State var width3: CGFloat = 0
-    @State var width4: CGFloat = 0
-    
-    let smallHeight: CGFloat = 70
-    let normalheight: CGFloat = 80
-    let iPadHeight: CGFloat = 100
-    
-    @State var mode: GameMode = .ADDITION
-    
+
     @State var isProfileView = false
     @State var showNoAccountAlert = false
-    
+    @State var lastGame: GameModel? = UserDefaults.standard.loadLastGame()
+
     @EnvironmentObject var authInfo: AuthInfoModel
     @EnvironmentObject var appModel: AppModel
     @EnvironmentObject var device: DeviceModel
-    
+
     @AppStorage("authState") var authState: AuthState = .UNAUTHORIZED
     @AppStorage("jwtToken") var jwtToken = ""
     @AppStorage("username") var username = ""
@@ -72,144 +62,93 @@ struct HomeView: View {
                     })
                 }
                 
-                VStack(spacing: 10) {
-                    Text("compete")
-                        .foregroundStyle(Color("darkPurple"))
-                        .fontWeight(.bold)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    
-                    HStack(spacing: 10) {
-                        Button(action: {}, label: {
-                            VStack(alignment: .trailing, spacing: 10) {
-                                Text("one vs one")
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                    .fontWeight(.bold)
-                                
-                                
-                                
-                                Image(systemName: "flag.pattern.checkered")
-                                    .font(.largeTitle)
-                                    .frame(height: 32)
+                ScrollView {
+                    VStack(spacing: device.valueByDevice(small: 30, normal: 40, ipad: 60)) {
+                        if let game = lastGame {
+                            VStack(spacing: 10) {
+                                SectionHeader(title: "last practice")
+
+                                LastPracticeDisplay(gameModel: game)
                             }
-                            .foregroundStyle(.white)
-                        })
-                        .padding(15)
-                        .raisedButton(cornerRadius: 17, backgroundColor: Color("pastelOrange"), shadowColor: Color("darkPastelOrange"), action: {})
-                        
-                        Button(action: {}, label: {
-                            VStack(alignment: .trailing, spacing: 10) {
-                                Text("time trial")
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                    .fontWeight(.bold)
-                                
-                                Image(systemName: "timer")
-                                    .font(.largeTitle)
-                                    .fontWeight(.bold)
-                                    .frame(height: 32)
-                                
+                        }
+
+                        VStack(spacing: device.valueByDevice(small: 10, normal: 10, ipad: 15)) {
+                            SectionHeader(title: "compete")
+                            
+                            HStack(spacing: device.valueByDevice(small: 10, normal: 10, ipad: 15)) {
+                                ModeCard(
+                                    title: "one vs one",
+                                    iconName: "figure.run",
+                                    backgroundColor: Color("pastelOrange"),
+                                    shadowColor: Color("darkPastelOrange"),
+                                    action: {}
+                                )
+
+                                ModeCard(
+                                    title: "time trial",
+                                    iconName: "timer",
+                                    backgroundColor: Color("pastelPink"),
+                                    shadowColor: Color("darkPastelPink"),
+                                    action: {
+                                        appModel.path.append(GameConfigsModel(mode: .TIME, difficulty: .MEDIUM, timeLimit: .ONE_MIN, numQuestions: 10))
+                                    }
+                                )
                             }
-                            .foregroundStyle(.white)
-                        })
-                        .padding(15)
-                        .raisedButton(cornerRadius: 17, backgroundColor: Color("pastelPink"), shadowColor: Color("darkPastelPink"), action: {
-                            
-                            appModel.path.append(GameConfigsModel(mode: .TIME, difficulty: .MEDIUM, timeLimit: .ONE_MIN, numQuestions: 10))
-                        })
-                    }
-                }
-                
-                VStack(spacing: 10) {
-                    Text("solo practice")
-                        .foregroundStyle(Color("darkPurple"))
-                        .fontWeight(.bold)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    
-                    VStack(spacing: 22) {
-                        HStack(spacing: 10) {
-                            Button(action: {}, label: {
-                                VStack(alignment: .trailing, spacing: 10) {
-                                    Text("addition")
-                                        .frame(maxWidth: .infinity, alignment: .leading)
-                                        .fontWeight(.bold)
-                                    
-                                    Image(systemName: "plus")
-                                        .font(.largeTitle)
-                                        .fontWeight(.bold)
-                                        .frame(height: 32)
-                                }
-                                .foregroundStyle(.white)
-                            })
-                            .padding(15)
-                            .raisedButton(cornerRadius: 17, backgroundColor: Color("pastelPurple"), shadowColor: Color("darkPastelPurple"), action: {
-                                
-                                appModel.path.append(GameConfigsModel(mode: .ADDITION, difficulty: .EASY, timeLimit: .ONE_MIN, numQuestions: 10))
-                            })
-                            
-                            Button(action: {}, label: {
-                                VStack(alignment: .trailing, spacing: 10) {
-                                    Text("subtraction")
-                                        .frame(maxWidth: .infinity, alignment: .leading)
-                                        .fontWeight(.bold)
-                                    
-                                    Image(systemName: "minus")
-                                        .font(.largeTitle)
-                                        .fontWeight(.bold)
-                                        .frame(height: 32)
-                                    
-                                }
-                                .foregroundStyle(.white)
-                            })
-                            .padding(15)
-                            .raisedButton(cornerRadius: 17, backgroundColor: Color("pastelBlue"), shadowColor: Color("darkPastelBlue"), action: {
-                                
-                                appModel.path.append(GameConfigsModel(mode: .SUBTRACTION, difficulty: .EASY, timeLimit: .ONE_MIN, numQuestions: 10))
-                            })
                         }
                         
-                        HStack(spacing: 10) {
-                            Button(action: {}, label: {
-                                VStack(alignment: .trailing, spacing: 10) {
-                                    Text("multiplication")
-                                        .frame(maxWidth: .infinity, alignment: .leading)
-                                        .fontWeight(.bold)
-                                    
-                                    Image(systemName: "multiply")
-                                        .font(.largeTitle)
-                                        .fontWeight(.bold)
-                                        .frame(height: 32)
-                                }
-                                .foregroundStyle(.white)
-                            })
-                            .padding(15)
-                            .raisedButton(cornerRadius: 17, backgroundColor: Color("pastelRed"), shadowColor: Color("darkPastelRed"), action: {
-                                
-                                appModel.path.append(GameConfigsModel(mode: .MULTIPLICATION, difficulty: .EASY, timeLimit: .ONE_MIN, numQuestions: 10))
-                            })
+                        VStack(spacing: device.valueByDevice(small: 10, normal: 10, ipad: 15)) {
+                            SectionHeader(title: "solo practice")
                             
-                            Button(action: {}, label: {
-                                VStack(alignment: .trailing, spacing: 10) {
-                                    Text("division")
-                                        .frame(maxWidth: .infinity, alignment: .leading)
-                                        .fontWeight(.bold)
-                                    
-                                    Image(systemName: "divide")
-                                        .font(.largeTitle)
-                                        .fontWeight(.bold)
-                                        .frame(height: 32)
-                                    
+                            VStack(spacing: device.valueByDevice(small: 22, normal: 22, ipad: 27)) {
+                                HStack(spacing: device.valueByDevice(small: 10, normal: 10, ipad: 15)) {
+                                    ModeCard(
+                                        title: "addition",
+                                        iconName: "plus",
+                                        backgroundColor: Color("pastelPurple"),
+                                        shadowColor: Color("darkPastelPurple"),
+                                        action: {
+                                            appModel.path.append(GameConfigsModel(mode: .ADDITION, difficulty: .EASY, timeLimit: .ONE_MIN, numQuestions: 10))
+                                        }
+                                    )
+
+                                    ModeCard(
+                                        title: "subtraction",
+                                        iconName: "minus",
+                                        backgroundColor: Color("pastelBlue"),
+                                        shadowColor: Color("darkPastelBlue"),
+                                        action: {
+                                            appModel.path.append(GameConfigsModel(mode: .SUBTRACTION, difficulty: .EASY, timeLimit: .ONE_MIN, numQuestions: 10))
+                                        }
+                                    )
                                 }
-                                .foregroundStyle(.white)
-                            })
-                            .padding(15)
-                            .raisedButton(cornerRadius: 17, backgroundColor: Color("pastelGreen"), shadowColor: Color("darkPastelGreen"), action: {
-                                
-                                appModel.path.append(GameConfigsModel(mode: .DIVISION, difficulty: .EASY, timeLimit: .ONE_MIN, numQuestions: 10))
-                            })
+
+                                HStack(spacing: device.valueByDevice(small: 10, normal: 10, ipad: 15)) {
+                                    ModeCard(
+                                        title: "multiplication",
+                                        iconName: "multiply",
+                                        backgroundColor: Color("pastelRed"),
+                                        shadowColor: Color("darkPastelRed"),
+                                        action: {
+                                            appModel.path.append(GameConfigsModel(mode: .MULTIPLICATION, difficulty: .EASY, timeLimit: .ONE_MIN, numQuestions: 10))
+                                        }
+                                    )
+
+                                    ModeCard(
+                                        title: "division",
+                                        iconName: "divide",
+                                        backgroundColor: Color("pastelGreen"),
+                                        shadowColor: Color("darkPastelGreen"),
+                                        action: {
+                                            appModel.path.append(GameConfigsModel(mode: .DIVISION, difficulty: .EASY, timeLimit: .ONE_MIN, numQuestions: 10))
+                                        }
+                                    )
+                                }
+                            }
                         }
                     }
+                    .padding(.bottom, device.valueByDevice(small: 15, normal: 20, ipad: 30))
                 }
-                
-                Spacer()
+                .scrollIndicators(.hidden)
             }
             
             .padding(device.valueByDevice(small: 15, normal: 20, ipad: 30))
@@ -217,6 +156,9 @@ struct HomeView: View {
             SideBar(isViewingProfile: $isProfileView)
             
         } //: ZStack
+        .onAppear {
+            lastGame = UserDefaults.standard.loadLastGame()
+        }
         .alert("No Account", isPresented: $showNoAccountAlert, actions: {
             Button(role: .none, action: {
                 authInfo.user = nil
@@ -238,7 +180,7 @@ struct HomeView: View {
         }, message: {
             Text("You're not signed in! Create an account or sign in to your QMM account.")
         })
-        
+
     } // body
 }
 

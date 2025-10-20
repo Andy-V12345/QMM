@@ -105,7 +105,7 @@ struct ExtraOptionsView: View {
                 .clipped()
                 .shadow(radius: 2)
                 .onChange(of: numQuestions) { _ in
-                    UIImpactFeedbackGenerator(style: .soft).impactOccurred()
+                    HapticManager.shared.trigger(.soft)
                 }
                 
                 HStack(spacing: device.valueByDevice(small: 15, normal: 20, ipad: 30)) {

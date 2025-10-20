@@ -37,6 +37,12 @@
 		D897986B2EA4157700440837 /* MultiplayerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D897986A2EA4157700440837 /* MultiplayerService.swift */; };
 		D897986D2EA4158700440837 /* FirestoreModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = D897986C2EA4158700440837 /* FirestoreModels.swift */; };
 		D89798702EA4160A00440837 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = D897986F2EA4160A00440837 /* FirebaseFirestore */; };
+		D89798722EA4394B00440837 /* LastPracticeDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = D89798712EA4394B00440837 /* LastPracticeDisplay.swift */; };
+		D89798742EA497DA00440837 /* GameStorageExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D89798732EA497DA00440837 /* GameStorageExtension.swift */; };
+		D89798772EA4AB6900440837 /* ModeCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = D89798752EA4AB6900440837 /* ModeCard.swift */; };
+		D89798782EA4AB6900440837 /* SectionHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = D89798762EA4AB6900440837 /* SectionHeader.swift */; };
+		D897987A2EA5A42C00440837 /* HapticManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D89798792EA5A42C00440837 /* HapticManager.swift */; };
+		D897987C2EA61B1900440837 /* MissedQuestionCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = D897987B2EA61B1900440837 /* MissedQuestionCard.swift */; };
 		D89C3C462E8FB2CD00C265A1 /* KeyPadButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D89C3C452E8FB2CD00C265A1 /* KeyPadButton.swift */; };
 		D8BAFEF62A09A12400D49C49 /* QuickMentalMathApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8BAFEF52A09A12400D49C49 /* QuickMentalMathApp.swift */; };
 		D8BAFEF82A09A12400D49C49 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8BAFEF72A09A12400D49C49 /* ContentView.swift */; };
@@ -96,6 +102,12 @@
 		D88D273D2A2D8B2C00E0EA63 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		D897986A2EA4157700440837 /* MultiplayerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiplayerService.swift; sourceTree = "<group>"; };
 		D897986C2EA4158700440837 /* FirestoreModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreModels.swift; sourceTree = "<group>"; };
+		D89798712EA4394B00440837 /* LastPracticeDisplay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LastPracticeDisplay.swift; sourceTree = "<group>"; };
+		D89798732EA497DA00440837 /* GameStorageExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameStorageExtension.swift; sourceTree = "<group>"; };
+		D89798752EA4AB6900440837 /* ModeCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModeCard.swift; sourceTree = "<group>"; };
+		D89798762EA4AB6900440837 /* SectionHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionHeader.swift; sourceTree = "<group>"; };
+		D89798792EA5A42C00440837 /* HapticManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticManager.swift; sourceTree = "<group>"; };
+		D897987B2EA61B1900440837 /* MissedQuestionCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MissedQuestionCard.swift; sourceTree = "<group>"; };
 		D89C3C452E8FB2CD00C265A1 /* KeyPadButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyPadButton.swift; sourceTree = "<group>"; };
 		D8BAFEF22A09A12400D49C49 /* QuickMentalMath.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = QuickMentalMath.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D8BAFEF52A09A12400D49C49 /* QuickMentalMathApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickMentalMathApp.swift; sourceTree = "<group>"; };
@@ -169,6 +181,9 @@
 		D872828A2E8DA44600C36890 /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				D897987B2EA61B1900440837 /* MissedQuestionCard.swift */,
+				D89798752EA4AB6900440837 /* ModeCard.swift */,
+				D89798762EA4AB6900440837 /* SectionHeader.swift */,
 				D89C3C452E8FB2CD00C265A1 /* KeyPadButton.swift */,
 				D872830F2E8E042600C36890 /* InGameStats.swift */,
 				D8E279212BB8E36D009B029E /* DifficultySelector.swift */,
@@ -179,6 +194,7 @@
 				D84ED7E12C44AA0B0043995D /* LeaderboardEntry.swift */,
 				D87283132E8E40C600C36890 /* RollingNumber.swift */,
 				D823EE742E8FD2370074C071 /* StatPanel.swift */,
+				D89798712EA4394B00440837 /* LastPracticeDisplay.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -186,6 +202,7 @@
 		D872828B2E8DA67F00C36890 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				D89798792EA5A42C00440837 /* HapticManager.swift */,
 				D87282912E8DA76700C36890 /* AppModel.swift */,
 				D872828E2E8DA6EF00C36890 /* AuthInfoModel.swift */,
 				D872828C2E8DA69900C36890 /* DeviceModel.swift */,
@@ -196,6 +213,7 @@
 		D87282BE2E8DAE0C00C36890 /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
+				D89798732EA497DA00440837 /* GameStorageExtension.swift */,
 				D87283152E8E427700C36890 /* CollectionExtensions.swift */,
 				D87282BF2E8DAE1D00C36890 /* ViewExtensions.swift */,
 			);
@@ -416,16 +434,20 @@
 				D87282812E8D920C00C36890 /* EndGameView.swift in Sources */,
 				D89C3C462E8FB2CD00C265A1 /* KeyPadButton.swift in Sources */,
 				D872828D2E8DA69900C36890 /* DeviceModel.swift in Sources */,
+				D897987A2EA5A42C00440837 /* HapticManager.swift in Sources */,
 				D87282822E8D920C00C36890 /* ExtraOptionsView.swift in Sources */,
 				D87282832E8D920C00C36890 /* ForgotPasswordView.swift in Sources */,
 				D897986D2EA4158700440837 /* FirestoreModels.swift in Sources */,
 				D87282942E8DA8EC00C36890 /* GameModel.swift in Sources */,
+				D897987C2EA61B1900440837 /* MissedQuestionCard.swift in Sources */,
 				D87282842E8D920C00C36890 /* GameView.swift in Sources */,
 				D87282852E8D920C00C36890 /* HomeView.swift in Sources */,
 				D872828F2E8DA6EF00C36890 /* AuthInfoModel.swift in Sources */,
 				D80930F02E96109900FEAEE3 /* GameConfigsModel.swift in Sources */,
 				D87282862E8D920C00C36890 /* LeaderboardView.swift in Sources */,
 				D87282872E8D920C00C36890 /* MissedQuestionsDisplay.swift in Sources */,
+				D89798772EA4AB6900440837 /* ModeCard.swift in Sources */,
+				D89798782EA4AB6900440837 /* SectionHeader.swift in Sources */,
 				D87282882E8D920C00C36890 /* StatsView.swift in Sources */,
 				D80930F22E961CF300FEAEE3 /* EndGameModel.swift in Sources */,
 				D87282892E8D920C00C36890 /* TimeTrialView.swift in Sources */,
@@ -436,11 +458,13 @@
 				D87283142E8E40C600C36890 /* RollingNumber.swift in Sources */,
 				D87282C02E8DAE2100C36890 /* ViewExtensions.swift in Sources */,
 				D897986B2EA4157700440837 /* MultiplayerService.swift in Sources */,
+				D89798722EA4394B00440837 /* LastPracticeDisplay.swift in Sources */,
 				D886E8D22C3AD8350054DD61 /* AuthService.swift in Sources */,
 				D87283102E8E043B00C36890 /* InGameStats.swift in Sources */,
 				D8BAFEF62A09A12400D49C49 /* QuickMentalMathApp.swift in Sources */,
 				D886E8D42C3ADA290054DD61 /* LoadingSpinner.swift in Sources */,
 				D823EE752E8FD2370074C071 /* StatPanel.swift in Sources */,
+				D89798742EA497DA00440837 /* GameStorageExtension.swift in Sources */,
 				D8F7B7BB2C3FB0CE005CFCF0 /* SideBar.swift in Sources */,
 				D8E279222BB8E36D009B029E /* DifficultySelector.swift in Sources */,
 			);

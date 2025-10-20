@@ -47,32 +47,39 @@ struct StatsView: View {
                     }
                     
                     if authInfo.user != nil && authInfo.user?.stats != nil {
-                        
-                        VStack(alignment: .leading, spacing: 15) {
-                            Text("overview")
-                                .font(.title3)
-                                .fontWeight(.semibold)
-                                .foregroundStyle(Color("lightPurple"))
-                            
-                            StatPanel(imageName: "bolt.fill", imageColor: Color("gold"), value: String(authInfo.user?.stats?.highScore ?? 0), label: "high score", borderColor: Color("gold"), progress: nil)
-                            
-                            StatPanel(imageName: "timer", imageColor: Color("correctGreen"), value: String(authInfo.user?.stats?.ttHighScore ?? 0), label: "time trial best", borderColor: Color("correctGreen"), progress: nil)
-                        }
-                        
-                        VStack(alignment: .leading, spacing: 15) {
-                            Text("by section")
-                                .font(.title3)
-                                .fontWeight(.semibold)
-                                .foregroundStyle(Color("lightPurple"))
-                            
-                            StatPanel(imageName: "plus.circle.fill", imageColor: Color("pastelPurple"), value: "\(Int(additionPercent * 100))%", label: "addition", borderColor: Color("pastelPurple"), progress: additionPercent)
-                            
-                            StatPanel(imageName: "minus.circle.fill", imageColor: Color("pastelBlue"), value: "\(Int(subtractionPercent * 100))%", label: "subtraction", borderColor: Color("pastelBlue"), progress: subtractionPercent)
-                            
-                            StatPanel(imageName: "multiply.circle.fill", imageColor: Color("pastelRed"), value: "\(Int(multiplicationPercent * 100))%", label: "multiplication", borderColor: Color("pastelRed"), progress: multiplicationPercent)
-                            
-                            StatPanel(imageName: "divide.circle.fill", imageColor: Color("pastelGreen"), value: "\(Int(divisionPercent * 100))%", label: "division", borderColor: Color("pastelGreen"), progress: divisionPercent)
-                        }
+                        ScrollView {
+                            VStack(spacing: 25) {
+                                VStack(alignment: .leading, spacing: 15) {
+                                    Text("overview")
+                                        .fontWeight(.heavy)
+                                        .foregroundStyle(Color("lightPurple"))
+                                    
+                                    VStack(spacing: 20) {
+                                        StatPanel(imageName: "bolt.fill", imageColor: Color("gold"), value: String(authInfo.user?.stats?.highScore ?? 0), label: "high score", borderColor: Color("gold"), progress: nil)
+                                        
+                                        StatPanel(imageName: "timer", imageColor: Color("correctGreen"), value: String(authInfo.user?.stats?.ttHighScore ?? 0), label: "time trial best", borderColor: Color("correctGreen"), progress: nil)
+                                    }
+                                }
+                                
+                                VStack(alignment: .leading, spacing: 15) {
+                                    Text("by section")
+                                        .fontWeight(.heavy)
+                                        .foregroundStyle(Color("lightPurple"))
+                                    
+                                    VStack(spacing: 20) {
+                                        StatPanel(imageName: "plus.circle.fill", imageColor: Color("pastelPurple"), value: "\(Int(additionPercent * 100))%", altValue: "\(authInfo.user!.stats!.additionScore) / \(authInfo.user!.stats!.additionTot)", label: "addition", borderColor: Color("pastelPurple"), progress: additionPercent)
+                                        
+                                        StatPanel(imageName: "minus.circle.fill", imageColor: Color("pastelBlue"), value: "\(Int(subtractionPercent * 100))%", altValue: "\(authInfo.user!.stats!.subtractionScore) / \(authInfo.user!.stats!.subtractionTot)", label: "subtraction", borderColor: Color("pastelBlue"), progress: subtractionPercent)
+                                        
+                                        StatPanel(imageName: "multiply.circle.fill", imageColor: Color("pastelRed"), value: "\(Int(multiplicationPercent * 100))%", altValue: "\(authInfo.user!.stats!.multiplicationScore) / \(authInfo.user!.stats!.multiplicationTot)", label: "multiplication", borderColor: Color("pastelRed"), progress: multiplicationPercent)
+                                        
+                                        StatPanel(imageName: "divide.circle.fill", imageColor: Color("pastelGreen"), value: "\(Int(divisionPercent * 100))%", altValue: "\(authInfo.user!.stats!.divisionScore) / \(authInfo.user!.stats!.divisionTot)", label: "division", borderColor: Color("pastelGreen"), progress: divisionPercent)
+                                    }
+                                }
+                            }
+                            .padding(.bottom, 20)
+                        } //: ScrollView
+                        .scrollIndicators(.hidden)
                     }
                     else {
                         Spacer()
@@ -82,7 +89,7 @@ struct StatsView: View {
                     
                     Spacer()
                 } //: Parent VStack
-                .padding(device.valueByDevice(small: 15, normal: 20, ipad: 30))
+                .padding([.top, .horizontal], device.valueByDevice(small: 15, normal: 20, ipad: 30))
             } //: ZStack
             .onAppear {
                 additionPercent = authInfo.user?.stats?.additionTot == 0 ? 0 : Double((authInfo.user?.stats!.additionScore)!) / Double((authInfo.user?.stats!.additionTot)!)

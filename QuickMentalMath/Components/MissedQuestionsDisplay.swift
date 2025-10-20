@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct MissedQuestion: Identifiable, Hashable {
+struct MissedQuestion: Identifiable, Hashable, Codable {
     var id = UUID()
     var question: String
     var userAns: String
@@ -27,26 +27,11 @@ struct MissedQuestionsDisplay: View {
                     .font(device.valueByDevice(small: .body, normal: .body, ipad: .title2))
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .dynamicTypeSize(.large)
-                    .bold()
+                    .fontWeight(.bold)
                 
                 VStack(spacing: device.valueByDevice(small: 20, normal: 20, ipad: 30)) {
-                    ForEach(0 ..< missedQuestions.count) { i in
-                        VStack(spacing: 15) {
-                            Text("\(missedQuestions[i].question) = \(missedQuestions[i].userAns)")
-                                .foregroundStyle(Color("darkPurple"))
-                                .fontWeight(.heavy)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .font(device.valueByDevice(small: .title3, normal: .title3, ipad: .title))
-                            
-                            Text("correct answer: \(missedQuestions[i].correctAns)")
-                                .foregroundStyle(Color("correctGreen"))
-                                .font(device.valueByDevice(small: .body, normal: .body, ipad: .title2))
-                                .fontWeight(.bold)
-                                .frame(maxWidth: .infinity, alignment: .trailing)
-                        }
-                        .padding(device.valueByDevice(small: 15, normal: 15, ipad: 25))
-                        .raisedButton(cornerRadius: 20, backgroundColor: Color("silver"), shadowColor: Color.gray.opacity(0.4), shadowOffset: device.valueByDevice(small: 5, normal: 5, ipad: 8), action: {})
-                        .allowsHitTesting(false)
+                    ForEach(missedQuestions) { question in
+                        MissedQuestionCard(missedQuestion: question)
                     }
                 }
             }

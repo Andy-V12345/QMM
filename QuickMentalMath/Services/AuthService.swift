@@ -359,6 +359,7 @@ class AuthService {
                 return false
             }
             if httpResponse?.statusCode == 200 {
+                UserDefaults.standard.clearLastGame()
                 return true
             }
             

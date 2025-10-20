@@ -44,15 +44,15 @@ struct RaisedButtonStyle: ViewModifier {
                                 withAnimation(.easeOut(duration: 0.1)) {
                                     isPressed = true
                                 }
-                                
-                                UIImpactFeedbackGenerator(style: impactStrength).impactOccurred()
-                                
+
+                                HapticManager.shared.trigger(impactStrength)
+
                                 try? await Task.sleep(nanoseconds: 100_000_000)
-                                
+
                                 withAnimation(.easeOut(duration: 0.15)) {
                                     isPressed = false
                                 }
-                                    
+
                                 action()
                             }
                         }

@@ -24,12 +24,7 @@ struct KeyPadButton: View {
     let difficulty: GameDifficulty
     let mode: GameMode
     let numQuestions: Int
-    
-        
-    let mediumHaptic = UIImpactFeedbackGenerator(style: .medium)
-    let rigidHaptic = UIImpactFeedbackGenerator(style: .rigid)
-    let heavyHaptic = UIImpactFeedbackGenerator(style: .heavy)
-    
+
     @EnvironmentObject var device: DeviceModel
         
     func checkAnswer() -> Bool {
@@ -199,14 +194,13 @@ struct KeyPadButton: View {
         }
         else if Int(id) == 12 {
             let isCorrect = checkAnswer()
-            
+
             if isCorrect {
-                mediumHaptic.impactOccurred()
+                HapticManager.shared.trigger(.medium)
                 numCorrect += 1
             }
             else {
-                heavyHaptic.impactOccurred()
-                rigidHaptic.impactOccurred()
+                HapticManager.shared.trigger(.heavy, count: 2, interval: 0.05)
                 missedQuestions.append(MissedQuestion(question: "\(String(format: "%.2f", num1)) \(mode == .TIME ? tmpMode : mode.rawValue) \(String(format: "%.2f", num2))", userAns: "\(input)", correctAns: "\(String(format: "%.2f", answer))"))
                 numIncorrect += 1
             }
@@ -228,14 +222,13 @@ struct KeyPadButton: View {
         else if Int(id) == 11 {
             if difficulty != .DECIMALS {
                 let isCorrect = checkAnswer()
-                
+
                 if isCorrect {
-                    mediumHaptic.impactOccurred()
+                    HapticManager.shared.trigger(.medium)
                     numCorrect += 1
                 }
                 else {
-                    heavyHaptic.impactOccurred()
-                    rigidHaptic.impactOccurred()
+                    HapticManager.shared.trigger(.heavy, count: 2, interval: 0.05)
                     missedQuestions.append(MissedQuestion(question: "\(String(format: "%.0f", num1)) \(mode == .TIME ? tmpMode : mode.rawValue) \(String(format: "%.0f", num2))", userAns: "\(input)", correctAns: "\(String(format: "%.0f", answer))"))
                     numIncorrect += 1
                 }
@@ -276,7 +269,7 @@ struct KeyPadButton: View {
             }
             
             if checkAnswer() {
-                mediumHaptic.impactOccurred()
+                HapticManager.shared.trigger(.medium)
                 numCorrect += 1
                 questionCount += 1
                 if mode != .TIME && questionCount > numQuestions {

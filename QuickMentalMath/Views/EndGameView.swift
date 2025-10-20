@@ -13,12 +13,16 @@ struct EndGameView: View {
     @State var newTtHighScore = false
     @State var saying: String = ""
     @State var confettiTrigger = 0
+    @State var showFraction = false
+    @State var showNumQuestions = false
+    @State var isConfettiOnCooldown = false
     
     @EnvironmentObject var appModel: AppModel
     @EnvironmentObject var authInfo: AuthInfoModel
     @EnvironmentObject var device: DeviceModel
     
     let numCorrect: Int
+    let totQuestions: Int
     let missedQuestions: [MissedQuestion]
     let questionCount: Int
     let gameConfigs: GameConfigsModel
@@ -31,13 +35,15 @@ struct EndGameView: View {
         self.missedQuestions = endGameModel.game.missedQuestions
         self.questionCount = endGameModel.game.questionCount
         self.gameConfigs = endGameModel.gameConfigs
+        self.totQuestions = self.questionCount - 1
         
-        if endGameModel.gameConfigs.mode == .TIME {
-            self.percentage = Double((Float(self.numCorrect) / Float(self.questionCount - 1)) * 100)
+        if self.totQuestions == 0 {
+            self.percentage = 0
         }
         else {
-            self.percentage = Double((Float(self.numCorrect) / Float(self.gameConfigs.numQuestions)) * 100)
+            self.percentage = Double((Float(self.numCorrect) / Float(self.totQuestions)) * 100)
         }
+        
     }
     
     let perfectSayings = [
@@ -63,7 +69,7 @@ struct EndGameView: View {
                     if newHighScore || newTtHighScore {
                         VStack(spacing: 5) {
                             Text("new high score")
-                                .foregroundStyle(Color("vividPurple"))
+                                .foregroundStyle(Color("lightPurple"))
                                 .fontWeight(.heavy)
                                 .font(device.valueByDevice(small: .subheadline, normal: .subheadline, ipad: .title2))
                                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -75,7 +81,7 @@ struct EndGameView: View {
                                     .foregroundStyle(Color("darkPurple"))
                                 
                                 Image(systemName: "bolt.fill")
-                                    .foregroundStyle(Color("vividPurple"))
+                                    .foregroundStyle(Color("lightPurple"))
                                     .font(device.valueByDevice(small: .title2, normal: .title2, ipad: .largeTitle))
                                 
                                 Spacer()
@@ -84,13 +90,23 @@ struct EndGameView: View {
                         .frame(maxWidth: .infinity)
                         .padding(.horizontal, device.valueByDevice(small: 20, normal: 20, ipad: 30))
                         .padding(.vertical, 15)
-                        .raisedButton(cornerRadius: 20, backgroundColor: Color("gold"), shadowColor: Color("darkYellow"), shadowOffset: device.valueByDevice(small: 5, normal: 5, ipad: 8), action: {})
+                        .raisedButton(cornerRadius: 20, backgroundColor: Color("gold"), shadowColor: Color("darkYellow"), shadowOffset: device.valueByDevice(small: 5, normal: 5, ipad: 8), action: {
+                            guard !isConfettiOnCooldown else { return }
+
+                            confettiTrigger += 1
+                            HapticManager.shared.trigger(.heavy)
+                            isConfettiOnCooldown = true
+
+                            Task {
+                                try? await Task.sleep(nanoseconds: 2_700_000_000) // 2.7 seconds
+                                isConfettiOnCooldown = false
+                            }
+                        })
                         .confettiCannon(trigger: $confettiTrigger, num: 50, colors: [Color("darkPurple"), Color("lightPurple"), Color("lighterPurple")], openingAngle: Angle(degrees: 0), closingAngle: Angle(degrees: 360), radius: 200, repetitions: 4, repetitionInterval: 0.3)
                         .zIndex(1000)
                         .onAppear {
                             confettiTrigger += 1
                         }
-                        .allowsHitTesting(false)
                     }
                     
                     HStack(spacing: 10) {
@@ -102,10 +118,11 @@ struct EndGameView: View {
                                 .frame(maxWidth: .infinity, alignment: .leading)
                             
                             HStack {
-                                Text("\(Int(percentage))%")
+                                Text(showFraction ? "\(numCorrect)/\(totQuestions)" :  "\(Int(percentage))%")
                                     .foregroundStyle(Color("darkPurple"))
                                     .font(device.valueByDevice(small: .title, normal: .title, ipad: .largeTitle))
                                     .fontWeight(.heavy)
+                                    .lineLimit(1)
                                     
                                 Spacer()
                                 
@@ -119,41 +136,45 @@ struct EndGameView: View {
                         .padding(.horizontal, device.valueByDevice(small: 15, normal: 15, ipad: 20))
                         .padding(.vertical, device.valueByDevice(small: 12, normal: 12, ipad: 17))
                         .frame(maxWidth: .infinity)
-                        .raisedButton(cornerRadius: 20, backgroundColor: Color("silver"), shadowColor: Color.gray.opacity(0.4), shadowOffset: device.valueByDevice(small: 5, normal: 5, ipad: 8), action: {})
-                        .allowsHitTesting(false)
+                        .raisedButton(cornerRadius: 20, backgroundColor: Color("offWhite"), shadowColor: Color.gray.opacity(0.4), shadowOffset: device.valueByDevice(small: 5, normal: 5, ipad: 8), action: {
+                            
+                            showFraction.toggle()
+                        })
                         
                         VStack(alignment: .leading, spacing: 5) {
-                            Text("score")
+                            Text(showNumQuestions ? "questions" : "score")
                                 .foregroundStyle(Color("lightPurple"))
                                 .font(device.valueByDevice(small: .subheadline, normal: .subheadline, ipad: .title3))
                                 .fontWeight(.bold)
                                 .frame(maxWidth: .infinity, alignment: .leading)
 
                             HStack {
-                                Text("\(numCorrect)")
+                                Text(showNumQuestions ? "\(totQuestions)" : "\(numCorrect)")
                                     .foregroundStyle(Color("darkPurple"))
                                     .font(device.valueByDevice(small: .title, normal: .title, ipad: .largeTitle))
                                     .fontWeight(.heavy)
                                 
                                 Spacer()
                                 
-                                Image(systemName: "checkmark.seal.fill")
+                                Image(systemName: showNumQuestions ? "list.clipboard.fill" : "checkmark.seal.fill")
                                     .font(device.valueByDevice(small: .body, normal: .body, ipad: .title))
-                                    .foregroundStyle(Color("pastelBlue"))
+                                    .foregroundStyle(Color(showNumQuestions ? "pastelBlue" : "correctGreen"))
                             }
                         }
                         .padding(.horizontal, device.valueByDevice(small: 15, normal: 15, ipad: 20))
                         .padding(.vertical, device.valueByDevice(small: 12, normal: 12, ipad: 17))
                         .frame(maxWidth: .infinity)
-                        .raisedButton(cornerRadius: 20, backgroundColor: Color("silver"), shadowColor: Color.gray.opacity(0.4), shadowOffset: device.valueByDevice(small: 5, normal: 5, ipad: 8), action: {})
-                        .allowsHitTesting(false)
+                        .raisedButton(cornerRadius: 20, backgroundColor: Color("offWhite"), shadowColor: Color.gray.opacity(0.4), shadowOffset: device.valueByDevice(small: 5, normal: 5, ipad: 8), action: {
+                            
+                            showNumQuestions.toggle()
+                        })
                     }
                     
                     if !missedQuestions.isEmpty {
                         MissedQuestionsDisplay(missedQuestions: missedQuestions)
                             .frame(maxHeight: .infinity)
                     }
-                    else if missedQuestions.isEmpty {
+                    else if missedQuestions.isEmpty && percentage == 100 {
                         Spacer()
                         
                         VStack(spacing: 10) {
@@ -225,9 +246,13 @@ struct EndGameView: View {
         } //: ZStack
         .onAppear {
             saying = perfectSayings.randomElement()!
-            
+
+            // Save the last played game to local storage
+            let gameModel = GameModel(numCorrect: numCorrect, numIncorrect: numCorrect + missedQuestions.count, missedQuestions: missedQuestions, questionCount: questionCount, gameConfigs: gameConfigs)
+            UserDefaults.standard.saveLastGame(gameModel)
+
             if authInfo.authState == .AUTHORIZED && authInfo.user != nil {
-                
+
                 switch self.gameConfigs.mode {
                 case .ADDITION:
                     authInfo.user?.stats?.additionScore += numCorrect
@@ -244,18 +269,18 @@ struct EndGameView: View {
                 default:
                     break
                 }
-                
+
                 if numCorrect > (authInfo.user?.stats!.highScore)! {
                     newHighScore = true
                 }
-                
+
                 if self.gameConfigs.mode == .TIME && numCorrect > (authInfo.user?.stats!.ttHighScore)! {
                     newTtHighScore = true
                     authInfo.user?.stats?.ttHighScore = numCorrect
                 }
-                
+
                 authInfo.user?.stats?.highScore = max((authInfo.user?.stats!.highScore)!, numCorrect)
-                
+
                 Task {
                     let statsRequest = UserStatsRequest(userStats: (authInfo.user?.stats)!)
                     let _ = await authInfo.updateUserStats(statsRequest: statsRequest)
@@ -266,20 +291,20 @@ struct EndGameView: View {
     
 }
 
-//#Preview {
-//    
-//    let missed = [
-//        MissedQuestion(question: "5 + 5", userAns: "8", correctAns: "10"),
-//        MissedQuestion(question: "8 + 5", userAns: "8", correctAns: "13"),
-//        MissedQuestion(question: "5 + 5", userAns: "8", correctAns: "10")
-//    ]
-//    let gameModel = GameModel(mode: "+", difficulty: "easy", totQuestions: 15, score: 10, missedQuestions: [])
-//    
-//    return GeometryReader { screen in
-//        EndGameView()
-//            .environmentObject(AuthInfoModel())
-//            .environmentObject(AppModel(path: NavigationPath()))
-//            .environmentObject(gameModel)
-//            .environmentObject(DeviceModel(screen: screen))
-//    }
-//}
+#Preview {
+    
+    let missed = [
+        MissedQuestion(question: "5 + 5", userAns: "8", correctAns: "10"),
+        MissedQuestion(question: "8 + 5", userAns: "8", correctAns: "13"),
+        MissedQuestion(question: "5 + 5", userAns: "8", correctAns: "10")
+    ]
+    
+    let game = GameModel(numCorrect: 10, numIncorrect: 3, missedQuestions: [], questionCount: 50, gameConfigs: GameConfigsModel(mode: .ADDITION, difficulty: .MEDIUM, timeLimit: .ONE_MIN, numQuestions: 50))
+    
+    return GeometryReader { screen in
+        EndGameView(endGameModel: EndGameModel(game: game))
+            .environmentObject(AuthInfoModel())
+            .environmentObject(AppModel(path: NavigationPath()))
+            .environmentObject(DeviceModel(screen: screen))
+    }
+}

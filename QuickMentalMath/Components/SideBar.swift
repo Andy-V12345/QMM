@@ -135,6 +135,7 @@ struct SideBar: View {
                             .raisedButton(cornerRadius: 20, backgroundColor: Color("offWhite"), shadowColor: Color("lightGray"), shadowOffset: 4, action: {
                                 authInfo.user = nil
                                 authInfo.authState = .UNAUTHORIZED
+                                UserDefaults.standard.clearLastGame()
                                 jwtToken = ""
                                 username = ""
                                 id = 0
