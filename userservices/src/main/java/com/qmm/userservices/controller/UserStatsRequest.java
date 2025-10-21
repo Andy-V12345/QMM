@@ -29,4 +29,10 @@ public class UserStatsRequest {
     private Long highScore;
 
     private Long ttHighScore;
+
+    private Long wins;
+
+    private Long losses;
+
+    private Long bestTime;
 }

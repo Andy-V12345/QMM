@@ -36,6 +36,12 @@ public class UserStats {
 
     private Long ttHighScore;
 
+    private Long wins;
+
+    private Long losses;
+
+    private Long bestTime;
+
     @OneToOne
     @JoinColumn(name="user_id")
     @JsonIgnore

@@ -53,6 +53,9 @@ public class UserStatsService {
                     .multiplicationTot(request.getMultiplicationTot())
                     .highScore(request.getHighScore())
                     .ttHighScore(request.getTtHighScore())
+                    .wins(request.getWins())
+                    .losses(request.getLosses())
+                    .bestTime(request.getBestTime())
                     .user(appUser)
                     .build();
 
@@ -85,6 +88,9 @@ public class UserStatsService {
             stats.setDivisionTot(request.getDivisionTot());
             stats.setHighScore(request.getHighScore());
             stats.setTtHighScore(request.getTtHighScore());
+            stats.setWins(request.getWins());
+            stats.setLosses(request.getLosses());
+            stats.setBestTime(request.getBestTime());
 
             userStatsRepository.save(stats);
 
