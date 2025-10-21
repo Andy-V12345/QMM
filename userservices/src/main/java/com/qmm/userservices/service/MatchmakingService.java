@@ -83,8 +83,6 @@ public class MatchmakingService {
                 // Return waiting response
                 JoinMatchResponse response = new JoinMatchResponse();
                 response.setStatus(WAITING);
-                response.setVariant(DEFAULT_VARIANT);
-                response.setQueuePosition(1);
                 return response;
 
             } else {
@@ -96,8 +94,6 @@ public class MatchmakingService {
                 if (opponentUid.equals(uid)) {
                     JoinMatchResponse response = new JoinMatchResponse();
                     response.setStatus(WAITING);
-                    response.setVariant(DEFAULT_VARIANT);
-                    response.setQueuePosition(1);
                     return response;
                 }
 
@@ -229,6 +225,15 @@ public class MatchmakingService {
                     queue.setWaitingPlayer(null);
                     transaction.set(queueRef, queue);
                 }
+                else { // user is no longer in queue
+                    // return already matched response
+                    JoinMatchResponse response = new JoinMatchResponse();
+                    response.setStatus(ALREADY_MATCHED);
+                    return response;
+                }
+            }
+            else { // queue doc doesn't exist
+                throw new IllegalStateException("Queue doesn't exist");
             }
 
             // Create game with bot
@@ -294,13 +299,37 @@ public class MatchmakingService {
      * Generate a random bot name.
      */
     private String generateBotName() {
-        String[] prefixes = {"Math", "Quick", "Speed", "Brain", "Clever", "Smart", "Number", "Calc"};
-        String[] suffixes = {"Whiz", "Master", "Ninja", "Wizard", "Pro", "Genius", "Expert", "Champion"};
+        String[] botNames = {
+            "mikey", "jessica22", "dan_m", "rachel",
+            "alex2004", "sarahk", "jasontheone", "emmac",
+            "chrisb92", "katie", "ryanmart", "ashley_",
+            "briann", "meganm27", "kevinp", "laurenw",
+            "itsjayz", "nicole", "erictran", "mandyross",
+            "tyler", "samfoster", "jakemills", "sophiec",
+            "danny76", "emward", "marcusl", "hannahb",
+            "noah", "maya_s", "lucask", "livia",
+            "ethan", "avabrooks", "matthall", "chloe_d",
+            "drew45", "zoeprice", "justin_r", "grace",
+            "isaac", "lilyh", "nathan_", "ellaaa",
+            "caleb", "ruby_m", "owen22", "miaaa",
+            "henryj", "jackm04",
+            // Gamer tag style names (based on real names)
+            "xXJasonXx", "MikeTheKing", "Sarah_Slayer", "DannyGaming",
+            "TTV_Rachel", "ProEthan", "Alex_YT", "EmilyAce",
+            "ChrisNinja", "KatieOP", "RyanTheGoat", "Ashley_Pro",
+            "BrianGG", "MeganPlays", "Kevin_TTV", "LaurenWins",
+            "JayStreamz", "NicoleOnTop", "EricGames", "AmandaFTW",
+            "TylerTV", "SamDaKing", "JakeGGEZ", "SophiaGaming",
+            "DanTheMan", "EmilyPlays", "MarcusOP", "HannahTTV",
+            "NoahGG", "MayaTheAce", "LucasGames", "OliviaStreams",
+            "EthanPro", "AvaPlays", "Matt_Gaming", "ChloeGG",
+            "DrewTheKing", "ZoeTTV", "Justin_Pro", "GracePlays",
+            "IsaacGaming", "LilyTTV", "NathanGG", "EllaTTV",
+            "CalebTheAce", "RubyGames", "OwenPlays", "MiaStreams",
+            "HenryGG", "JackGaming", "xXEmilyXx", "SamThePro",
+            "TTV_Alex", "MikeGGEZ", "SarahGaming", "DannyStreams"
+        };
 
-        String prefix = prefixes[new java.util.Random().nextInt(prefixes.length)];
-        String suffix = suffixes[new java.util.Random().nextInt(suffixes.length)];
-        int number = new java.util.Random().nextInt(100);
-
-        return prefix + suffix + number;
+        return botNames[new java.util.Random().nextInt(botNames.length)];
     }
 }

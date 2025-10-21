@@ -11,9 +11,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class JoinMatchResponse {
-    private MatchStatus status;         // WAITING or MATCHED
-    private String variant;             // "DEFAULT" (for waiting response)
-    private Integer queuePosition;      // 1 (for waiting response)
+    private MatchStatus status;         // WAITING or MATCHED or ALREADY_MATCHED
     private String gameId;              // present when matched
     private Timestamp startAt;          // present when matched
 }

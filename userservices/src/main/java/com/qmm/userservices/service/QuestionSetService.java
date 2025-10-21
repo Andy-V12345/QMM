@@ -5,6 +5,7 @@ import com.google.cloud.firestore.Firestore;
 import com.qmm.userservices.firestore.Operation;
 import com.qmm.userservices.firestore.QuestionSet;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -15,14 +16,12 @@ import java.util.concurrent.ThreadLocalRandom;
 
 @Service
 public class QuestionSetService {
-    private static final int TARGET_COUNT = 2;
     private static final String MODE = "MIXED";
     private static final String DIFFICULTY = "MEDIUM";
     private static final int SCHEMA_VERSION = 1;
-    private static final String QUESTION_SETS_COLLECTION = "questionSets";
 
     @Autowired
-    private Firestore db;
+    Environment env;
 
     /**
      * Generates a new question set with 25 random questions .
@@ -30,6 +29,9 @@ public class QuestionSetService {
      */
     public QuestionSet generateQuestionSet() throws ExecutionException, InterruptedException {
         List<QuestionSet.QuestionItem> questions = new ArrayList<>();
+
+        String num_questions = env.getProperty("NUM_QUESTIONS");
+        int TARGET_COUNT = num_questions == null ? 25 : Integer.parseInt(num_questions);
 
         for (int i = 0; i < TARGET_COUNT; i++) {
             // Choose random operation
