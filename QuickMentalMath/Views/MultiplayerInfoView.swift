@@ -9,10 +9,19 @@ import SwiftUI
 
 struct MultiplayerInfoView: View {
     @EnvironmentObject var device: DeviceModel
+    @EnvironmentObject var appModel: AppModel
     
+    @State var findingGame = false
     @State private var player1Progress: Int = 0
     @State private var player2Progress: Int = 0
     @State private var winner: String? = nil
+    
+    let gamePlayer: GamePlayer
+    
+    
+    init(gamePlayer: GamePlayer) {
+        self.gamePlayer = gamePlayer
+    }
     
     private func reset() async {
         // Reset after reaching the end
@@ -49,14 +58,82 @@ struct MultiplayerInfoView: View {
                         Spacer()
                     }
                     .foregroundStyle(Color("lightPurple"))
+                    
+                    HStack(spacing: 12) {
+                        VStack(spacing: 5) {
+                            Text("wins")
+                                .foregroundStyle(Color("correctGreen"))
+                                .fontWeight(.bold)
+                                .font(device.valueByDevice(small: .body, normal: .body, ipad: .title2))
+                                .frame(maxWidth: .infinity, alignment: .leading)
+
+                            Text("5")
+                                .foregroundStyle(Color("darkPurple"))
+                                .fontWeight(.heavy)
+                                .font(device.valueByDevice(small: .title, normal: .title, ipad: Font.system(size: 45)))
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .lineLimit(1)
+                        }
+                        .padding(.horizontal, device.valueByDevice(small: 15, normal: 15, ipad: 20))
+                        .padding(.vertical, device.valueByDevice(small: 12, normal: 12, ipad: 17))
+                        .frame(maxWidth: .infinity)
+                        .raisedButton(cornerRadius: 15, backgroundColor: Color("offWhite"), shadowColor: Color.gray.opacity(0.4), shadowOffset: 7, action: {
+                            
+                        })
+                        
+                        VStack(spacing: 5) {
+                            Text("losses")
+                                .foregroundStyle(Color("errorRed"))
+                                .fontWeight(.bold)
+                                .font(device.valueByDevice(small: .body, normal: .body, ipad: .title2))
+                                .frame(maxWidth: .infinity, alignment: .leading)
+
+                            Text("8")
+                                .foregroundStyle(Color("darkPurple"))
+                                .fontWeight(.heavy)
+                                .font(device.valueByDevice(small: .title, normal: .title, ipad: Font.system(size: 45)))
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .lineLimit(1)
+                        }
+                        .padding(.horizontal, device.valueByDevice(small: 15, normal: 15, ipad: 20))
+                        .padding(.vertical, device.valueByDevice(small: 12, normal: 12, ipad: 17))
+                        .frame(maxWidth: .infinity)
+                        .raisedButton(cornerRadius: 15, backgroundColor: Color("offWhite"), shadowColor: Color.gray.opacity(0.4), shadowOffset: 7, action: {
+                            
+                        })
+                        
+                        VStack(spacing: 5) {
+                            Text("best")
+                                .foregroundStyle(Color("lightPurple"))
+                                .fontWeight(.bold)
+                                .font(device.valueByDevice(small: .body, normal: .body, ipad: .title2))
+                                .frame(maxWidth: .infinity, alignment: .leading)
+
+                            Text("120s")
+                                .foregroundStyle(Color("darkPurple"))
+                                .fontWeight(.heavy)
+                                .font(device.valueByDevice(small: .title, normal: .title, ipad: Font.system(size: 45)))
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .lineLimit(1)
+                        }
+                        .padding(.horizontal, device.valueByDevice(small: 15, normal: 15, ipad: 20))
+                        .padding(.vertical, device.valueByDevice(small: 12, normal: 12, ipad: 17))
+                        .frame(maxWidth: .infinity)
+                        .raisedButton(cornerRadius: 15, backgroundColor: Color("offWhite"), shadowColor: Color.gray.opacity(0.4), shadowOffset: 7, action: {
+                            
+                        })
+                        
+                    }
+                    .padding(.top, 5)
                 } //: Text Title VStack
                 
+                Spacer()
                 
                 // Racing progress bars
-                VStack(spacing: device.valueByDevice(small: 30, normal: 35, ipad: 45)) {
+                VStack(spacing: device.valueByDevice(small: 25, normal: 30, ipad: 45)) {
                     RacingProgressBar(
                         playerName: "Player 1",
-                        backgroundColor: Color("pastelRed"),
+                        backgroundColor: Color("errorRed"),
                         shadowColor: Color("darkPastelRed"),
                         currentProgress: player1Progress
                     )
@@ -71,6 +148,7 @@ struct MultiplayerInfoView: View {
                     Text("be the first to the finish line")
                         .foregroundStyle(Color("darkPurple"))
                         .fontWeight(.heavy)
+                        .font(device.valueByDevice(small: .body, normal: .body, ipad: .title))
                 }
                 
                 Spacer()
@@ -87,12 +165,12 @@ struct MultiplayerInfoView: View {
                     .raisedButton(impactStrength: .heavy, cornerRadius: 20, backgroundColor: Color("lighterPurple"), shadowColor: Color("lightPurple"), shadowOffset: device.valueByDevice(small: 11, normal: 11, ipad: 13),
                                   action: {
                         
-                        // TODO: find game
+                        findingGame = true
                     })
                     //: Start Button
                     
                     Button(action: {
-                        // TODO: BACK TO HOME
+                        appModel.path.removeLast()
                     }, label: {
                         Text("back to home")
                             .foregroundStyle(Color("darkPurple"))
@@ -106,6 +184,10 @@ struct MultiplayerInfoView: View {
         .onAppear {
             startRacingAnimation()
         }
+        .fullScreenCover(isPresented: $findingGame, content: {
+            
+            WaitingRoomView()
+        })
     }
     
     // MARK: - Racing Animation Logic
@@ -152,8 +234,9 @@ struct MultiplayerInfoView: View {
 #Preview {
     return (
         GeometryReader { screen in
-            MultiplayerInfoView()
+            MultiplayerInfoView(gamePlayer: GamePlayer(uid: "123", displayName: "andy.v123"))
                 .environmentObject(DeviceModel(screen: screen))
+                .environmentObject(AppModel(path: NavigationPath()))
         }
     )
 }

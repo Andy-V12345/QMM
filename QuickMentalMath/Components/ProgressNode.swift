@@ -26,12 +26,12 @@ struct ProgressNode: View {
     var body: some View {
         Circle()
             .fill(isVisuallyCompleted ? backgroundColor : Color("silver"))
-            .frame(width: device.valueByDevice(small: nodeSize, normal: nodeSize + 5, ipad: nodeSize + 20))
+            .frame(width: device.valueByDevice(small: nodeSize, normal: nodeSize, ipad: nodeSize + 20))
             .overlay(
                 // Show checkmark for completed nodes
                 isVisuallyCompleted ?
                     Image(systemName: "checkmark")
-                        .font(device.valueByDevice(small: .body, normal: .title2, ipad: .title))
+                        .font(device.valueByDevice(small: .body, normal: .body, ipad: .title))
                         .foregroundStyle(.white)
                         .fontWeight(.bold)
                     : nil
@@ -42,6 +42,7 @@ struct ProgressNode: View {
                     Text("\(index + 1)")
                         .fontWeight(.bold)
                         .foregroundStyle(Color("darkPurple"))
+                        .font(device.valueByDevice(small: .body, normal: .body, ipad: .title))
                     : nil
             )
             .clipped()
@@ -49,7 +50,7 @@ struct ProgressNode: View {
                 color: isVisuallyCompleted ? shadowColor : Color.gray.opacity(0.4),
                 radius: 0,
                 x: 0,
-                y: device.valueByDevice(small: 3, normal: 5, ipad: 7)
+                y: device.valueByDevice(small: 3, normal: 3, ipad: 5)
             )
             .id(index)
             .onChange(of: shouldBeCompleted) { newValue in

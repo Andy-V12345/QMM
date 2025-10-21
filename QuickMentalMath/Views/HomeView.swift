@@ -81,7 +81,14 @@ struct HomeView: View {
                                     iconName: "figure.run",
                                     backgroundColor: Color("pastelOrange"),
                                     shadowColor: Color("darkPastelOrange"),
-                                    action: {}
+                                    action: {
+                                        if authInfo.authState != .AUTHORIZED {
+                                            showNoAccountAlert = true
+                                        }
+                                        else {
+                                            appModel.path.append(GamePlayer(uid: String(authInfo.user!.id), displayName: authInfo.user!.username))
+                                        }
+                                    }
                                 )
 
                                 ModeCard(

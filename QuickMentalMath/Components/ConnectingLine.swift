@@ -17,11 +17,11 @@ struct ConnectingLine: View {
     @EnvironmentObject var device: DeviceModel
 
     private var lineWidth: CGFloat {
-        device.valueByDevice(small: 40, normal: 50, ipad: 70)
+        device.valueByDevice(small: 40, normal: 45, ipad: 70)
     }
 
     private var lineHeight: CGFloat {
-        device.valueByDevice(small: 6, normal: 8, ipad: 12)
+        device.valueByDevice(small: 6, normal: 6, ipad: 12)
     }
 
     private var isFilled: Bool {
@@ -38,7 +38,7 @@ struct ConnectingLine: View {
                     color: Color.gray.opacity(0.4),
                     radius: 0,
                     x: 0,
-                    y: device.valueByDevice(small: 3, normal: 4, ipad: 5)
+                    y: device.valueByDevice(small: 2, normal: 2, ipad: 3)
                 )
 
             // Foreground (filled portion - animates from left to right)
@@ -49,7 +49,7 @@ struct ConnectingLine: View {
                     color: isFilled ? shadowColor : Color.clear,
                     radius: 0,
                     x: 0,
-                    y: device.valueByDevice(small: 2, normal: 3, ipad: 4)
+                    y: device.valueByDevice(small: 2, normal: 2, ipad: 3)
                 )
         }
         .frame(width: lineWidth, height: lineHeight)

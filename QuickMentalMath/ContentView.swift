@@ -68,33 +68,31 @@ struct ContentView: View {
                                 .navigationBarBackButtonHidden()
                         }
                     })
+                    .navigationDestination(for: GamePlayer.self, destination: { gamePlayer in
+                        
+                        MultiplayerInfoView(gamePlayer: gamePlayer)
+                            .navigationBarBackButtonHidden()
+                    })
             }
-//            .onChange(of: scenePhase) { oldPhase, phase in
-//                switch phase {
-//                case .active:
-//                    authInfo.user = User(id: id, username: username, jwtToken: jwtToken)
-//                    authInfo.authState = authState
-//                    
-//                    Task {
-//                        if authInfo.authState == .UNAUTHORIZED {
-//                            appModel.path = NavigationPath([authInfo.authState])
-//                        }
-//                        else if authInfo.authState == .NO_ACCOUNT {
-//                            appModel.path = NavigationPath([AuthState.UNAUTHORIZED, authInfo.authState])
-//                        }
-//                        else {
-//                            await authInfo.loadUserStats()
-//                            appModel.path = NavigationPath([AuthState.UNAUTHORIZED, authInfo.authState])
-//                        }
-//                    }
-//                case .background:
-//                    break
-//                case .inactive:
-//                    break
-//                @unknown default:
-//                    break
-//                }
-//            }
+            .onChange(of: scenePhase) { phase in
+                switch phase {
+                case .active:
+                    authInfo.user = User(id: id, username: username, jwtToken: jwtToken)
+                    authInfo.authState = authState
+                    
+                    Task {
+                        if authInfo.authState == .UNAUTHORIZED {
+                            appModel.path = NavigationPath([authInfo.authState])
+                        }
+                    }
+                case .background:
+                    break
+                case .inactive:
+                    break
+                @unknown default:
+                    break
+                }
+            }
             .onAppear {
                 deviceModel.setScreen(screen: screen)
                 

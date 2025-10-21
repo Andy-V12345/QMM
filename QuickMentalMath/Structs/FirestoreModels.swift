@@ -61,7 +61,7 @@ struct GameSession: Codable {
     }
 }
 
-struct GamePlayer: Codable {
+struct GamePlayer: Codable, Hashable {
     var uid: String
     var displayName: String
 
