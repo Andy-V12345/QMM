@@ -48,6 +48,14 @@
 		D89798822EA6C63B00440837 /* RacingProgressBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = D89798812EA6C63B00440837 /* RacingProgressBar.swift */; };
 		D89798852EA6CF6F00440837 /* ConnectingLine.swift in Sources */ = {isa = PBXBuildFile; fileRef = D89798832EA6CF6F00440837 /* ConnectingLine.swift */; };
 		D89798862EA6CF6F00440837 /* ProgressNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = D89798842EA6CF6F00440837 /* ProgressNode.swift */; };
+		D89798882EA7463300440837 /* MultiplayerGameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D89798872EA7463300440837 /* MultiplayerGameView.swift */; };
+		D897988A2EA81D7D00440837 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = D89798892EA81D7D00440837 /* GoogleService-Info.plist */; };
+		D897988B2EA81D7D00440837 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = D89798892EA81D7D00440837 /* GoogleService-Info.plist */; };
+		D897988C2EA81D7D00440837 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = D89798892EA81D7D00440837 /* GoogleService-Info.plist */; };
+		D897988E2EA81DB600440837 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = D897988D2EA81DB600440837 /* FirebaseAnalytics */; };
+		D89798902EA81DB600440837 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = D897988F2EA81DB600440837 /* FirebaseCore */; };
+		D89798922EA8AD5900440837 /* MultiplayerEndGameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D89798912EA8AD5900440837 /* MultiplayerEndGameView.swift */; };
+		D89798942EA987FC00440837 /* MultiplayerEndGameModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D89798932EA987FC00440837 /* MultiplayerEndGameModel.swift */; };
 		D89C3C462E8FB2CD00C265A1 /* KeyPadButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D89C3C452E8FB2CD00C265A1 /* KeyPadButton.swift */; };
 		D8BAFEF62A09A12400D49C49 /* QuickMentalMathApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8BAFEF52A09A12400D49C49 /* QuickMentalMathApp.swift */; };
 		D8BAFEF82A09A12400D49C49 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8BAFEF72A09A12400D49C49 /* ContentView.swift */; };
@@ -118,6 +126,10 @@
 		D89798812EA6C63B00440837 /* RacingProgressBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RacingProgressBar.swift; sourceTree = "<group>"; };
 		D89798832EA6CF6F00440837 /* ConnectingLine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectingLine.swift; sourceTree = "<group>"; };
 		D89798842EA6CF6F00440837 /* ProgressNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressNode.swift; sourceTree = "<group>"; };
+		D89798872EA7463300440837 /* MultiplayerGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiplayerGameView.swift; sourceTree = "<group>"; };
+		D89798892EA81D7D00440837 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		D89798912EA8AD5900440837 /* MultiplayerEndGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiplayerEndGameView.swift; sourceTree = "<group>"; };
+		D89798932EA987FC00440837 /* MultiplayerEndGameModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiplayerEndGameModel.swift; sourceTree = "<group>"; };
 		D89C3C452E8FB2CD00C265A1 /* KeyPadButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyPadButton.swift; sourceTree = "<group>"; };
 		D8BAFEF22A09A12400D49C49 /* QuickMentalMath.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = QuickMentalMath.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D8BAFEF52A09A12400D49C49 /* QuickMentalMathApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickMentalMathApp.swift; sourceTree = "<group>"; };
@@ -141,6 +153,8 @@
 			files = (
 				D88AD2C12E8FAB450036BF62 /* ConfettiSwiftUI in Frameworks */,
 				D89798702EA4160A00440837 /* FirebaseFirestore in Frameworks */,
+				D89798902EA81DB600440837 /* FirebaseCore in Frameworks */,
+				D897988E2EA81DB600440837 /* FirebaseAnalytics in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -168,6 +182,7 @@
 				D80930F12E961CF300FEAEE3 /* EndGameModel.swift */,
 				D87282932E8DA8EC00C36890 /* GameModel.swift */,
 				D80930EF2E96109900FEAEE3 /* GameConfigsModel.swift */,
+				D89798932EA987FC00440837 /* MultiplayerEndGameModel.swift */,
 			);
 			path = Structs;
 			sourceTree = "<group>";
@@ -186,6 +201,8 @@
 				D872827E2E8D920C00C36890 /* TimeTrialView.swift */,
 				D897987D2EA6C16000440837 /* WaitingRoomView.swift */,
 				D897987F2EA6C21600440837 /* MultiplayerInfoView.swift */,
+				D89798872EA7463300440837 /* MultiplayerGameView.swift */,
+				D89798912EA8AD5900440837 /* MultiplayerEndGameView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -267,6 +284,7 @@
 		D8BAFEF42A09A12400D49C49 /* QuickMentalMath */ = {
 			isa = PBXGroup;
 			children = (
+				D89798892EA81D7D00440837 /* GoogleService-Info.plist */,
 				D80930F32E96220C00FEAEE3 /* Structs */,
 				D87282BE2E8DAE0C00C36890 /* Extensions */,
 				D872828B2E8DA67F00C36890 /* Classes */,
@@ -418,6 +436,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D87EFEB32E91AFBC00D5F4A5 /* Launch Screen.storyboard in Resources */,
+				D897988A2EA81D7D00440837 /* GoogleService-Info.plist in Resources */,
 				D8BAFEFE2A09A12500D49C49 /* Preview Assets.xcassets in Resources */,
 				D8BAFEFA2A09A12500D49C49 /* Assets.xcassets in Resources */,
 			);
@@ -427,6 +446,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D897988C2EA81D7D00440837 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -434,6 +454,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D897988B2EA81D7D00440837 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -457,6 +478,8 @@
 				D897987C2EA61B1900440837 /* MissedQuestionCard.swift in Sources */,
 				D87282842E8D920C00C36890 /* GameView.swift in Sources */,
 				D87282852E8D920C00C36890 /* HomeView.swift in Sources */,
+				D89798882EA7463300440837 /* MultiplayerGameView.swift in Sources */,
+				D89798942EA987FC00440837 /* MultiplayerEndGameModel.swift in Sources */,
 				D872828F2E8DA6EF00C36890 /* AuthInfoModel.swift in Sources */,
 				D80930F02E96109900FEAEE3 /* GameConfigsModel.swift in Sources */,
 				D87282862E8D920C00C36890 /* LeaderboardView.swift in Sources */,
@@ -484,6 +507,7 @@
 				D886E8D42C3ADA290054DD61 /* LoadingSpinner.swift in Sources */,
 				D89798802EA6C21600440837 /* MultiplayerInfoView.swift in Sources */,
 				D823EE752E8FD2370074C071 /* StatPanel.swift in Sources */,
+				D89798922EA8AD5900440837 /* MultiplayerEndGameView.swift in Sources */,
 				D89798742EA497DA00440837 /* GameStorageExtension.swift in Sources */,
 				D8F7B7BB2C3FB0CE005CFCF0 /* SideBar.swift in Sources */,
 				D8E279222BB8E36D009B029E /* DifficultySelector.swift in Sources */,
@@ -890,6 +914,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = D897986E2EA4160A00440837 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseFirestore;
+		};
+		D897988D2EA81DB600440837 /* FirebaseAnalytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D897986E2EA4160A00440837 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalytics;
+		};
+		D897988F2EA81DB600440837 /* FirebaseCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D897986E2EA4160A00440837 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCore;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

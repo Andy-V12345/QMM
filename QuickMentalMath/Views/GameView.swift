@@ -40,7 +40,7 @@ struct GameView: View {
     
     @EnvironmentObject var appModel: AppModel
     @EnvironmentObject var device: DeviceModel
-    
+
     init(gameModel: GameModel) {
         self.numCorrect = gameModel.numCorrect
         self.numIncorrect = gameModel.numIncorrect
@@ -51,6 +51,195 @@ struct GameView: View {
         self.difficulty = gameModel.gameConfigs.difficulty
         self.mode = gameModel.gameConfigs.mode
         self.missedQuestions = []
+    }
+
+    // MARK: - Game Logic Methods
+
+    private func checkAnswer() -> Bool {
+        return answer.isEqual(to: Double(input)!)
+    }
+
+    private func newQuestion(mode: String) {
+        input = "f"
+
+        if mode == "+" {
+            if difficulty == .EASY {
+                num1 = Double(Int.random(in: 0...10))
+                num2 = Double(Int.random(in: 0...10))
+            }
+            else if difficulty == .MEDIUM {
+                num1 = Double(Int.random(in: 5...50))
+                num2 = Double(Int.random(in: 5...50))
+            }
+            else if difficulty == .HARD {
+                num1 = Double(Int.random(in: 10...200))
+                num2 = Double(Int.random(in: 10...200))
+            }
+            else {
+                num1 = round(100.0 * Double.random(in: 0.01...10)) / 100.0
+                num2 = round(100.0 * Double.random(in: 0.01...10)) / 100.0
+            }
+            answer = num1 + num2
+        }
+        else if mode == "-" {
+            if difficulty == .EASY {
+                num1 = Double(Int.random(in: 5...10))
+                num2 = Double(Int.random(in: 0...10))
+                while num2 > num1 {
+                    num2 = Double(Int.random(in: 0...10))
+                }
+            }
+            else if difficulty == .MEDIUM {
+                num1 = Double(Int.random(in: 10...30))
+                num2 = Double(Int.random(in: 5...30))
+                while num2 > num1 {
+                    num2 = Double(Int.random(in: 5...30))
+                }
+            }
+            else if difficulty == .HARD {
+                num1 = Double(Int.random(in: 10...500))
+                num2 = Double(Int.random(in: 10...400))
+                while num2 > num1 {
+                    num2 = Double(Int.random(in: 10...500))
+                }
+            }
+            else {
+                num1 = round(100.0 * Double.random(in: 10...20)) / 100.0
+                num2 = round(100.0 * Double.random(in: 0.01..<10)) / 100.0
+                while num2 > num1 {
+                    num2 = round(100.0 * Double.random(in: 0.01..<10)) / 100.0
+                }
+            }
+            answer = num1 - num2
+        }
+        else if mode == "x" {
+            if difficulty == .EASY {
+                num1 = Double(Int.random(in: 1...5))
+                num2 = Double(Int.random(in: 0...5))
+            }
+            else if difficulty == .MEDIUM {
+                num1 = Double(Int.random(in: 1...12))
+                num2 = Double(Int.random(in: 0...12))
+            }
+            else if difficulty == .HARD {
+                num1 = Double(Int.random(in: 5...40))
+                num2 = Double(Int.random(in: 5...40))
+            }
+            else {
+                num1 = round(100.0 * Double.random(in: 0.01...20)) / 100.0
+                num2 = Double(Int.random(in: 1...20))
+            }
+            answer = num1 * num2
+        }
+        else {
+            if difficulty == .EASY {
+                num1 = Double(Int.random(in: 10...20))
+                num2 = Double(Int.random(in: 1...10))
+
+                while Int(num1) % Int(num2) != 0 {
+                    num1 = Double(Int.random(in: 10...20))
+                    num2 = Double(Int.random(in: 1...10))
+                }
+            }
+            else if difficulty == .MEDIUM {
+
+                let choices = Array(1...12)
+
+                let productNums = [choices.randomElement()!, choices.randomElement()!]
+
+                num1 = Double(productNums[0] * productNums[1])
+                num2 = Double(productNums.randomElement()!)
+
+            }
+            else {
+                let choices = Array(5...20)
+
+                let productNums = [choices.randomElement()!, choices.randomElement()!]
+
+                num1 = Double(productNums[0] * productNums[1])
+                num2 = Double(productNums.randomElement()!)
+            }
+            answer = num1 / num2
+        }
+    }
+
+    private func randomMode() -> String {
+        let modes = ["+", "-", "x", "÷"]
+        tmpMode = modes.randomElement()!
+        return tmpMode
+    }
+
+    func handleKeypadClick(id: String) {
+        if Int(id) == 10 {
+            input.remove(at: input.index(before: input.endIndex))
+            if input.count == 0 {
+                input = "f"
+            }
+        }
+        else if Int(id) == 12 {
+            if input == "f" {
+                input = "."
+            }
+            else {
+                if input.count < 5 {
+                    input.append(".")
+                }
+            }
+        }
+        else if Int(id) == 11 {
+            let isCorrect = checkAnswer()
+
+            if isCorrect {
+                HapticManager.shared.trigger(.medium)
+                numCorrect += 1
+            }
+            else {
+                HapticManager.shared.trigger(.heavy, count: 2, interval: 0.05)
+                missedQuestions.append(MissedQuestion(question: "\(String(format: "%.2f", num1)) \(mode == .TIME ? tmpMode : mode.rawValue) \(String(format: "%.2f", num2))", userAns: "\(input)", correctAns: "\(String(format: "%.2f", answer))"))
+                numIncorrect += 1
+            }
+
+            questionCount += 1
+
+            if mode != .TIME && questionCount > numQuestions {
+                isGameOver = true
+                return
+            }
+
+            if mode == .TIME {
+                newQuestion(mode: randomMode())
+            }
+            else {
+                newQuestion(mode: mode.rawValue)
+            }
+        }
+        else {
+            if input == "f" {
+                input = id
+            }
+            else {
+                if input.count < (difficulty == .DECIMALS ? 5 : 4) {
+                    input.append(id)
+                }
+            }
+
+            if checkAnswer() {
+                HapticManager.shared.trigger(.medium)
+                numCorrect += 1
+                questionCount += 1
+                if mode != .TIME && questionCount > numQuestions {
+                    isGameOver = true
+                    return
+                }
+
+                if mode == .TIME {
+                    newQuestion(mode: randomMode())
+                }
+                else {
+                    newQuestion(mode: mode.rawValue)
+                }
+            }
+        }
     }
     
     var body: some View {
@@ -145,31 +334,33 @@ struct GameView: View {
                 .frame(maxHeight: device.screen!.size.height * topSize)
                 
                 // keypad
-                
+
                 VStack(spacing: device.valueByDevice(small: 13, normal: 13, ipad: 20)) {
                     HStack {
                         ForEach(1...3, id: \.self) { index in
-                            KeyPadButton(id: String(keyNums[index-1]), input: $input, num1: $num1, num2: $num2, answer: $answer, numCorrect: $numCorrect, numIncorrect: $numIncorrect, isGameOver: $isGameOver, tmpMode: $tmpMode, missedQuestions: $missedQuestions, questionCount: $questionCount, difficulty: difficulty, mode: mode, numQuestions: numQuestions)
+                            KeyPadButton(id: String(keyNums[index-1]), onClick: handleKeypadClick)
                         }
                     }
                     HStack {
                         ForEach(4...6, id: \.self) { index in
-                            KeyPadButton(id: String(keyNums[index-1]), input: $input, num1: $num1, num2: $num2, answer: $answer, numCorrect: $numCorrect, numIncorrect: $numIncorrect, isGameOver: $isGameOver, tmpMode: $tmpMode, missedQuestions: $missedQuestions, questionCount: $questionCount, difficulty: difficulty, mode: mode, numQuestions: numQuestions)
+                            KeyPadButton(id: String(keyNums[index-1]), onClick: handleKeypadClick)
                         }
                     }
                     HStack {
                         ForEach(7...9, id: \.self) { index in
-                            KeyPadButton(id: String(keyNums[index-1]), input: $input, num1: $num1, num2: $num2, answer: $answer, numCorrect: $numCorrect, numIncorrect: $numIncorrect, isGameOver: $isGameOver, tmpMode: $tmpMode, missedQuestions: $missedQuestions, questionCount: $questionCount, difficulty: difficulty, mode: mode, numQuestions: numQuestions)
+                            KeyPadButton(id: String(keyNums[index-1]), onClick: handleKeypadClick)
                         }
                     }
                     HStack {
-                        ForEach(10...12, id: \.self) { index in
-                            KeyPadButton(id: String(keyNums[index-1]), input: $input, num1: $num1, num2: $num2, answer: $answer, numCorrect: $numCorrect, numIncorrect: $numIncorrect, isGameOver: $isGameOver, tmpMode: $tmpMode, missedQuestions: $missedQuestions, questionCount: $questionCount, difficulty: difficulty, mode: mode, numQuestions: numQuestions)
-                        }
+                        KeyPadButton(id: "10", foregroundColor: .white, backgroundColor: Color("errorRed"), shadowColor: Color("darkErrorRed"), imageName: "delete.left", isDisabled: input == "f", onClick: handleKeypadClick)
+                        
+                        KeyPadButton(id: "0", onClick: handleKeypadClick)
+                        
+                        KeyPadButton(id: "11", foregroundColor: .white, backgroundColor: Color("correctGreen"), shadowColor: Color("darkGreen"), imageName: "checkmark", isDisabled: Double(input) == nil, onClick: handleKeypadClick)
                     }
-                    
+
                     if difficulty == .DECIMALS {
-                        KeyPadButton(id: "12", input: $input, num1: $num1, num2: $num2, answer: $answer, numCorrect: $numCorrect, numIncorrect: $numIncorrect, isGameOver: $isGameOver, tmpMode: $tmpMode, missedQuestions: $missedQuestions, questionCount: $questionCount, difficulty: difficulty, mode: mode, numQuestions: numQuestions)
+                        KeyPadButton(id: "12", onClick: handleKeypadClick)
                     }
                 }
                 .frame(height: device.screen!.size.height * (1 - topSize))
@@ -185,9 +376,17 @@ struct GameView: View {
         .onAppear() {
             isGameOver = false
             topSize = difficulty == .DECIMALS ? 0.6 : 0.65
-            
+
             if timeLimit == .NO_LIMIT { // No time limit
                 timer.upstream.connect().cancel()
+            }
+
+            // Generate first question
+            if mode == .TIME {
+                newQuestion(mode: randomMode())
+            }
+            else {
+                newQuestion(mode: mode.rawValue)
             }
         }
         .onChange(of: isGameOver, perform: { new in
@@ -219,14 +418,18 @@ struct GameView: View {
     } // body
 }
 
-//#Preview {
-//    GeometryReader { screen in
-//        GameView()
-//            .environmentObject(GameModel(mode: "+", difficulty: "hard", totQuestions: 10, score: 2))
-//            .environmentObject(AppModel(path: NavigationPath()))
-//            .environmentObject(DeviceModel(screen: screen))
-//    }
-//}
+#Preview {
+    
+    let gameModel = GameModel(gameConfigs: GameConfigsModel(mode: .ADDITION, difficulty: .DECIMALS, timeLimit: .ONE_MIN, numQuestions: 10))
+    
+    return (
+        GeometryReader { screen in
+            GameView(gameModel: gameModel)
+                .environmentObject(AppModel(path: NavigationPath()))
+                .environmentObject(DeviceModel(screen: screen))
+        }
+    )
+}
 
 
 

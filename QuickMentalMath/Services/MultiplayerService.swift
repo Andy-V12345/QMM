@@ -22,6 +22,7 @@ struct FirebaseTimestamp: Codable {
 enum MatchStatus: String, Codable {
     case WAITING
     case MATCHED
+    case ALREADY_MATCHED
 }
 
 enum GameState: String, Codable {
@@ -57,8 +58,10 @@ struct LeaveMatchRequest: Codable {
 
 struct JoinMatchResponseWaiting: Codable {
     var status: String  // "WAITING"
-    var variant: String // "DEFAULT"
-    var queuePosition: Int
+}
+
+struct JoinMatchResponseAlreadyMatched: Codable {
+    var status: String // "ALREADY_MATCHED"
 }
 
 struct JoinMatchResponseMatched: Codable {
@@ -70,6 +73,7 @@ struct JoinMatchResponseMatched: Codable {
 enum JoinMatchResponse {
     case waiting(JoinMatchResponseWaiting)
     case matched(JoinMatchResponseMatched)
+    case already_matched(JoinMatchResponseAlreadyMatched)
 }
 
 // MARK: - Game Request/Response Models
@@ -114,206 +118,244 @@ class MultiplayerService {
 
     static let baseUrl = "https://qmm.andy-vu.com/api/v1"
 
+    // MARK: - Retry Helper
+
+    private static func withRetry<T>(maxAttempts: Int = 3, delay: UInt64 = 500_000_000, operation: @escaping () async -> Result<T, Error>) async -> Result<T, Error> {
+        var lastError: Error?
+
+        for attempt in 1...maxAttempts {
+            let result = await operation()
+
+            switch result {
+            case .success:
+                return result
+            case .failure(let error):
+                lastError = error
+                if attempt < maxAttempts {
+                    try? await Task.sleep(nanoseconds: delay)
+                }
+            }
+        }
+
+        return .failure(lastError ?? NSError(domain: "MultiplayerService", code: -1, userInfo: [NSLocalizedDescriptionKey: "All retry attempts failed"]))
+    }
+
     // MARK: - Matchmaking
 
     static func joinMatch(userId: Int, username: String, jwtToken: String) async -> Result<JoinMatchResponse, Error> {
-        var request = URLRequest(url: URL(string: baseUrl + "/match/join")!)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.setValue("Bearer \(jwtToken)", forHTTPHeaderField: "Authorization")
+        return await withRetry {
+            var request = URLRequest(url: URL(string: baseUrl + "/match/join")!)
+            request.httpMethod = "POST"
+            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            request.setValue("Bearer \(jwtToken)", forHTTPHeaderField: "Authorization")
 
-        do {
-            request.httpBody = try JSONEncoder().encode(JoinMatchRequest(userId: userId, username: username))
-            let (data, httpResponse) = try await URLSession.shared.data(for: request)
+            do {
+                request.httpBody = try JSONEncoder().encode(JoinMatchRequest(userId: userId, username: username))
+                let (data, httpResponse) = try await URLSession.shared.data(for: request)
 
-            guard let response = httpResponse as? HTTPURLResponse else {
-                return .failure(NSError(domain: "MultiplayerService", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid response"]))
-            }
-
-            if response.statusCode == 200 {
-                // Try to decode as waiting response first
-                if let waitingResponse = try? JSONDecoder().decode(JoinMatchResponseWaiting.self, from: data) {
-                    return .success(.waiting(waitingResponse))
+                guard let response = httpResponse as? HTTPURLResponse else {
+                    return .failure(NSError(domain: "MultiplayerService", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid response"]))
                 }
-                // Try to decode as matched response
-                else if let matchedResponse = try? JSONDecoder().decode(JoinMatchResponseMatched.self, from: data) {
-                    return .success(.matched(matchedResponse))
+                
+
+                if response.statusCode == 200 {
+                    // Try to decode as waiting response first
+                    if let waitingResponse = try? JSONDecoder().decode(JoinMatchResponseWaiting.self, from: data) {
+                        return .success(.waiting(waitingResponse))
+                    }
+                    // Try to decode as matched response
+                    else if let matchedResponse = try? JSONDecoder().decode(JoinMatchResponseMatched.self, from: data) {
+                        return .success(.matched(matchedResponse))
+                    }
+                    else if let alreadyMatchedResponse = try? JSONDecoder().decode(JoinMatchResponseAlreadyMatched.self, from: data) {
+                        return .success(.already_matched(alreadyMatchedResponse))
+                    }
+                    else {
+                        return .failure(NSError(domain: "MultiplayerService", code: -2, userInfo: [NSLocalizedDescriptionKey: "Failed to decode response"]))
+                    }
                 }
                 else {
-                    return .failure(NSError(domain: "MultiplayerService", code: -2, userInfo: [NSLocalizedDescriptionKey: "Failed to decode response"]))
+                    let errorMessage = String(data: data, encoding: .utf8) ?? "Unknown error"
+                    return .failure(NSError(domain: "MultiplayerService", code: response.statusCode, userInfo: [NSLocalizedDescriptionKey: errorMessage]))
                 }
             }
-            else {
-                let errorMessage = String(data: data, encoding: .utf8) ?? "Unknown error"
-                return .failure(NSError(domain: "MultiplayerService", code: response.statusCode, userInfo: [NSLocalizedDescriptionKey: errorMessage]))
+            catch {
+                return .failure(error)
             }
-        }
-        catch {
-            return .failure(error)
         }
     }
 
     static func leaveMatch(userId: Int, jwtToken: String) async -> Result<Bool, Error> {
-        var request = URLRequest(url: URL(string: baseUrl + "/match/leave")!)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.setValue("Bearer \(jwtToken)", forHTTPHeaderField: "Authorization")
+        return await withRetry {
+            var request = URLRequest(url: URL(string: baseUrl + "/match/leave")!)
+            request.httpMethod = "POST"
+            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            request.setValue("Bearer \(jwtToken)", forHTTPHeaderField: "Authorization")
 
-        do {
-            request.httpBody = try JSONEncoder().encode(LeaveMatchRequest(userId: userId))
-            let (data, httpResponse) = try await URLSession.shared.data(for: request)
+            do {
+                request.httpBody = try JSONEncoder().encode(LeaveMatchRequest(userId: userId))
+                let (data, httpResponse) = try await URLSession.shared.data(for: request)
 
-            guard let response = httpResponse as? HTTPURLResponse else {
-                return .failure(NSError(domain: "MultiplayerService", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid response"]))
-            }
-
-            if response.statusCode == 200 {
-                if let successResponse = try? JSONDecoder().decode(GenericSuccessResponse.self, from: data) {
-                    return .success(successResponse.success)
+                guard let response = httpResponse as? HTTPURLResponse else {
+                    return .failure(NSError(domain: "MultiplayerService", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid response"]))
                 }
-                return .success(true)
+
+                if response.statusCode == 200 {
+                    if let successResponse = try? JSONDecoder().decode(GenericSuccessResponse.self, from: data) {
+                        return .success(successResponse.success)
+                    }
+                    return .success(true)
+                }
+                else {
+                    let errorMessage = String(data: data, encoding: .utf8) ?? "Unknown error"
+                    return .failure(NSError(domain: "MultiplayerService", code: response.statusCode, userInfo: [NSLocalizedDescriptionKey: errorMessage]))
+                }
             }
-            else {
-                let errorMessage = String(data: data, encoding: .utf8) ?? "Unknown error"
-                return .failure(NSError(domain: "MultiplayerService", code: response.statusCode, userInfo: [NSLocalizedDescriptionKey: errorMessage]))
+            catch {
+                return .failure(error)
             }
-        }
-        catch {
-            return .failure(error)
         }
     }
 
     static func playBot(userId: Int, username: String, jwtToken: String) async -> Result<JoinMatchResponseMatched, Error> {
-        var request = URLRequest(url: URL(string: baseUrl + "/match/playBot")!)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.setValue("Bearer \(jwtToken)", forHTTPHeaderField: "Authorization")
+        return await withRetry {
+            var request = URLRequest(url: URL(string: baseUrl + "/match/playBot")!)
+            request.httpMethod = "POST"
+            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            request.setValue("Bearer \(jwtToken)", forHTTPHeaderField: "Authorization")
 
-        do {
-            request.httpBody = try JSONEncoder().encode(JoinMatchRequest(userId: userId, username: username))
-            let (data, httpResponse) = try await URLSession.shared.data(for: request)
+            do {
+                request.httpBody = try JSONEncoder().encode(JoinMatchRequest(userId: userId, username: username))
+                let (data, httpResponse) = try await URLSession.shared.data(for: request)
 
-            guard let response = httpResponse as? HTTPURLResponse else {
-                return .failure(NSError(domain: "MultiplayerService", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid response"]))
-            }
+                guard let response = httpResponse as? HTTPURLResponse else {
+                    return .failure(NSError(domain: "MultiplayerService", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid response"]))
+                }
 
-            if response.statusCode == 200 {
-                let matchedResponse = try JSONDecoder().decode(JoinMatchResponseMatched.self, from: data)
-                return .success(matchedResponse)
+                if response.statusCode == 200 {
+                    let matchedResponse = try JSONDecoder().decode(JoinMatchResponseMatched.self, from: data)
+                    return .success(matchedResponse)
+                }
+                else {
+                    let errorMessage = String(data: data, encoding: .utf8) ?? "Unknown error"
+                    return .failure(NSError(domain: "MultiplayerService", code: response.statusCode, userInfo: [NSLocalizedDescriptionKey: errorMessage]))
+                }
             }
-            else {
-                let errorMessage = String(data: data, encoding: .utf8) ?? "Unknown error"
-                return .failure(NSError(domain: "MultiplayerService", code: response.statusCode, userInfo: [NSLocalizedDescriptionKey: errorMessage]))
+            catch {
+                return .failure(error)
             }
-        }
-        catch {
-            return .failure(error)
         }
     }
 
     // MARK: - Game Actions
 
     static func submitAnswer(gameId: String, userId: String, qIndex: Int, answer: Int, clientSentAt: Int64? = nil, jwtToken: String) async -> Result<SubmitAnswerResponse, Error> {
-        var request = URLRequest(url: URL(string: baseUrl + "/games/\(gameId)/submit")!)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.setValue("Bearer \(jwtToken)", forHTTPHeaderField: "Authorization")
+        return await withRetry {
+            var request = URLRequest(url: URL(string: baseUrl + "/games/\(gameId)/submit")!)
+            request.httpMethod = "POST"
+            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            request.setValue("Bearer \(jwtToken)", forHTTPHeaderField: "Authorization")
 
-        do {
-            request.httpBody = try JSONEncoder().encode(SubmitAnswerRequest(userId: userId, qIndex: qIndex, answer: answer, clientSentAt: clientSentAt))
-            let (data, httpResponse) = try await URLSession.shared.data(for: request)
+            do {
+                request.httpBody = try JSONEncoder().encode(SubmitAnswerRequest(userId: userId, qIndex: qIndex, answer: answer, clientSentAt: clientSentAt))
+                let (data, httpResponse) = try await URLSession.shared.data(for: request)
 
-            guard let response = httpResponse as? HTTPURLResponse else {
-                return .failure(NSError(domain: "MultiplayerService", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid response"]))
-            }
+                guard let response = httpResponse as? HTTPURLResponse else {
+                    return .failure(NSError(domain: "MultiplayerService", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid response"]))
+                }
 
-            if response.statusCode == 200 {
-                let submitResponse = try JSONDecoder().decode(SubmitAnswerResponse.self, from: data)
-                return .success(submitResponse)
+                if response.statusCode == 200 {
+                    let submitResponse = try JSONDecoder().decode(SubmitAnswerResponse.self, from: data)
+                    return .success(submitResponse)
+                }
+                else if response.statusCode == 404 {
+                    return .failure(NSError(domain: "MultiplayerService", code: 404, userInfo: [NSLocalizedDescriptionKey: "Game not found"]))
+                }
+                else if response.statusCode == 403 {
+                    return .failure(NSError(domain: "MultiplayerService", code: 403, userInfo: [NSLocalizedDescriptionKey: "Not a player in this game"]))
+                }
+                else if response.statusCode == 409 {
+                    let errorMessage = String(data: data, encoding: .utf8) ?? "Out of order submission or incorrect answer"
+                    return .failure(NSError(domain: "MultiplayerService", code: 409, userInfo: [NSLocalizedDescriptionKey: errorMessage]))
+                }
+                else {
+                    let errorMessage = String(data: data, encoding: .utf8) ?? "Unknown error"
+                    return .failure(NSError(domain: "MultiplayerService", code: response.statusCode, userInfo: [NSLocalizedDescriptionKey: errorMessage]))
+                }
             }
-            else if response.statusCode == 404 {
-                return .failure(NSError(domain: "MultiplayerService", code: 404, userInfo: [NSLocalizedDescriptionKey: "Game not found"]))
+            catch {
+                return .failure(error)
             }
-            else if response.statusCode == 403 {
-                return .failure(NSError(domain: "MultiplayerService", code: 403, userInfo: [NSLocalizedDescriptionKey: "Not a player in this game"]))
-            }
-            else if response.statusCode == 409 {
-                let errorMessage = String(data: data, encoding: .utf8) ?? "Out of order submission or incorrect answer"
-                return .failure(NSError(domain: "MultiplayerService", code: 409, userInfo: [NSLocalizedDescriptionKey: errorMessage]))
-            }
-            else {
-                let errorMessage = String(data: data, encoding: .utf8) ?? "Unknown error"
-                return .failure(NSError(domain: "MultiplayerService", code: response.statusCode, userInfo: [NSLocalizedDescriptionKey: errorMessage]))
-            }
-        }
-        catch {
-            return .failure(error)
         }
     }
 
     static func updatePresence(gameId: String, userId: Int, connection: ConnectionStatus, jwtToken: String) async -> Result<Bool, Error> {
-        var request = URLRequest(url: URL(string: baseUrl + "/games/\(gameId)/presence")!)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.setValue("Bearer \(jwtToken)", forHTTPHeaderField: "Authorization")
+        return await withRetry {
+            var request = URLRequest(url: URL(string: baseUrl + "/games/\(gameId)/presence")!)
+            request.httpMethod = "POST"
+            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            request.setValue("Bearer \(jwtToken)", forHTTPHeaderField: "Authorization")
 
-        do {
-            request.httpBody = try JSONEncoder().encode(PresenceRequest(userId: userId, connection: connection))
-            let (data, httpResponse) = try await URLSession.shared.data(for: request)
+            do {
+                request.httpBody = try JSONEncoder().encode(PresenceRequest(userId: userId, connection: connection))
+                let (data, httpResponse) = try await URLSession.shared.data(for: request)
 
-            guard let response = httpResponse as? HTTPURLResponse else {
-                return .failure(NSError(domain: "MultiplayerService", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid response"]))
-            }
-
-            if response.statusCode == 200 {
-                if let successResponse = try? JSONDecoder().decode(GenericSuccessResponse.self, from: data) {
-                    return .success(successResponse.success)
+                guard let response = httpResponse as? HTTPURLResponse else {
+                    return .failure(NSError(domain: "MultiplayerService", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid response"]))
                 }
-                return .success(true)
+
+                if response.statusCode == 200 {
+                    if let successResponse = try? JSONDecoder().decode(GenericSuccessResponse.self, from: data) {
+                        return .success(successResponse.success)
+                    }
+                    return .success(true)
+                }
+                else {
+                    let errorMessage = String(data: data, encoding: .utf8) ?? "Unknown error"
+                    return .failure(NSError(domain: "MultiplayerService", code: response.statusCode, userInfo: [NSLocalizedDescriptionKey: errorMessage]))
+                }
             }
-            else {
-                let errorMessage = String(data: data, encoding: .utf8) ?? "Unknown error"
-                return .failure(NSError(domain: "MultiplayerService", code: response.statusCode, userInfo: [NSLocalizedDescriptionKey: errorMessage]))
+            catch {
+                return .failure(error)
             }
-        }
-        catch {
-            return .failure(error)
         }
     }
 
     static func forfeit(gameId: String, userId: Int, jwtToken: String) async -> Result<Bool, Error> {
-        var request = URLRequest(url: URL(string: baseUrl + "/games/\(gameId)/forfeit")!)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.setValue("Bearer \(jwtToken)", forHTTPHeaderField: "Authorization")
+        return await withRetry {
+            var request = URLRequest(url: URL(string: baseUrl + "/games/\(gameId)/forfeit")!)
+            request.httpMethod = "POST"
+            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            request.setValue("Bearer \(jwtToken)", forHTTPHeaderField: "Authorization")
 
-        do {
-            request.httpBody = try JSONEncoder().encode(ForfeitRequest(userId: userId))
-            let (data, httpResponse) = try await URLSession.shared.data(for: request)
+            do {
+                request.httpBody = try JSONEncoder().encode(ForfeitRequest(userId: userId))
+                let (data, httpResponse) = try await URLSession.shared.data(for: request)
 
-            guard let response = httpResponse as? HTTPURLResponse else {
-                return .failure(NSError(domain: "MultiplayerService", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid response"]))
-            }
-
-            if response.statusCode == 200 {
-                if let successResponse = try? JSONDecoder().decode(GenericSuccessResponse.self, from: data) {
-                    return .success(successResponse.success)
+                guard let response = httpResponse as? HTTPURLResponse else {
+                    return .failure(NSError(domain: "MultiplayerService", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid response"]))
                 }
-                return .success(true)
+
+                if response.statusCode == 200 {
+                    if let successResponse = try? JSONDecoder().decode(GenericSuccessResponse.self, from: data) {
+                        return .success(successResponse.success)
+                    }
+                    return .success(true)
+                }
+                else if response.statusCode == 404 {
+                    return .failure(NSError(domain: "MultiplayerService", code: 404, userInfo: [NSLocalizedDescriptionKey: "Game not found"]))
+                }
+                else if response.statusCode == 403 {
+                    return .failure(NSError(domain: "MultiplayerService", code: 403, userInfo: [NSLocalizedDescriptionKey: "Not a player in this game"]))
+                }
+                else {
+                    let errorMessage = String(data: data, encoding: .utf8) ?? "Unknown error"
+                    return .failure(NSError(domain: "MultiplayerService", code: response.statusCode, userInfo: [NSLocalizedDescriptionKey: errorMessage]))
+                }
             }
-            else if response.statusCode == 404 {
-                return .failure(NSError(domain: "MultiplayerService", code: 404, userInfo: [NSLocalizedDescriptionKey: "Game not found"]))
+            catch {
+                return .failure(error)
             }
-            else if response.statusCode == 403 {
-                return .failure(NSError(domain: "MultiplayerService", code: 403, userInfo: [NSLocalizedDescriptionKey: "Not a player in this game"]))
-            }
-            else {
-                let errorMessage = String(data: data, encoding: .utf8) ?? "Unknown error"
-                return .failure(NSError(domain: "MultiplayerService", code: response.statusCode, userInfo: [NSLocalizedDescriptionKey: errorMessage]))
-            }
-        }
-        catch {
-            return .failure(error)
         }
     }
 }

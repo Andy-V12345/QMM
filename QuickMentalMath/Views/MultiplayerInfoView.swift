@@ -10,12 +10,15 @@ import SwiftUI
 struct MultiplayerInfoView: View {
     @EnvironmentObject var device: DeviceModel
     @EnvironmentObject var appModel: AppModel
-    
+    @EnvironmentObject var authInfo: AuthInfoModel
+
     @State var findingGame = false
     @State private var player1Progress: Int = 0
     @State private var player2Progress: Int = 0
     @State private var winner: String? = nil
-    
+    @State private var player1AnimationTask: Task<Void, Never>?
+    @State private var player2AnimationTask: Task<Void, Never>?
+
     let gamePlayer: GamePlayer
     
     
@@ -67,7 +70,7 @@ struct MultiplayerInfoView: View {
                                 .font(device.valueByDevice(small: .body, normal: .body, ipad: .title2))
                                 .frame(maxWidth: .infinity, alignment: .leading)
 
-                            Text("5")
+                            Text("\(authInfo.user?.stats?.wins ?? 0)")
                                 .foregroundStyle(Color("darkPurple"))
                                 .fontWeight(.heavy)
                                 .font(device.valueByDevice(small: .title, normal: .title, ipad: Font.system(size: 45)))
@@ -88,7 +91,7 @@ struct MultiplayerInfoView: View {
                                 .font(device.valueByDevice(small: .body, normal: .body, ipad: .title2))
                                 .frame(maxWidth: .infinity, alignment: .leading)
 
-                            Text("8")
+                            Text("\(authInfo.user?.stats?.losses ?? 0)")
                                 .foregroundStyle(Color("darkPurple"))
                                 .fontWeight(.heavy)
                                 .font(device.valueByDevice(small: .title, normal: .title, ipad: Font.system(size: 45)))
@@ -109,7 +112,7 @@ struct MultiplayerInfoView: View {
                                 .font(device.valueByDevice(small: .body, normal: .body, ipad: .title2))
                                 .frame(maxWidth: .infinity, alignment: .leading)
 
-                            Text("120s")
+                            Text(authInfo.user?.stats?.bestTime.map { "\($0)s" } ?? "--")
                                 .foregroundStyle(Color("darkPurple"))
                                 .fontWeight(.heavy)
                                 .font(device.valueByDevice(small: .title, normal: .title, ipad: Font.system(size: 45)))
@@ -132,17 +135,17 @@ struct MultiplayerInfoView: View {
                 // Racing progress bars
                 VStack(spacing: device.valueByDevice(small: 25, normal: 30, ipad: 45)) {
                     RacingProgressBar(
-                        playerName: "Player 1",
                         backgroundColor: Color("errorRed"),
                         shadowColor: Color("darkPastelRed"),
-                        currentProgress: player1Progress
+                        currentProgress: player1Progress,
+                        totalNodes: 10
                     )
                     
                     RacingProgressBar(
-                        playerName: "Player 2",
                         backgroundColor: Color("pastelBlue"),
                         shadowColor: Color("darkPastelBlue"),
-                        currentProgress: player2Progress
+                        currentProgress: player2Progress,
+                        totalNodes: 10
                     )
                     
                     Text("be the first to the finish line")
@@ -184,8 +187,19 @@ struct MultiplayerInfoView: View {
         .onAppear {
             startRacingAnimation()
         }
+        .onDisappear {
+            stopRacingAnimation()
+        }
+        .onChange(of: findingGame, perform: { new in
+            if new {
+                // Sheet appeared - stop animations
+                stopRacingAnimation()
+            } else {
+                // Sheet dismissed - resume animations
+                startRacingAnimation()
+            }
+        })
         .fullScreenCover(isPresented: $findingGame, content: {
-            
             WaitingRoomView()
         })
     }
@@ -194,11 +208,17 @@ struct MultiplayerInfoView: View {
     
     private func startRacingAnimation() {
         // Animate Player 1
-        Task {
+        player1AnimationTask = Task {
             while true {
+                // Check if task was cancelled
+                if Task.isCancelled { return }
+
                 let randomDelay = Double.random(in: 0.7...1.3)
                 try? await Task.sleep(nanoseconds: UInt64(randomDelay * 1_000_000_000))
-                
+
+                // Check again after sleep
+                if Task.isCancelled { return }
+
                 if player1Progress < 10 {
                     withAnimation(.easeInOut(duration: 0.1)) {
                         player1Progress += 1
@@ -210,13 +230,19 @@ struct MultiplayerInfoView: View {
                 }
             }
         }
-        
+
         // Animate Player 2
-        Task {
+        player2AnimationTask = Task {
             while true {
+                // Check if task was cancelled
+                if Task.isCancelled { return }
+
                 let randomDelay = Double.random(in: 0.9...1.5)
                 try? await Task.sleep(nanoseconds: UInt64(randomDelay * 1_000_000_000))
-                
+
+                // Check again after sleep
+                if Task.isCancelled { return }
+
                 if player2Progress < 10 {
                     withAnimation(.easeInOut(duration: 0.1)) {
                         player2Progress += 1
@@ -229,6 +255,11 @@ struct MultiplayerInfoView: View {
             }
         }
     }
+
+    private func stopRacingAnimation() {
+        player1AnimationTask?.cancel()
+        player2AnimationTask?.cancel()
+    }
 }
 
 #Preview {
@@ -237,6 +268,7 @@ struct MultiplayerInfoView: View {
             MultiplayerInfoView(gamePlayer: GamePlayer(uid: "123", displayName: "andy.v123"))
                 .environmentObject(DeviceModel(screen: screen))
                 .environmentObject(AppModel(path: NavigationPath()))
+                .environmentObject(AuthInfoModel())
         }
     )
 }

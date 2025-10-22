@@ -9,6 +9,7 @@
 
 import Foundation
 import FirebaseFirestore
+import FirebaseCore
 
 // MARK: - User Match Status
 // Path: /users/{uid}/matchStatus/current
@@ -28,7 +29,11 @@ struct UserMatchStatus: Codable {
 // MARK: - Game Session
 // Path: /games/{gameId}
 
-struct GameSession: Codable {
+struct GameSession: Codable, Hashable {
+    static func == (lhs: GameSession, rhs: GameSession) -> Bool {
+        return lhs.id == rhs.id
+    }
+    
     var id: String
     var mode: String           // "MIXED"
     var difficulty: String     // "MEDIUM"
@@ -71,7 +76,11 @@ struct GamePlayer: Codable, Hashable {
     }
 }
 
-struct QuestionSet: Codable {
+struct QuestionSet: Codable, Hashable {
+    static func == (lhs: QuestionSet, rhs: QuestionSet) -> Bool {
+        return lhs.mode == rhs.mode && lhs.difficulty == rhs.difficulty && lhs.targetCount == rhs.targetCount
+    }
+    
     var mode: String           // "MIXED"
     var difficulty: String     // "MEDIUM"
     var targetCount: Int       // 25
@@ -90,7 +99,7 @@ struct QuestionSet: Codable {
     }
 }
 
-struct QuestionItem: Codable {
+struct QuestionItem: Codable, Hashable {
     var a: Int
     var b: Int
     var op: String  // "+", "-", "×", "÷"
@@ -104,7 +113,7 @@ struct QuestionItem: Codable {
     }
 }
 
-struct GameResultFirestore: Codable {
+struct GameResultFirestore: Codable, Hashable {
     var winnerUid: String
     var p1TimeMs: Int64?
     var p2TimeMs: Int64?
@@ -121,7 +130,7 @@ struct GameResultFirestore: Codable {
     }
 }
 
-struct GamePostgame: Codable {
+struct GamePostgame: Codable, Hashable {
     var acceptingSubmissions: Bool
     var lockedAt: Timestamp?
 

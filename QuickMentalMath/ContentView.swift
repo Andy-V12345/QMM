@@ -73,6 +73,16 @@ struct ContentView: View {
                         MultiplayerInfoView(gamePlayer: gamePlayer)
                             .navigationBarBackButtonHidden()
                     })
+                    .navigationDestination(for: GameSession.self, destination: { gameSession in
+                            
+                        MultiplayerGameView(gameSession: gameSession)
+                            .navigationBarBackButtonHidden()
+                    })
+                    .navigationDestination(for: MultiplayerEndGameModel.self, destination: { endGameModel in
+                            
+                        MultiplayerEndGameView(endGameModel: endGameModel)
+                            .navigationBarBackButtonHidden()
+                    })
             }
             .onChange(of: scenePhase) { phase in
                 switch phase {
@@ -115,7 +125,7 @@ struct ContentView: View {
             .environmentObject(authInfo)
             .environmentObject(appModel)
             .environmentObject(deviceModel)
-            .dynamicTypeSize(.large ... .xxLarge)
+            .dynamicTypeSize(.large)
         }
     }
     

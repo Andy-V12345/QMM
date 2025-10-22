@@ -6,14 +6,25 @@
 //
 
 import SwiftUI
+import FirebaseFirestore
 
 struct WaitingRoomView: View {
 
     @Environment(\.dismiss) var dismiss
-    
+
     @EnvironmentObject var device: DeviceModel
+    @EnvironmentObject var authInfo: AuthInfoModel
+    @EnvironmentObject var appModel: AppModel
+
     @State private var bounceOffset: CGFloat = 0
     @State private var selectedQuote: String = ""
+    @State private var statusText: String = "joining matchmaking"
+    @State private var matchStatusListener: ListenerRegistration?
+    @State private var botTimerTask: Task<Void, Never>?
+    @State private var showError: Bool = false
+    @State private var errorMessage: String = ""
+    @State private var gameId: String?
+    @State private var hasSeenInitialSnapshot: Bool = false
 
     let quotes = [
         "your opponent is gonna be shook.",
@@ -24,9 +35,136 @@ struct WaitingRoomView: View {
         "about to witness some real competition.",
         "this matchup is about to go crazy."
     ]
-    
+
     private func leaveQueue() {
-        dismiss()
+        // Cancel listeners and timers
+        matchStatusListener?.remove()
+        botTimerTask?.cancel()
+
+        // Call leave match API
+        Task {
+            guard let user = authInfo.user else { return }
+            let _ = await MultiplayerService.leaveMatch(userId: user.id, jwtToken: user.jwtToken)
+            dismiss()
+        }
+    }
+
+    private func joinMatchmaking() {
+        guard let user = authInfo.user else { return }
+
+        Task {
+            let result = await MultiplayerService.joinMatch(userId: user.id, username: user.username, jwtToken: user.jwtToken)
+
+            switch result {
+            case .success(let response):
+                switch response {
+                case .waiting:
+                    // Update status and start listening
+                    statusText = "finding a game"
+                    startMatchStatusListener()
+                    startBotFallbackTimer()
+                case .matched(let matchData):
+                    // Immediately matched
+                    gameId = matchData.gameId
+                    statusText = "joining game"
+                    await fetchGameSessionAndNavigate(gameId: matchData.gameId)
+                case .already_matched:
+                    break
+                }
+            case .failure(let error):
+                // Show error after 3 retries failed
+                print("error", error)
+                errorMessage = error.localizedDescription
+                showError = true
+            }
+        }
+    }
+
+    private func startMatchStatusListener() {
+        guard let user = authInfo.user else { return }
+
+        let db = Firestore.firestore()
+        let docRef = db.collection("users").document("\(user.id)").collection("matchStatus").document("current")
+
+        matchStatusListener = docRef.addSnapshotListener { snapshot, error in
+            guard let data = snapshot?.data(), error == nil else {
+                print("Error listening to match status: \(error?.localizedDescription ?? "unknown")")
+                return
+            }
+
+            // Ignore the initial snapshot (which contains stale data)
+            if !hasSeenInitialSnapshot {
+                hasSeenInitialSnapshot = true
+                return
+            }
+
+            if let matched = data["matched"] as? Bool, matched == true {
+                // Match found!
+                if let foundGameId = data["gameId"] as? String {
+                    gameId = foundGameId
+                    statusText = "joining game"
+                    botTimerTask?.cancel()
+                    matchStatusListener?.remove()
+
+                    Task {
+                        await fetchGameSessionAndNavigate(gameId: foundGameId)
+                    }
+                }
+            }
+        }
+    }
+
+    private func startBotFallbackTimer() {
+        botTimerTask = Task {
+            try? await Task.sleep(nanoseconds: 10_000_000_000) // 10 seconds
+
+            // Check if task was cancelled or already navigated
+            if Task.isCancelled { return }
+
+            // Still not matched, play with bot
+            guard let user = authInfo.user else { return }
+
+            let result = await MultiplayerService.playBot(userId: user.id, username: user.username, jwtToken: user.jwtToken)
+
+            // Check if cancelled after await (Firestore listener may have triggered navigation)
+            if Task.isCancelled { return }
+
+            switch result {
+            case .success(let matchData):
+                gameId = matchData.gameId
+                statusText = "joining game"
+            case .failure(let error):
+                print(error)
+
+                // Only show error alert for non-cancellation errors
+                let nsError = error as NSError
+                if nsError.code != NSURLErrorCancelled {
+                    errorMessage = error.localizedDescription
+                    showError = true
+                }
+            }
+        }
+    }
+
+    private func fetchGameSessionAndNavigate(gameId: String) async {
+        let db = Firestore.firestore()
+        let docRef = db.collection("games").document(gameId)
+
+        do {
+            let snapshot = try await docRef.getDocument()
+
+            // Use Firestore's built-in decoding to handle Timestamp objects
+            let gameSession = try snapshot.data(as: GameSession.self)
+
+            // Navigate to game on main thread
+            await MainActor.run {
+                appModel.path.append(gameSession)
+                dismiss()
+            }
+        } catch {
+            errorMessage = "Failed to load game session: \(error.localizedDescription)"
+            showError = true
+        }
     }
 
     var body: some View {
@@ -54,16 +192,10 @@ struct WaitingRoomView: View {
                 .padding(.bottom, 30)
 
                 // Status text
-                Text("finding a game")
+                Text(statusText)
                     .font(device.valueByDevice(small: .title2, normal: .title, ipad: .largeTitle))
                     .fontWeight(.heavy)
                     .foregroundStyle(Color("darkPurple"))
-
-                // Secondary text
-                Text("give us a moment")
-                    .font(device.valueByDevice(small: .body, normal: .headline, ipad: .title2))
-                    .fontWeight(.semibold)
-                    .foregroundStyle(Color("lightPurple"))
 
                 // Quote
                 
@@ -84,7 +216,7 @@ struct WaitingRoomView: View {
                     Text("leave queue")
                         .foregroundStyle(Color("offWhite"))
                         .font(device.valueByDevice(small: .body, normal: .body, ipad: .title2))
-                        .fontWeight(.semibold)
+                        .fontWeight(.bold)
                 })
                 .padding(device.valueByDevice(small: 10, normal: 12, ipad: 14))
                 .frame(maxWidth: .infinity)
@@ -93,7 +225,7 @@ struct WaitingRoomView: View {
                     cornerRadius: 20,
                     backgroundColor: Color("errorRed"),
                     shadowColor: Color("darkErrorRed"),
-                    shadowOffset: device.valueByDevice(small: 8, normal: 10, ipad: 13),
+                    shadowOffset: device.valueByDevice(small: 6, normal: 8, ipad: 10),
                     action: {
                         leaveQueue()
                     }
@@ -104,6 +236,18 @@ struct WaitingRoomView: View {
         .onAppear {
             bounceOffset = -15
             selectedQuote = quotes.randomElement() ?? quotes[0]
+            joinMatchmaking()
+        }
+        .onDisappear {
+            matchStatusListener?.remove()
+            botTimerTask?.cancel()
+        }
+        .alert("Matchmaking Error", isPresented: $showError) {
+            Button("OK") {
+                dismiss()
+            }
+        } message: {
+            Text(errorMessage)
         }
     }
 }
@@ -113,7 +257,8 @@ struct WaitingRoomView: View {
         GeometryReader { screen in
             WaitingRoomView()
                 .environmentObject(DeviceModel(screen: screen))
+                .environmentObject(AuthInfoModel())
+                .environmentObject(AppModel(path: NavigationPath()))
         }
     )
-    
 }

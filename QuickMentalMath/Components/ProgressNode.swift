@@ -13,19 +13,53 @@ struct ProgressNode: View {
     let currentProgress: Int
     let backgroundColor: Color
     let shadowColor: Color
+    let nodeSize: CGFloat
+    let isFinished: Bool
 
     @State private var isVisuallyCompleted: Bool = false
 
     @EnvironmentObject var device: DeviceModel
 
-    private let nodeSize: CGFloat = 40
     private var shouldBeCompleted: Bool {
         index < currentProgress
+    }
+    
+    init(index: Int, currentProgress: Int, backgroundColor: Color, shadowColor: Color, nodeSize: CGFloat?, isFinished: Bool) {
+        self.index = index
+        self.currentProgress = currentProgress
+        self.backgroundColor = backgroundColor
+        self.shadowColor = shadowColor
+        self.nodeSize = nodeSize ?? 40
+        self.isFinished = isFinished
+    }
+    
+    var actualBackgroundColor: Color {
+        if isVisuallyCompleted {
+            if isFinished {
+                return Color("gold")
+            }
+            
+            return self.backgroundColor
+        }
+        
+        return Color("silver")
+    }
+    
+    var actualShadowColor: Color {
+        if isVisuallyCompleted {
+            if isFinished {
+                return Color("darkYellow")
+            }
+            
+            return self.shadowColor
+        }
+        
+        return Color.gray.opacity(0.4)
     }
 
     var body: some View {
         Circle()
-            .fill(isVisuallyCompleted ? backgroundColor : Color("silver"))
+            .fill(actualBackgroundColor)
             .frame(width: device.valueByDevice(small: nodeSize, normal: nodeSize, ipad: nodeSize + 20))
             .overlay(
                 // Show checkmark for completed nodes
@@ -47,7 +81,7 @@ struct ProgressNode: View {
             )
             .clipped()
             .shadow(
-                color: isVisuallyCompleted ? shadowColor : Color.gray.opacity(0.4),
+                color: actualShadowColor,
                 radius: 0,
                 x: 0,
                 y: device.valueByDevice(small: 3, normal: 3, ipad: 5)
@@ -83,21 +117,27 @@ struct ProgressNode: View {
                 index: 0,
                 currentProgress: 3,
                 backgroundColor: Color("lighterPurple"),
-                shadowColor: Color("lightPurple")
+                shadowColor: Color("lightPurple"),
+                nodeSize: nil,
+                isFinished: true
             )
 
             ProgressNode(
                 index: 2,
                 currentProgress: 3,
                 backgroundColor: Color("lighterPurple"),
-                shadowColor: Color("lightPurple")
+                shadowColor: Color("lightPurple"),
+                nodeSize: nil,
+                isFinished: false
             )
 
             ProgressNode(
                 index: 5,
                 currentProgress: 3,
                 backgroundColor: Color("lighterPurple"),
-                shadowColor: Color("lightPurple")
+                shadowColor: Color("lightPurple"),
+                nodeSize: nil,
+                isFinished: true
             )
         }
         .padding(20)

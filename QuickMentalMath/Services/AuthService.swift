@@ -27,6 +27,9 @@ struct UserStats: Codable {
     var divisionTot: Int
     var highScore: Int
     var ttHighScore: Int
+    var wins: Int?
+    var losses: Int?
+    var bestTime: Int?
 }
 
 enum AuthState: String, Hashable {
@@ -62,6 +65,9 @@ struct UserStatsRequest: Encodable {
     var divisionTot: Int
     var highScore: Int
     var ttHighScore: Int
+    var wins: Int?
+    var losses: Int?
+    var bestTime: Int?
     
     init() {
         self.additionScore = 0
@@ -87,6 +93,9 @@ struct UserStatsRequest: Encodable {
         self.divisionTot = userStats.divisionTot
         self.highScore = userStats.highScore
         self.ttHighScore = userStats.ttHighScore
+        self.wins = userStats.wins
+        self.losses = userStats.losses
+        self.bestTime = userStats.bestTime
     }
 }
 

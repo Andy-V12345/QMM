@@ -13,6 +13,7 @@ struct ConnectingLine: View {
     let currentProgress: Int
     let backgroundColor: Color
     let shadowColor: Color
+    let isFinished: Bool
 
     @EnvironmentObject var device: DeviceModel
 
@@ -27,7 +28,19 @@ struct ConnectingLine: View {
     private var isFilled: Bool {
         index < currentProgress - 1
     }
-
+    
+    var actualShadowColor: Color {
+        if isFilled {
+            if isFinished {
+                return Color("darkYellow")
+            }
+            
+            return shadowColor
+        }
+        
+        return Color.clear
+    }
+    
     var body: some View {
         ZStack(alignment: .leading) {
             // Background (unfilled)
@@ -43,10 +56,10 @@ struct ConnectingLine: View {
 
             // Foreground (filled portion - animates from left to right)
             Capsule()
-                .fill(backgroundColor)
+                .fill(isFinished ? Color("gold") : backgroundColor)
                 .frame(width: isFilled ? lineWidth : 0, height: lineHeight)
                 .shadow(
-                    color: isFilled ? shadowColor : Color.clear,
+                    color: actualShadowColor,
                     radius: 0,
                     x: 0,
                     y: device.valueByDevice(small: 2, normal: 2, ipad: 3)
@@ -63,21 +76,24 @@ struct ConnectingLine: View {
                 index: 0,
                 currentProgress: 3,
                 backgroundColor: Color("lighterPurple"),
-                shadowColor: Color("lightPurple")
+                shadowColor: Color("lightPurple"),
+                isFinished: true
             )
 
             ConnectingLine(
                 index: 2,
                 currentProgress: 3,
                 backgroundColor: Color("lighterPurple"),
-                shadowColor: Color("lightPurple")
+                shadowColor: Color("lightPurple"),
+                isFinished: false
             )
 
             ConnectingLine(
                 index: 5,
                 currentProgress: 3,
                 backgroundColor: Color("lighterPurple"),
-                shadowColor: Color("lightPurple")
+                shadowColor: Color("lightPurple"),
+                isFinished: true
             )
         }
         .padding(20)

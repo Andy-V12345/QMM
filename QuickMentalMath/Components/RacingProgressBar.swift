@@ -7,68 +7,111 @@
 
 import SwiftUI
 
+enum PlayerConnectionStatus: String {
+    case CONNECTED = "connected", DISCONNECTED = "disconnected"
+}
+
 struct RacingProgressBar: View {
     
-    let playerName: String
+    let playerName: String?
     let backgroundColor: Color
     let shadowColor: Color
     let currentProgress: Int
+    let totalNodes: Int
+    let playerConnection: PlayerConnectionStatus
+    let nodeSize: CGFloat?
     
+    init(playerName: String, playerConnection: PlayerConnectionStatus, backgroundColor: Color, shadowColor: Color, currentProgress: Int, totalNodes: Int) {
+        self.playerName = playerName
+        self.playerConnection = playerConnection
+        self.backgroundColor = backgroundColor
+        self.shadowColor = shadowColor
+        self.currentProgress = currentProgress
+        self.totalNodes = totalNodes
+        self.nodeSize = nil
+    }
+    
+    init(playerName: String, playerConnection: PlayerConnectionStatus, backgroundColor: Color, shadowColor: Color, currentProgress: Int, totalNodes: Int, nodeSize: CGFloat) {
+        self.playerName = playerName
+        self.playerConnection = playerConnection
+        self.backgroundColor = backgroundColor
+        self.shadowColor = shadowColor
+        self.currentProgress = currentProgress
+        self.totalNodes = totalNodes
+        self.nodeSize = nodeSize
+    }
+    
+    init(backgroundColor: Color, shadowColor: Color, currentProgress: Int, totalNodes: Int) {
+        self.playerName = nil
+        self.playerConnection = .CONNECTED
+        self.backgroundColor = backgroundColor
+        self.shadowColor = shadowColor
+        self.currentProgress = currentProgress
+        self.totalNodes = totalNodes
+        self.nodeSize = nil
+    }
+    
+    var isFinished: Bool {
+        currentProgress == totalNodes
+    }
+
     @EnvironmentObject var device: DeviceModel
     
-    private let totalNodes = 10
 
     var body: some View {
         ScrollViewReader { proxy in
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 10) {
-                    ForEach(0..<totalNodes, id: \.self) { index in
-                        // Progress node
-                        ProgressNode(
-                            index: index,
-                            currentProgress: currentProgress,
-                            backgroundColor: backgroundColor,
-                            shadowColor: shadowColor
-                        )
-
-                        // Connecting line (if not the last node)
-                        if index < totalNodes - 1 {
-                            ConnectingLine(
+            VStack(spacing: 2) {
+                if let name = playerName {
+                    HStack {
+                        Text(name)
+                            .font(device.valueByDevice(small: .body, normal: .body, ipad: .title2))
+                            .foregroundStyle(Color("darkPurple"))
+                            .fontWeight(.heavy)
+                            .opacity(playerConnection == .CONNECTED ? 1 : 0.5)
+                        
+                        Circle()
+                            .fill(Color(playerConnection == .CONNECTED ? "correctGreen" : "errorRed"))
+                            .frame(width: device.valueByDevice(small: 8, normal: 8, ipad: 10))
+                        
+                        Spacer()
+                    }
+                }
+                
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 10) {
+                        ForEach(0..<totalNodes, id: \.self) { index in
+                            // Progress node
+                            ProgressNode(
                                 index: index,
                                 currentProgress: currentProgress,
                                 backgroundColor: backgroundColor,
-                                shadowColor: shadowColor
+                                shadowColor: shadowColor,
+                                nodeSize: nodeSize,
+                                isFinished: isFinished
                             )
+                            
+                            // Connecting line (if not the last node)
+                            if index < totalNodes - 1 {
+                                ConnectingLine(
+                                    index: index,
+                                    currentProgress: currentProgress,
+                                    backgroundColor: backgroundColor,
+                                    shadowColor: shadowColor,
+                                    isFinished: isFinished
+                                )
+                            }
                         }
                     }
-                    
-                    //                        // Final connecting line to flag
-                    //                        Capsule()
-                    //                            .fill(currentProgress >= totalNodes ? backgroundColor : Color("silver"))
-                    //                            .frame(width: device.valueByDevice(small: 40, normal: 50, ipad: 70),
-                    //                                   height: device.valueByDevice(small: 6, normal: 8, ipad: 12))
-                    //                            .shadow(color: currentProgress >= totalNodes ? shadowColor : Color.gray.opacity(0.4),
-                    //                                    radius: 0,
-                    //                                    x: 0,
-                    //                                    y: device.valueByDevice(small: 3, normal: 4, ipad: 5))
-                    //
-                    //                        // Checkered flag at the end
-                    //                        Image(systemName: "flag")
-                    //                            .font(device.valueByDevice(small: .largeTitle, normal: Font.system(size: 45), ipad: Font.system(size: 65)))
-                    //                            .foregroundStyle(currentProgress >= totalNodes ? Color("gold") : Color.gray.opacity(0.3))
-                    //                            .id("flag")
+                    .padding(.vertical, device.valueByDevice(small: 5, normal: 8, ipad: 15))
                 }
-                .padding(.vertical, device.valueByDevice(small: 10, normal: 12, ipad: 15))
-            }
-            .onChange(of: currentProgress) { newProgress in
-                withAnimation(.easeInOut(duration: 0.3)) {
-                    if newProgress > 0 && newProgress <= totalNodes {
-                        proxy.scrollTo(newProgress - 1, anchor: .center)
-                    } else if newProgress > totalNodes {
-                        //                            proxy.scrollTo("flag", anchor: .center)
+                .onChange(of: currentProgress) { newProgress in
+                    withAnimation(.easeInOut(duration: 0.3)) {
+                        if newProgress > 0 && newProgress <= totalNodes {
+                            proxy.scrollTo(newProgress - 1, anchor: .center)
+                        }
                     }
                 }
-            }
+            } //: VStack
         }
     }
 }
@@ -77,17 +120,21 @@ struct RacingProgressBar: View {
     GeometryReader { screen in
         VStack(spacing: 30) {
             RacingProgressBar(
-                playerName: "Player 1",
-                backgroundColor: Color("lighterPurple"),
-                shadowColor: Color("lightPurple"),
-                currentProgress: 3
+                playerName: "Bobby123",
+                playerConnection: .DISCONNECTED,
+                backgroundColor: Color("errorRed"),
+                shadowColor: Color("darkErrorRed"),
+                currentProgress: 3,
+                totalNodes: 10
             )
             
             RacingProgressBar(
-                playerName: "Player 2",
+                playerName: "you",
+                playerConnection: .CONNECTED,
                 backgroundColor: Color("pastelBlue"),
                 shadowColor: Color("darkPastelBlue"),
-                currentProgress: 10
+                currentProgress: 10,
+                totalNodes: 10
             )
         }
         .padding(20)
