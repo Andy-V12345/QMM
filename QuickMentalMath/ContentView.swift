@@ -126,6 +126,9 @@ struct ContentView: View {
             .environmentObject(appModel)
             .environmentObject(deviceModel)
             .dynamicTypeSize(.large)
+            .fullScreenCover(isPresented: $appModel.findingGame, content: {
+                WaitingRoomView(device: deviceModel, authInfo: authInfo, appModel: appModel)
+            })
         }
     }
     

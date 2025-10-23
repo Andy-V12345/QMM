@@ -115,18 +115,9 @@ struct QuestionItem: Codable, Hashable {
 
 struct GameResultFirestore: Codable, Hashable {
     var winnerUid: String
-    var p1TimeMs: Int64?
-    var p2TimeMs: Int64?
-    var finishedAt: Timestamp
-    var decidedBy: String  // FIRST_TO_FINISH, BOTH_FINISHED, GRACE_TIMEOUT, FORFEIT
-
-    init(winnerUid: String, p1TimeMs: Int64? = nil, p2TimeMs: Int64? = nil,
-         finishedAt: Timestamp, decidedBy: String) {
+    
+    init(winnerUid: String) {
         self.winnerUid = winnerUid
-        self.p1TimeMs = p1TimeMs
-        self.p2TimeMs = p2TimeMs
-        self.finishedAt = finishedAt
-        self.decidedBy = decidedBy
     }
 }
 

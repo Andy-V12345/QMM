@@ -20,25 +20,24 @@ struct MultiplayerGameView: View {
     @State var isGameOver = false
     @State var showAreYouSure = false
     @State var questionIndex = 0
-    
-    @State var infoText = "race to the finish"
 
     @State var opponentProgress: Int = 0
     @State var opponentStatus: String = "PLAYING"
     @State var opponentConnection: PlayerConnectionStatus = .CONNECTED
     @State var opponentProgressListener: ListenerRegistration?
     @State var botSubmissionTask: Task<Void, Never>?
+    @State var botDifficulty: GameDifficulty = .MEDIUM
 
     // Server reconciliation state
     @State var confirmedQuestionIndex: Int = 0
     @State var pendingSubmissions: Set<Int> = []
     @State var confirmedQuestions: Set<Int> = []
-    @State var showConnectionWarning: Bool = true
+    @State var showConnectionWarning: Bool = false
     @State var isSubmittingAnswer: Bool = false
 
     // Countdown state
     @State var countdownValue: Int = 3
-    @State var showCountdown: Bool = false
+    @State var showCountdown: Bool = true
 
     // Leave game state
     @State var showLeaveGameOverlay: Bool = false
@@ -63,6 +62,85 @@ struct MultiplayerGameView: View {
 
     var isOpponentBot: Bool {
         opponent.uid.starts(with: "bot")
+    }
+
+    var infoText: String {
+        let lead = questionIndex - opponentProgress
+        let isEarlyGame = questionIndex < 4
+        let isEndGame = numQuestions - questionIndex <= 5
+        let cycleIndex = (questionIndex / 3)  // Cycle every 3 questions
+
+        // Early game messages
+        if isEarlyGame {
+            let messages = ["let's get it", "time to lock in", "show what you got"]
+            return messages[cycleIndex % messages.count]
+        }
+
+        // Message selection based on lead and game phase
+        if lead == 0 {
+            // Tied
+            if isEndGame {
+                let messages = ["final stretch!", "this is it!", "crunch time!", "clutch up"]
+                return messages[cycleIndex % messages.count]
+            } else {
+                let messages = ["neck and neck fr", "too close rn", "y'all are tied", "it's anyone's game"]
+                return messages[cycleIndex % messages.count]
+            }
+        } else if lead == 1 {
+            // Ahead by 1
+            if isEndGame {
+                let messages = ["don't fumble!", "don't choke!", "so close!"]
+                return messages[cycleIndex % messages.count]
+            } else {
+                let messages = ["barely winning rn", "keep it up", "stay focused"]
+                return messages[cycleIndex % messages.count]
+            }
+        } else if lead == 2 {
+            // Ahead by 2
+            if isEndGame {
+                let messages = ["almost there!", "you got this", "secure the bag!"]
+                return messages[cycleIndex % messages.count]
+            } else {
+                let messages = ["you're in the lead", "W player", "highkey winning"]
+                return messages[cycleIndex % messages.count]
+            }
+        } else if lead >= 3 {
+            // Ahead by 3+
+            if isEndGame {
+                let messages = ["gg ez", "it's over!", "too easy fr"]
+                return messages[cycleIndex % messages.count]
+            } else {
+                let messages = ["absolutely cooking", "they're cooked", "diff is crazy", "so free"]
+                return messages[cycleIndex % messages.count]
+            }
+        } else if lead == -1 {
+            // Behind by 1
+            if isEndGame {
+                let messages = ["you gotta clutch up", "go go go!"]
+                return messages[cycleIndex % messages.count]
+            } else {
+                let messages = ["so close!", "catch up!", "almost there"]
+                return messages[cycleIndex % messages.count]
+            }
+        } else if lead == -2 {
+            // Behind by 2
+            if isEndGame {
+                let messages = ["it's not over yet!", "move move move!"]
+                return messages[cycleIndex % messages.count]
+            } else {
+                let messages = ["lowkey falling behind", "lock in bro", "step it up", "wake up"]
+                return messages[cycleIndex % messages.count]
+            }
+        } else {
+            // Behind by 3+
+            if isEndGame {
+                let messages = ["it's wraps", "you're cooked", "gg go next", "sheesh not good"]
+                return messages[cycleIndex % messages.count]
+            } else {
+                let messages = ["you're cooked", "oof that's rough", "taking a big L rn", "nah this is bad", "yikes..."]
+                return messages[cycleIndex % messages.count]
+            }
+        }
     }
 
     var curQuestion: QuestionItem {
@@ -104,7 +182,7 @@ struct MultiplayerGameView: View {
     }
     
     private func handleGameOver() {
-        appModel.path.append(MultiplayerEndGameModel(gameId: gameSession.id, players: gameSession.players))
+        appModel.path.append(MultiplayerEndGameModel(gameId: gameSession.id))
     }
     
     private func updateProgress() {
@@ -208,12 +286,12 @@ struct MultiplayerGameView: View {
         Task {
             for i in (1...3).reversed() {
                 countdownValue = i
-                try? await Task.sleep(nanoseconds: 1_000_000_000) // 1 second
+                try? await Task.sleep(nanoseconds: 1_000_000_000)
             }
 
-            // Show "GO!" briefly
+            // Show "GO" briefly
             countdownValue = 0
-            try? await Task.sleep(nanoseconds: 500_000_000) // 0.5 seconds
+            try? await Task.sleep(nanoseconds: 750_000_000)
 
             // Hide countdown
             await MainActor.run {
@@ -222,12 +300,18 @@ struct MultiplayerGameView: View {
                 // Start listening to opponent's progress
                 startOpponentProgressListener()
 
-                // If playing against bot, start bot simulation
+                // If playing against bot, select difficulty and start bot simulation
                 if isOpponentBot {
+                    selectBotDifficulty()
                     startBotSimulation()
                 }
             }
         }
+    }
+
+    private func selectBotDifficulty() {
+        let difficulties: [GameDifficulty] = [.EASY, .MEDIUM, .HARD]
+        botDifficulty = difficulties.randomElement() ?? .MEDIUM
     }
 
     private func startBotSimulation() {
@@ -240,8 +324,18 @@ struct MultiplayerGameView: View {
                 // Check if task was cancelled
                 if Task.isCancelled { return }
 
-                // Random delay
-                let randomDelay = Double.random(in: 1.5...2.5)
+                // Random delay based on difficulty
+                let randomDelay: Double
+                switch botDifficulty {
+                case .EASY:
+                    randomDelay = Double.random(in: 2.0...4.0)
+                case .MEDIUM:
+                    randomDelay = Double.random(in: 1.5...2.5)
+                case .HARD:
+                    randomDelay = Double.random(in: 1.0...2.25)
+                default:
+                    randomDelay = Double.random(in: 1.5...2.5)
+                }
                 try? await Task.sleep(nanoseconds: UInt64(randomDelay * 1_000_000_000))
 
                 // Get the correct answer for this question
@@ -360,7 +454,7 @@ struct MultiplayerGameView: View {
                                 Text(infoText)
                                     .font(device.valueByDevice(small: .subheadline, normal: .subheadline, ipad: .title3))
                                     .foregroundStyle(Color("darkPurple"))
-                                    .fontWeight(.semibold)
+                                    .fontWeight(.bold)
                                     .lineLimit(1)
                                     .padding(.horizontal, 12)
                                     .padding(.vertical, 6)

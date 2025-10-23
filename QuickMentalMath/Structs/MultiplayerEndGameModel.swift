@@ -9,5 +9,4 @@ import Foundation
 
 struct MultiplayerEndGameModel: Hashable {
     var gameId: String
-    var players: [GamePlayer]
 }

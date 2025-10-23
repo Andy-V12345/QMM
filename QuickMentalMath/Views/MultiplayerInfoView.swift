@@ -12,7 +12,6 @@ struct MultiplayerInfoView: View {
     @EnvironmentObject var appModel: AppModel
     @EnvironmentObject var authInfo: AuthInfoModel
 
-    @State var findingGame = false
     @State private var player1Progress: Int = 0
     @State private var player2Progress: Int = 0
     @State private var winner: String? = nil
@@ -67,7 +66,7 @@ struct MultiplayerInfoView: View {
                             Text("wins")
                                 .foregroundStyle(Color("correctGreen"))
                                 .fontWeight(.bold)
-                                .font(device.valueByDevice(small: .body, normal: .body, ipad: .title2))
+                                .font(device.valueByDevice(small: .subheadline, normal: .body, ipad: .title2))
                                 .frame(maxWidth: .infinity, alignment: .leading)
 
                             Text("\(authInfo.user?.stats?.wins ?? 0)")
@@ -77,18 +76,16 @@ struct MultiplayerInfoView: View {
                                 .frame(maxWidth: .infinity, alignment: .leading)
                                 .lineLimit(1)
                         }
-                        .padding(.horizontal, device.valueByDevice(small: 15, normal: 15, ipad: 20))
-                        .padding(.vertical, device.valueByDevice(small: 12, normal: 12, ipad: 17))
+                        .padding(.horizontal, device.valueByDevice(small: 12, normal: 15, ipad: 20))
+                        .padding(.vertical, device.valueByDevice(small: 10, normal: 12, ipad: 17))
                         .frame(maxWidth: .infinity)
-                        .raisedButton(cornerRadius: 15, backgroundColor: Color("offWhite"), shadowColor: Color.gray.opacity(0.4), shadowOffset: 7, action: {
-                            
-                        })
+                        .raisedButton(cornerRadius: 15, backgroundColor: Color("offWhite"), shadowColor: Color.gray.opacity(0.4), shadowOffset: device.valueByDevice(small: 5, normal: 5, ipad: 8), action: {})
                         
                         VStack(spacing: 5) {
                             Text("losses")
                                 .foregroundStyle(Color("errorRed"))
                                 .fontWeight(.bold)
-                                .font(device.valueByDevice(small: .body, normal: .body, ipad: .title2))
+                                .font(device.valueByDevice(small: .subheadline, normal: .body, ipad: .title2))
                                 .frame(maxWidth: .infinity, alignment: .leading)
 
                             Text("\(authInfo.user?.stats?.losses ?? 0)")
@@ -101,18 +98,16 @@ struct MultiplayerInfoView: View {
                         .padding(.horizontal, device.valueByDevice(small: 15, normal: 15, ipad: 20))
                         .padding(.vertical, device.valueByDevice(small: 12, normal: 12, ipad: 17))
                         .frame(maxWidth: .infinity)
-                        .raisedButton(cornerRadius: 15, backgroundColor: Color("offWhite"), shadowColor: Color.gray.opacity(0.4), shadowOffset: 7, action: {
-                            
-                        })
+                        .raisedButton(cornerRadius: 15, backgroundColor: Color("offWhite"), shadowColor: Color.gray.opacity(0.4), shadowOffset: device.valueByDevice(small: 5, normal: 5, ipad: 8), action: {})
                         
                         VStack(spacing: 5) {
                             Text("best")
                                 .foregroundStyle(Color("lightPurple"))
                                 .fontWeight(.bold)
-                                .font(device.valueByDevice(small: .body, normal: .body, ipad: .title2))
+                                .font(device.valueByDevice(small: .subheadline, normal: .body, ipad: .title2))
                                 .frame(maxWidth: .infinity, alignment: .leading)
 
-                            Text(authInfo.user?.stats?.bestTime.map { "\($0)s" } ?? "--")
+                            Text(authInfo.user!.stats!.bestTime != nil ?  String(format: "%.1fs", Double(authInfo.user!.stats!.bestTime!) / 10.0) : "--")
                                 .foregroundStyle(Color("darkPurple"))
                                 .fontWeight(.heavy)
                                 .font(device.valueByDevice(small: .title, normal: .title, ipad: Font.system(size: 45)))
@@ -122,9 +117,7 @@ struct MultiplayerInfoView: View {
                         .padding(.horizontal, device.valueByDevice(small: 15, normal: 15, ipad: 20))
                         .padding(.vertical, device.valueByDevice(small: 12, normal: 12, ipad: 17))
                         .frame(maxWidth: .infinity)
-                        .raisedButton(cornerRadius: 15, backgroundColor: Color("offWhite"), shadowColor: Color.gray.opacity(0.4), shadowOffset: 7, action: {
-                            
-                        })
+                        .raisedButton(cornerRadius: 15, backgroundColor: Color("offWhite"), shadowColor: Color.gray.opacity(0.4), shadowOffset: device.valueByDevice(small: 5, normal: 5, ipad: 8), action: {})
                         
                     }
                     .padding(.top, 5)
@@ -168,7 +161,7 @@ struct MultiplayerInfoView: View {
                     .raisedButton(impactStrength: .heavy, cornerRadius: 20, backgroundColor: Color("lighterPurple"), shadowColor: Color("lightPurple"), shadowOffset: device.valueByDevice(small: 11, normal: 11, ipad: 13),
                                   action: {
                         
-                        findingGame = true
+                        appModel.findingGame = true
                     })
                     //: Start Button
                     
@@ -190,7 +183,7 @@ struct MultiplayerInfoView: View {
         .onDisappear {
             stopRacingAnimation()
         }
-        .onChange(of: findingGame, perform: { new in
+        .onChange(of: appModel.findingGame, perform: { new in
             if new {
                 // Sheet appeared - stop animations
                 stopRacingAnimation()
@@ -198,9 +191,6 @@ struct MultiplayerInfoView: View {
                 // Sheet dismissed - resume animations
                 startRacingAnimation()
             }
-        })
-        .fullScreenCover(isPresented: $findingGame, content: {
-            WaitingRoomView()
         })
     }
     

@@ -9,8 +9,10 @@ import SwiftUI
 
 class AppModel: ObservableObject {
     @Published var path: NavigationPath
+    @Published var findingGame: Bool
     
     init(path: NavigationPath) {
         self.path = path
+        self.findingGame = false
     }
 }

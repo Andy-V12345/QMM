@@ -12,9 +12,9 @@ struct WaitingRoomView: View {
 
     @Environment(\.dismiss) var dismiss
 
-    @EnvironmentObject var device: DeviceModel
-    @EnvironmentObject var authInfo: AuthInfoModel
-    @EnvironmentObject var appModel: AppModel
+    @ObservedObject var device: DeviceModel
+    @ObservedObject var authInfo: AuthInfoModel
+    @ObservedObject var appModel: AppModel
 
     @State private var bounceOffset: CGFloat = 0
     @State private var selectedQuote: String = ""
@@ -250,15 +250,4 @@ struct WaitingRoomView: View {
             Text(errorMessage)
         }
     }
-}
-
-#Preview {
-    return (
-        GeometryReader { screen in
-            WaitingRoomView()
-                .environmentObject(DeviceModel(screen: screen))
-                .environmentObject(AuthInfoModel())
-                .environmentObject(AppModel(path: NavigationPath()))
-        }
-    )
 }
