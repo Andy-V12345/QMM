@@ -19,6 +19,7 @@ struct RoundedCorner: Shape {
 
 struct RaisedButtonStyle: ViewModifier {
     @State private var isPressed = false
+    @State private var isAnimating = false
     let impactStrength: UIImpactFeedbackGenerator.FeedbackStyle
     let cornerRadius: CGFloat
     let backgroundColor: Color
@@ -40,6 +41,7 @@ struct RaisedButtonStyle: ViewModifier {
                 TapGesture()
                     .onEnded {
                         Task {
+                            isAnimating = true
                             if isEnabled {
                                 withAnimation(.easeOut(duration: 0.1)) {
                                     isPressed = true
@@ -55,9 +57,11 @@ struct RaisedButtonStyle: ViewModifier {
 
                                 action()
                             }
+                            isAnimating = false
                         }
                     }
             )
+            .allowsHitTesting(!isAnimating)
             .onAppear {
                 if !isEnabled {
                     isPressed = true
