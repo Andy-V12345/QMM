@@ -139,7 +139,8 @@ struct WaitingRoomView: View {
 
     private func startBotFallbackTimer() {
         botTimerTask = Task {
-            try? await Task.sleep(nanoseconds: 10_000_000_000) // 10 seconds
+            let randomDelay = Double.random(in: 5.0...9.0)
+            try? await Task.sleep(nanoseconds: UInt64(randomDelay * 1_000_000_000))
 
             // Check if task was cancelled or already navigated
             if Task.isCancelled { return }
