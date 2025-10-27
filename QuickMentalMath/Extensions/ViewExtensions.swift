@@ -82,7 +82,7 @@ extension View {
     func roundedCorner(_ radius: CGFloat, corners: UIRectCorner) -> some View {
         clipShape(RoundedCorner(radius: radius, corners: corners) )
     }
-    
+
     func raisedButton(
         impactStrength: UIImpactFeedbackGenerator.FeedbackStyle = .medium,
         cornerRadius: CGFloat = 10,

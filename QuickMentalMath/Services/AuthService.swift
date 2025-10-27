@@ -129,13 +129,11 @@ class AuthService {
             }
             
             if httpResponse?.statusCode == 403 {
-                print(httpResponse)
                 return (nil, "INVALID_CREDS")
             }
             else {
                 if let res = try? JSONDecoder().decode(AuthResponse.self, from: data!) {
                     var user = User(id: res.id!, username: res.username!, jwtToken: res.jwtToken!)
-                    user.stats = await loadUserStats(userId: user.id, jwtToken: user.jwtToken)
                     
                     return (user, res.status)
                 }
@@ -164,14 +162,6 @@ class AuthService {
                     var user = User(id: response.id!, username: response.username!, jwtToken: response.jwtToken!)
                     let statsRequest = UserStatsRequest()
                     let success = await createUserStats(userId: user.id, jwtToken: user.jwtToken, statsRequest: statsRequest)
-                    
-                    if success {
-                        let stats = await loadUserStats(userId: user.id, jwtToken: user.jwtToken)
-                        user.stats = stats
-                    }
-                    else {
-                        print("couldn't create stats")
-                    }
                                                             
                     return (user, response.status)
                 }
@@ -190,7 +180,7 @@ class AuthService {
         
     }
     
-    static func loadUserStats(userId: Int, jwtToken: String) async -> UserStats? {
+    static func loadUserStats(userId: Int, jwtToken: String) async throws -> UserStats? {
         var request = URLRequest(url: URL(string: baseUrl + "/stats/\(userId)")!)
         request.httpMethod = "GET"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -203,13 +193,12 @@ class AuthService {
                 return stats
             }
             else {
-                print("no stats")
                 return nil
             }
         }
         catch {
             print(error)
-            return nil
+            throw error
         }
     }
     
@@ -229,7 +218,6 @@ class AuthService {
                 return true
             }
             else {
-                print(httpResponse?.statusCode)
                 return false
             }
         }
@@ -255,7 +243,6 @@ class AuthService {
                 return true
             }
             else {
-                print(httpResponse?.statusCode)
                 return false
             }
         }

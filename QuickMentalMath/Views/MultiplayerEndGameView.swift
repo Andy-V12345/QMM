@@ -15,6 +15,11 @@ struct MultiplayerEndGameView: View {
     @EnvironmentObject var appModel: AppModel
     @EnvironmentObject var authInfo: AuthInfoModel
 
+    @AppStorage("authState") var authState: AuthState = .UNAUTHORIZED
+    @AppStorage("jwtToken") var jwtToken = ""
+    @AppStorage("username") var username = ""
+    @AppStorage("id") var id = 0
+
     let endGameModel: MultiplayerEndGameModel
 
     // Loading and data state
@@ -33,9 +38,6 @@ struct MultiplayerEndGameView: View {
     // Confetti state
     @State private var confettiTrigger = 0
     @State private var isConfettiOnCooldown = false
-
-    // Bot simulation state
-    @State private var isBotSimulationComplete: Bool = false
         
     init(endGameModel: MultiplayerEndGameModel) {
         self.endGameModel = endGameModel
@@ -161,7 +163,7 @@ struct MultiplayerEndGameView: View {
 
         let result = await withRetry {
             return await Task<Result<UserStats, Error>, Never> {
-                if let stats = await AuthService.loadUserStats(userId: user.id, jwtToken: user.jwtToken) {
+                if let stats = try? await AuthService.loadUserStats(userId: user.id, jwtToken: user.jwtToken) {
                     return .success(stats)
                 } else {
                     return .failure(NSError(domain: "MultiplayerEndGameView", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to load user stats"]))
@@ -182,7 +184,7 @@ struct MultiplayerEndGameView: View {
     private func simulateBotCompletion() async {
         guard let userProgress = userProgress,
               let userTimeMs = userProgress.elapsedMs else { return }
-
+        
         // Wait a random 2-5 seconds
         let randomDelay = Double.random(in: 2.0...5.0)
         try? await Task.sleep(nanoseconds: UInt64(randomDelay * 1_000_000_000))
@@ -203,7 +205,6 @@ struct MultiplayerEndGameView: View {
         // Set opponent progress
         await MainActor.run {
             opponentProgress = simulatedProgress
-            isBotSimulationComplete = true
         }
     }
 
@@ -215,9 +216,9 @@ struct MultiplayerEndGameView: View {
         guard let opponent = session.players.first(where: { $0.uid != String(userId) }) else { return }
 
         // Check if opponent is a bot and user won
-        let isOpponentBot = opponent.displayName.lowercased().contains("bot")
+        let isOpponentBot = opponent.uid.lowercased().contains("bot")
         let userWon = session.result?.winnerUid == String(userId)
-
+        
         // If opponent is bot and user won, simulate bot completion instead of listening
         if isOpponentBot && userWon {
             await simulateBotCompletion()
@@ -329,13 +330,12 @@ struct MultiplayerEndGameView: View {
             // Fetch game session first (needed for opponent listener)
             await fetchGameSession()
 
-            // Fetch user progress, user stats, and start opponent listener in parallel
-            async let userProgressTask: Void = fetchUserProgress()
-            async let userStatsTask: Void = fetchUserStats()
-            async let opponentListenerTask: Void = startOpponentProgressListener()
+            // Fetch user progress first (needed for bot simulation)
+            await fetchUserProgress()
 
-            _ = await (userProgressTask, userStatsTask, opponentListenerTask)
-
+            // Fetch user stats
+            await fetchUserStats()
+            
             // Calculate and update stats after all data loaded
             await calculateAndUpdateStats()
 
@@ -343,14 +343,49 @@ struct MultiplayerEndGameView: View {
             await MainActor.run {
                 isLoading = false
             }
+            
+            await startOpponentProgressListener()
         }
     }
 
     var body: some View {
         ZStack {
             Color.white.ignoresSafeArea()
-            
-            VStack(spacing: device.valueByDevice(small: 20, normal: 20, ipad: 30)) {
+
+            // Check if user is signed in
+            if authInfo.user == nil {
+                VStack(spacing: 15) {
+                    Text("looks like you're not signed in")
+                        .foregroundStyle(Color("errorRed"))
+                        .fontWeight(.semibold)
+                        .font(device.valueByDevice(small: .body, normal: .body, ipad: .title2))
+
+                    Button(action: {}, label: {
+                        Text("sign in")
+                            .foregroundStyle(Color("offWhite"))
+                            .font(device.valueByDevice(small: .body, normal: .body, ipad: .title2))
+                            .fontWeight(.bold)
+                            .padding(.horizontal, device.valueByDevice(small: 12, normal: 14, ipad: 16))
+                            .padding(.vertical, 4)
+                            .raisedButton(
+                                cornerRadius: 12,
+                                backgroundColor: Color("errorRed"),
+                                shadowColor: Color("darkErrorRed"),
+                                shadowOffset: device.valueByDevice(small: 3, normal: 4, ipad: 6),
+                                action: {
+                                    authInfo.user = nil
+                                    authInfo.authState = .UNAUTHORIZED
+                                    jwtToken = ""
+                                    username = ""
+                                    id = 0
+                                    authState = authInfo.authState
+                                    appModel.path = NavigationPath([AuthState.UNAUTHORIZED])
+                                }
+                            )
+                    })
+                }
+            } else {
+                VStack(spacing: device.valueByDevice(small: 20, normal: 20, ipad: 30)) {
                 
                 VStack(spacing: 15) {
                     // Error Message Banner
@@ -582,10 +617,13 @@ struct MultiplayerEndGameView: View {
                             .foregroundStyle(Color("darkPurple"))
                     }
                 }
+                }
             }
         }
         .onAppear {
-            loadInitialData()
+            if authInfo.user != nil {
+                loadInitialData()
+            }
         }
         .onChange(of: isLoading, perform: { newValue in
             // Trigger confetti when loading completes and user won

@@ -45,12 +45,6 @@ class AuthInfoModel: ObservableObject {
     }
     
     @MainActor
-    func loadUserStats() async {
-        let stats = await AuthService.loadUserStats(userId: user!.id, jwtToken: user!.jwtToken)
-        user?.stats = stats
-    }
-    
-    @MainActor
     func createUserStats(statsRequest: UserStatsRequest) async -> Bool {
         return await AuthService.createUserStats(userId: user!.id, jwtToken: user!.jwtToken, statsRequest: statsRequest)
     }

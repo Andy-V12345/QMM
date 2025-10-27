@@ -16,7 +16,12 @@ struct EndGameView: View {
     @State var showFraction = false
     @State var showNumQuestions = false
     @State var isConfettiOnCooldown = false
-    
+
+    // Local stats state
+    @State private var userStats: UserStats?
+    @State private var isLoading: Bool = true
+    @State private var isErrorFetchingStats = false
+
     @EnvironmentObject var appModel: AppModel
     @EnvironmentObject var authInfo: AuthInfoModel
     @EnvironmentObject var device: DeviceModel
@@ -36,16 +41,96 @@ struct EndGameView: View {
         self.questionCount = endGameModel.game.questionCount
         self.gameConfigs = endGameModel.gameConfigs
         self.totQuestions = self.questionCount - 1
-        
+
         if self.totQuestions == 0 {
             self.percentage = 0
         }
         else {
             self.percentage = Double((Float(self.numCorrect) / Float(self.totQuestions)) * 100)
         }
-        
+
     }
-    
+
+    private func fetchUserStats() async {
+        guard let user = authInfo.user else { return }
+
+        do {
+            if let stats = try await AuthService.loadUserStats(userId: user.id, jwtToken: user.jwtToken) {
+                await MainActor.run {
+                    isErrorFetchingStats = false
+                    userStats = stats
+                }
+            }
+        }
+        catch {
+            isErrorFetchingStats = true
+            isLoading = false
+        }
+    }
+
+    private func calculateAndUpdateStats() async {
+        guard let user = authInfo.user,
+              var currentStats = userStats else { return }
+
+        // Update operation-specific stats
+        switch self.gameConfigs.mode {
+        case .ADDITION:
+            currentStats.additionScore += numCorrect
+            currentStats.additionTot += self.gameConfigs.numQuestions
+        case .SUBTRACTION:
+            currentStats.subtractionScore += numCorrect
+            currentStats.subtractionTot += self.gameConfigs.numQuestions
+        case .MULTIPLICATION:
+            currentStats.multiplicationScore += numCorrect
+            currentStats.multiplicationTot += self.gameConfigs.numQuestions
+        case .DIVISION:
+            currentStats.divisionScore += numCorrect
+            currentStats.divisionTot += self.gameConfigs.numQuestions
+        default:
+            break
+        }
+
+        // Check for high score
+        if numCorrect > currentStats.highScore {
+            await MainActor.run {
+                newHighScore = true
+            }
+        }
+
+        // Check for time trial high score
+        if self.gameConfigs.mode == .TIME && numCorrect > currentStats.ttHighScore {
+            await MainActor.run {
+                newTtHighScore = true
+            }
+            currentStats.ttHighScore = numCorrect
+        }
+
+        // Update high score
+        currentStats.highScore = max(currentStats.highScore, numCorrect)
+
+        // Update stats on backend
+        let statsRequest = UserStatsRequest(userStats: currentStats)
+        let success = await AuthService.updateUserStats(
+            userId: user.id,
+            statId: currentStats.id,
+            jwtToken: user.jwtToken,
+            statsRequest: statsRequest
+        )
+
+        if success {
+            await MainActor.run {
+                userStats = currentStats
+                isLoading = false
+            }
+        } else {
+            // Even if update fails, show the view with calculated stats
+            await MainActor.run {
+                userStats = currentStats
+                isLoading = false
+            }
+        }
+    }
+
     let perfectSayings = [
         "a perfect score. you must be a genius.",
         "you sort of cooked here.",
@@ -59,11 +144,32 @@ struct EndGameView: View {
             Color.white.ignoresSafeArea()
             
             VStack(spacing: device.valueByDevice(small: 20, normal: 20, ipad: 30)) {
-                Text("your results")
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .font(.largeTitle)
-                    .foregroundStyle(Color("darkPurple"))
-                    .bold()
+                VStack(spacing: 15) {
+                    if isErrorFetchingStats {
+                        HStack(spacing: 8) {
+                            Image(systemName: "exclamationmark.triangle.fill")
+                                .foregroundStyle(.white)
+                            
+                            Text("failed to update your stats")
+                                .foregroundStyle(.white)
+                                .fontWeight(.semibold)
+                                .lineLimit(1)
+                        }
+                        .font(device.valueByDevice(small: .subheadline, normal: .subheadline, ipad: .title3))
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 6)
+                        .raisedButton(backgroundColor: Color("errorRed"), shadowColor: Color("darkErrorRed"), shadowOffset: 2, action: {})
+                        .allowsHitTesting(false)
+                        .transition(.move(edge: .top).combined(with: .opacity))
+                    }
+                    
+                    Text("your results")
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .font(.largeTitle)
+                        .foregroundStyle(Color("darkPurple"))
+                        .bold()
+                }
+                .animation(.easeInOut(duration: 0.3), value: isErrorFetchingStats)                
                                 
                 VStack(spacing: device.valueByDevice(small: 20, normal: 20, ipad: 35)) {
                     if newHighScore || newTtHighScore {
@@ -75,15 +181,15 @@ struct EndGameView: View {
                                 .frame(maxWidth: .infinity, alignment: .leading)
                             
                             HStack {
-                                Text("\(newHighScore ? (authInfo.user?.stats?.highScore ?? 0) : (authInfo.user?.stats?.ttHighScore ?? 0))")
+                                Text("\(newHighScore ? (userStats?.highScore ?? 0) : (userStats?.ttHighScore ?? 0))")
                                     .font(device.valueByDevice(small: .largeTitle, normal: .largeTitle, ipad: Font.system(size: 60)))
                                     .fontWeight(.bold)
                                     .foregroundStyle(Color("darkPurple"))
-                                
+
                                 Image(systemName: "bolt.fill")
                                     .foregroundStyle(Color("lightPurple"))
                                     .font(device.valueByDevice(small: .title2, normal: .title2, ipad: .largeTitle))
-                                
+
                                 Spacer()
                             }
                         }
@@ -243,6 +349,22 @@ struct EndGameView: View {
                 }
             }
             .padding(device.valueByDevice(small: 15, normal: 20, ipad: 30))
+
+            // Loading Overlay
+            if isLoading {
+                ZStack {
+                    Color.white.ignoresSafeArea()
+
+                    VStack(spacing: 20) {
+                        LoadingSpinner(size: 25, color: Color("lightPurple"), width: 6)
+
+                        Text("finalizing results...")
+                            .font(device.valueByDevice(small: .title3, normal: .title2, ipad: .title))
+                            .fontWeight(.semibold)
+                            .foregroundStyle(Color("darkPurple"))
+                    }
+                }
+            }
         } //: ZStack
         .onAppear {
             saying = perfectSayings.randomElement()!
@@ -251,40 +373,15 @@ struct EndGameView: View {
             let gameModel = GameModel(numCorrect: numCorrect, numIncorrect: numCorrect + missedQuestions.count, missedQuestions: missedQuestions, questionCount: questionCount, gameConfigs: gameConfigs)
             UserDefaults.standard.saveLastGame(gameModel)
 
+            // Fetch and update stats if user is authorized
             if authInfo.authState == .AUTHORIZED && authInfo.user != nil {
-
-                switch self.gameConfigs.mode {
-                case .ADDITION:
-                    authInfo.user?.stats?.additionScore += numCorrect
-                    authInfo.user?.stats?.additionTot += self.gameConfigs.numQuestions
-                case .SUBTRACTION:
-                    authInfo.user?.stats?.subtractionScore += numCorrect
-                    authInfo.user?.stats?.subtractionTot += self.gameConfigs.numQuestions
-                case .MULTIPLICATION:
-                    authInfo.user?.stats?.multiplicationScore += numCorrect
-                    authInfo.user?.stats?.multiplicationTot += self.gameConfigs.numQuestions
-                case .DIVISION:
-                    authInfo.user?.stats?.divisionScore += numCorrect
-                    authInfo.user?.stats?.divisionTot += self.gameConfigs.numQuestions
-                default:
-                    break
-                }
-
-                if numCorrect > (authInfo.user?.stats!.highScore)! {
-                    newHighScore = true
-                }
-
-                if self.gameConfigs.mode == .TIME && numCorrect > (authInfo.user?.stats!.ttHighScore)! {
-                    newTtHighScore = true
-                    authInfo.user?.stats?.ttHighScore = numCorrect
-                }
-
-                authInfo.user?.stats?.highScore = max((authInfo.user?.stats!.highScore)!, numCorrect)
-
                 Task {
-                    let statsRequest = UserStatsRequest(userStats: (authInfo.user?.stats)!)
-                    let _ = await authInfo.updateUserStats(statsRequest: statsRequest)
+                    await fetchUserStats()
+                    await calculateAndUpdateStats()
                 }
+            } else {
+                // No user logged in, skip loading
+                isLoading = false
             }
         }
     } // body

@@ -12,7 +12,8 @@ struct ContentView: View {
     @StateObject var authInfo = AuthInfoModel()
     @StateObject var appModel = AppModel(path: NavigationPath())
     @StateObject var deviceModel = DeviceModel()
-    
+    @StateObject var networkMonitor = NetworkMonitor()
+
     @Environment(\.scenePhase) var scenePhase
     
     @AppStorage("authState") var authState: AuthState = .UNAUTHORIZED
@@ -117,7 +118,6 @@ struct ContentView: View {
                         appModel.path = NavigationPath([AuthState.UNAUTHORIZED, authInfo.authState])
                     }
                     else {
-                        await authInfo.loadUserStats()
                         appModel.path = NavigationPath([AuthState.UNAUTHORIZED, authInfo.authState])
                     }
                 }
@@ -125,9 +125,10 @@ struct ContentView: View {
             .environmentObject(authInfo)
             .environmentObject(appModel)
             .environmentObject(deviceModel)
+            .environmentObject(networkMonitor)
             .dynamicTypeSize(.large)
             .fullScreenCover(isPresented: $appModel.findingGame, content: {
-                WaitingRoomView(device: deviceModel, authInfo: authInfo, appModel: appModel)
+                WaitingRoomView(device: deviceModel, authInfo: authInfo, appModel: appModel, networkMonitor: networkMonitor)
             })
         }
     }

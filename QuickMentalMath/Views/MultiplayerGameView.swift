@@ -47,6 +47,12 @@ struct MultiplayerGameView: View {
     @EnvironmentObject var device: DeviceModel
     @EnvironmentObject var authInfo: AuthInfoModel
     @EnvironmentObject var appModel: AppModel
+    @EnvironmentObject var networkMonitor: NetworkMonitor
+
+    @AppStorage("authState") var authState: AuthState = .UNAUTHORIZED
+    @AppStorage("jwtToken") var jwtToken = ""
+    @AppStorage("username") var username = ""
+    @AppStorage("id") var id = 0
 
     let numQuestions: Int
     let gameSession: GameSession
@@ -330,11 +336,11 @@ struct MultiplayerGameView: View {
                 case .EASY:
                     randomDelay = Double.random(in: 2.0...4.0)
                 case .MEDIUM:
-                    randomDelay = Double.random(in: 1.5...2.5)
+                    randomDelay = Double.random(in: 1.75...2.0)
                 case .HARD:
-                    randomDelay = Double.random(in: 1.0...2.25)
+                    randomDelay = Double.random(in: 0.8...1.75)
                 default:
-                    randomDelay = Double.random(in: 1.5...2.5)
+                    randomDelay = Double.random(in: 1.5...2.0)
                 }
                 try? await Task.sleep(nanoseconds: UInt64(randomDelay * 1_000_000_000))
 
@@ -355,7 +361,11 @@ struct MultiplayerGameView: View {
                 case .success:
                     botQuestionIndex += 1
                 case .failure(let error):
-                    print("Bot submission failed: \(error.localizedDescription)")
+                    let nsError = error as NSError
+                    
+                    if nsError.code != NSURLErrorCancelled {
+                        print("Bot submission failed: \(error.localizedDescription)")
+                    }
                     // Continue anyway
                     botQuestionIndex += 1
                 }
@@ -415,208 +425,273 @@ struct MultiplayerGameView: View {
         ZStack {
             Color.white.ignoresSafeArea()
 
-            VStack(spacing: 0) {
-                VStack {
-                    VStack(spacing: 20) {
-                        // MARK: MENU BAR
-                        HStack {
-                            Button(action: {
-                                showAreYouSure = true
-                            }, label: {
-                                Image(systemName: "chevron.left")
-                                    .font(.headline)
-                                    .bold()
-                                    .foregroundColor(Color("darkPurple"))
-                                    .dynamicTypeSize(.large)
-                            })
-                            
-                            Spacer()
-                            
-                            if showConnectionWarning {
-                                HStack(spacing: 8) {
-                                    Image(systemName: "wifi.slash")
-                                        .foregroundStyle(.white)
-                                    
-                                    Text("connection issues")
-                                        .foregroundStyle(.white)
-                                        .fontWeight(.semibold)
-                                        .lineLimit(1)
+            // Check if connected to wifi
+            if !networkMonitor.isConnected {
+                VStack(spacing: 20) {
+                    HStack {
+                        Button(action: {
+                            showAreYouSure = true
+                        }, label: {
+                            Image(systemName: "chevron.left")
+                                .font(.headline)
+                                .bold()
+                                .foregroundColor(Color("darkPurple"))
+                                .dynamicTypeSize(.large)
+                        })
+
+                        Spacer()
+                    }
+                    .padding(.horizontal, 20)
+                    .padding(.top, 10)
+
+                    Spacer()
+
+                    Text("not connected to wifi")
+                        .foregroundStyle(Color("errorRed"))
+                        .fontWeight(.semibold)
+                        .font(device.valueByDevice(small: .body, normal: .body, ipad: .title2))
+                        .multilineTextAlignment(.center)
+
+                    Spacer()
+                }
+            } else if authInfo.user == nil {
+                // Check if user is signed in
+                VStack(spacing: 15) {
+                    Text("looks like you're not signed in")
+                        .foregroundStyle(Color("errorRed"))
+                        .fontWeight(.semibold)
+                        .font(device.valueByDevice(small: .body, normal: .body, ipad: .title2))
+
+                    Button(action: {}, label: {
+                        Text("sign in")
+                            .foregroundStyle(Color("offWhite"))
+                            .font(device.valueByDevice(small: .body, normal: .body, ipad: .title2))
+                            .fontWeight(.bold)
+                            .padding(.horizontal, device.valueByDevice(small: 12, normal: 14, ipad: 16))
+                            .padding(.vertical, 4)
+                            .raisedButton(
+                                cornerRadius: 12,
+                                backgroundColor: Color("errorRed"),
+                                shadowColor: Color("darkErrorRed"),
+                                shadowOffset: device.valueByDevice(small: 3, normal: 4, ipad: 6),
+                                action: {
+                                    authInfo.user = nil
+                                    authInfo.authState = .UNAUTHORIZED
+                                    jwtToken = ""
+                                    username = ""
+                                    id = 0
+                                    authState = authInfo.authState
+                                    appModel.path = NavigationPath([AuthState.UNAUTHORIZED])
                                 }
-                                .font(device.valueByDevice(small: .subheadline, normal: .subheadline, ipad: .title3))
-                                .padding(.horizontal, 12)
-                                .padding(.vertical, 6)
-                                .raisedButton(backgroundColor: Color("errorRed"), shadowColor: Color("darkErrorRed"), shadowOffset: 2, action: {})
-                                .allowsHitTesting(false)
-                                .transition(.move(edge: .top).combined(with: .opacity))
-                                .animation(.easeInOut(duration: 0.3), value: showConnectionWarning)
-                            }
-                            else {
-                                Text(infoText)
+                            )
+                    })
+                }
+            } else {
+                VStack(spacing: 0) {
+                    VStack {
+                        VStack(spacing: 20) {
+                            // MARK: MENU BAR
+                            HStack {
+                                Button(action: {
+                                    showAreYouSure = true
+                                }, label: {
+                                    Image(systemName: "chevron.left")
+                                        .font(.headline)
+                                        .bold()
+                                        .foregroundColor(Color("darkPurple"))
+                                        .dynamicTypeSize(.large)
+                                })
+                                
+                                Spacer()
+                                
+                                if showConnectionWarning {
+                                    HStack(spacing: 8) {
+                                        Image(systemName: "wifi.slash")
+                                            .foregroundStyle(.white)
+                                        
+                                        Text("connection issues")
+                                            .foregroundStyle(.white)
+                                            .fontWeight(.semibold)
+                                            .lineLimit(1)
+                                    }
                                     .font(device.valueByDevice(small: .subheadline, normal: .subheadline, ipad: .title3))
-                                    .foregroundStyle(Color("darkPurple"))
-                                    .fontWeight(.bold)
-                                    .lineLimit(1)
                                     .padding(.horizontal, 12)
                                     .padding(.vertical, 6)
-                                    .raisedButton(shadowOffset: 2, action: {})
+                                    .raisedButton(backgroundColor: Color("errorRed"), shadowColor: Color("darkErrorRed"), shadowOffset: 2, action: {})
                                     .allowsHitTesting(false)
                                     .transition(.move(edge: .top).combined(with: .opacity))
                                     .animation(.easeInOut(duration: 0.3), value: showConnectionWarning)
+                                }
+                                else {
+                                    Text(infoText)
+                                        .font(device.valueByDevice(small: .subheadline, normal: .subheadline, ipad: .title3))
+                                        .foregroundStyle(Color("darkPurple"))
+                                        .fontWeight(.bold)
+                                        .lineLimit(1)
+                                        .padding(.horizontal, 12)
+                                        .padding(.vertical, 6)
+                                        .raisedButton(shadowOffset: 2, action: {})
+                                        .allowsHitTesting(false)
+                                        .transition(.move(edge: .top).combined(with: .opacity))
+                                        .animation(.easeInOut(duration: 0.3), value: showConnectionWarning)
+                                }
+                                
+                                Spacer()
+                                
+                                
+                                // Used to center the hstack
+                                Button(action: {
+                                }, label: {
+                                    Image(systemName: "chevron.left")
+                                        .font(.headline)
+                                        .bold()
+                                        .foregroundColor(Color("darkPurple"))
+                                        .dynamicTypeSize(.large)
+                                })
+                                .hidden()
+                            } //: HStack
+                            .padding(.horizontal, 20)
+                            
+                            
+                            // MARK: PROGRESS BARS
+                            VStack(spacing: device.valueByDevice(small: 8, normal: 12, ipad: 15)) {
+                                RacingProgressBar(
+                                    playerName: opponent.displayName,
+                                    playerConnection: opponentConnection,
+                                    backgroundColor: Color("errorRed"),
+                                    shadowColor: Color("darkErrorRed"),
+                                    currentProgress: opponentProgress,
+                                    totalNodes: numQuestions,
+                                    nodeSize: device.valueByDevice(small: 32, normal: 38, ipad: 40)
+                                )
+                                .animation(.easeInOut(duration: 0.15), value: opponentProgress)
+                                
+                                RacingProgressBar(playerName: "you", playerConnection: .CONNECTED, backgroundColor: Color("pastelBlue"), shadowColor: Color("darkPastelBlue"), currentProgress: questionIndex, totalNodes: numQuestions, nodeSize: device.valueByDevice(small: 32, normal: 38, ipad: 40))
+                                    .animation(.easeInOut(duration: 0.15), value: questionIndex)
                             }
-                            
-                            Spacer()
-                            
-                            
-                            // Used to center the hstack
-                            Button(action: {
-                            }, label: {
-                                Image(systemName: "chevron.left")
-                                    .font(.headline)
-                                    .bold()
-                                    .foregroundColor(Color("darkPurple"))
-                                    .dynamicTypeSize(.large)
-                            })
-                            .hidden()
-                        } //: HStack
-                        .padding(.horizontal, 20)
-                        
-                        
-                        // MARK: PROGRESS BARS
-                        VStack(spacing: device.valueByDevice(small: 8, normal: 12, ipad: 15)) {
-                            RacingProgressBar(
-                                playerName: opponent.displayName,
-                                playerConnection: opponentConnection,
-                                backgroundColor: Color("errorRed"),
-                                shadowColor: Color("darkErrorRed"),
-                                currentProgress: opponentProgress,
-                                totalNodes: numQuestions,
-                                nodeSize: device.valueByDevice(small: 32, normal: 38, ipad: 40)
-                            )
-                            .animation(.easeInOut(duration: 0.15), value: opponentProgress)
-                            
-                            RacingProgressBar(playerName: "you", playerConnection: .CONNECTED, backgroundColor: Color("pastelBlue"), shadowColor: Color("darkPastelBlue"), currentProgress: questionIndex, totalNodes: numQuestions, nodeSize: device.valueByDevice(small: 32, normal: 38, ipad: 40))
-                                .animation(.easeInOut(duration: 0.15), value: questionIndex)
+                            .padding(.horizontal, 20)
                         }
-                        .padding(.horizontal, 20)
-                    }
                         
-                    Spacer()
-
-                    // MARK: NUMBERS DISPLAY
-                    VStack(spacing: 10) {
-                        Text(String(Int(max(curQuestion.a, curQuestion.b))))
-                            .font(.system(size: device.screen!.size.width * numSize, weight: .bold, design: .rounded))
-                            .foregroundColor(Color("darkPurple"))
-                            .frame(maxWidth: .infinity, alignment: .trailing)
-                            .tracking(device.valueByDevice(small: 5, normal: 8, ipad: 15))
-
-                        HStack {
-                            Text(curQuestion.op)
+                        Spacer()
+                        
+                        // MARK: NUMBERS DISPLAY
+                        VStack(spacing: 10) {
+                            Text(String(Int(max(curQuestion.a, curQuestion.b))))
                                 .font(.system(size: device.screen!.size.width * numSize, weight: .bold, design: .rounded))
-                                .bold()
-                                .foregroundColor(Color("darkPurple"))
-
-                            Spacer()
-
-                            Text(String(Int(min(curQuestion.a, curQuestion.b))))
-                                .font(.system(size: device.screen!.size.width * numSize, weight: .bold, design: .rounded))
-                                .bold()
                                 .foregroundColor(Color("darkPurple"))
                                 .frame(maxWidth: .infinity, alignment: .trailing)
                                 .tracking(device.valueByDevice(small: 5, normal: 8, ipad: 15))
+                            
+                            HStack {
+                                Text(curQuestion.op)
+                                    .font(.system(size: device.screen!.size.width * numSize, weight: .bold, design: .rounded))
+                                    .bold()
+                                    .foregroundColor(Color("darkPurple"))
+                                
+                                Spacer()
+                                
+                                Text(String(Int(min(curQuestion.a, curQuestion.b))))
+                                    .font(.system(size: device.screen!.size.width * numSize, weight: .bold, design: .rounded))
+                                    .bold()
+                                    .foregroundColor(Color("darkPurple"))
+                                    .frame(maxWidth: .infinity, alignment: .trailing)
+                                    .tracking(device.valueByDevice(small: 5, normal: 8, ipad: 15))
+                            }
+                            
+                            Rectangle()
+                                .fill(Color("darkPurple"))
+                                .frame(maxWidth: .infinity, maxHeight: device.valueByDevice(small: 5, normal: 5, ipad: 7))
+                                .cornerRadius(5)
+                            
+                            Text(input)
+                                .font(.system(size: device.screen!.size.width * numSize, weight: .bold, design: .rounded))
+                                .bold()
+                                .foregroundColor(Color("darkPurple"))
+                                .opacity(input == "f" ? 0 : 1)
+                                .frame(maxWidth: .infinity, alignment: .trailing)
+                                .tracking(device.valueByDevice(small: 5, normal: 8, ipad: 15))
                         }
-
-                        Rectangle()
-                            .fill(Color("darkPurple"))
-                            .frame(maxWidth: .infinity, maxHeight: device.valueByDevice(small: 5, normal: 5, ipad: 7))
-                            .cornerRadius(5)
-
-                        Text(input)
-                            .font(.system(size: device.screen!.size.width * numSize, weight: .bold, design: .rounded))
-                            .bold()
-                            .foregroundColor(Color("darkPurple"))
-                            .opacity(input == "f" ? 0 : 1)
-                            .frame(maxWidth: .infinity, alignment: .trailing)
-                            .tracking(device.valueByDevice(small: 5, normal: 8, ipad: 15))
+                        .frame(maxWidth: device.screen!.size.width * 0.5)
+                        
+                        Spacer()
+                        
                     }
-                    .frame(maxWidth: device.screen!.size.width * 0.5)
-
+                    .padding(.top, 10)
+                    .frame(maxHeight: device.screen!.size.height * topSize)
+                    
+                    // MARK: KEYPAD
+                    VStack(spacing: device.valueByDevice(small: 13, normal: 13, ipad: 20)) {
+                        HStack {
+                            ForEach(1...3, id: \.self) { index in
+                                KeyPadButton(id: String(keyNums[index-1]), onClick: handleKeypadClick)
+                            }
+                        }
+                        HStack {
+                            ForEach(4...6, id: \.self) { index in
+                                KeyPadButton(id: String(keyNums[index-1]), onClick: handleKeypadClick)
+                            }
+                        }
+                        HStack {
+                            ForEach(7...9, id: \.self) { index in
+                                KeyPadButton(id: String(keyNums[index-1]), onClick: handleKeypadClick)
+                            }
+                        }
+                        HStack {
+                            KeyPadButton(id: "10", foregroundColor: .white, backgroundColor: Color("errorRed"), shadowColor: Color("darkErrorRed"), imageName: "delete.left", isDisabled: input == "f", onClick: handleKeypadClick)
+                            
+                            KeyPadButton(id: "0", onClick: handleKeypadClick)
+                            
+                            KeyPadButton(id: "11", foregroundColor: .white, backgroundColor: Color("correctGreen"), shadowColor: Color("darkGreen"), imageName: "checkmark", isDisabled: true, onClick: handleKeypadClick)
+                        }
+                    }
+                    .frame(height: device.screen!.size.height * (1 - topSize))
+                    .padding(.horizontal, device.valueByDevice(small: 10, normal: 10, ipad: 20))
+                    
                     Spacer()
-
+                    
                 }
-                .padding(.top, 10)
-                .frame(maxHeight: device.screen!.size.height * topSize)
-
-                // MARK: KEYPAD
-                VStack(spacing: device.valueByDevice(small: 13, normal: 13, ipad: 20)) {
-                    HStack {
-                        ForEach(1...3, id: \.self) { index in
-                            KeyPadButton(id: String(keyNums[index-1]), onClick: handleKeypadClick)
-                        }
-                    }
-                    HStack {
-                        ForEach(4...6, id: \.self) { index in
-                            KeyPadButton(id: String(keyNums[index-1]), onClick: handleKeypadClick)
-                        }
-                    }
-                    HStack {
-                        ForEach(7...9, id: \.self) { index in
-                            KeyPadButton(id: String(keyNums[index-1]), onClick: handleKeypadClick)
-                        }
-                    }
-                    HStack {
-                        KeyPadButton(id: "10", foregroundColor: .white, backgroundColor: Color("errorRed"), shadowColor: Color("darkErrorRed"), imageName: "delete.left", isDisabled: input == "f", onClick: handleKeypadClick)
+                .frame(maxHeight: .infinity)
+                .animation(.easeOut(duration: 0.3), value: showCountdown)
+                
+                // Countdown Overlay
+                if showCountdown {
+                    ZStack {
+                        Color.white.ignoresSafeArea()
                         
-                        KeyPadButton(id: "0", onClick: handleKeypadClick)
-                        
-                        KeyPadButton(id: "11", foregroundColor: .white, backgroundColor: Color("correctGreen"), shadowColor: Color("darkGreen"), imageName: "checkmark", isDisabled: true, onClick: handleKeypadClick)
-                    }
-                }
-                .frame(height: device.screen!.size.height * (1 - topSize))
-                .padding(.horizontal, device.valueByDevice(small: 10, normal: 10, ipad: 20))
-
-                Spacer()
-
-            }
-            .frame(maxHeight: .infinity)
-
-            // Countdown Overlay
-            if showCountdown {
-                ZStack {
-                    Color.white.ignoresSafeArea()
-
-                    Text(countdownValue == 0 ? "GO" : "\(countdownValue)")
-                        .font(.system(size: device.valueByDevice(small: 75, normal: 100, ipad: 150), weight: .black))
-                        .foregroundStyle(Color("darkPurple"))
-                        .scaleEffect(countdownValue == 0 ? 1.2 : 1.0)
-                        .animation(.spring(response: 0.3, dampingFraction: 0.6), value: countdownValue)
-                }
-                .transition(.opacity)
-            }
-
-            // Leave Game Loading Overlay
-            if showLeaveGameOverlay {
-                ZStack {
-                    Color.white.opacity(0.7)
-                        .ignoresSafeArea()
-                        .allowsHitTesting(true)
-
-                    VStack(spacing: 20) {
-                        LoadingSpinner(size: 25, color: Color("lightPurple"), width: 6)
-
-                        Text("leaving game...")
-                            .font(device.valueByDevice(small: .title3, normal: .title2, ipad: .title))
-                            .fontWeight(.semibold)
+                        Text(countdownValue == 0 ? "GO" : "\(countdownValue)")
+                            .font(.system(size: device.valueByDevice(small: 75, normal: 100, ipad: 150), weight: .black))
                             .foregroundStyle(Color("darkPurple"))
+                            .scaleEffect(countdownValue == 0 ? 1.2 : 1.0)
+                            .animation(.spring(response: 0.3, dampingFraction: 0.6), value: countdownValue)
+                    }
+                    .transition(.opacity)
+                }
+                
+                // Leave Game Loading Overlay
+                if showLeaveGameOverlay {
+                    ZStack {
+                        Color.white.opacity(0.7)
+                            .ignoresSafeArea()
+                            .allowsHitTesting(true)
+                        
+                        VStack(spacing: 20) {
+                            LoadingSpinner(size: 25, color: Color("lightPurple"), width: 6)
+                            
+                            Text("leaving game...")
+                                .font(device.valueByDevice(small: .title3, normal: .title2, ipad: .title))
+                                .fontWeight(.semibold)
+                                .foregroundStyle(Color("darkPurple"))
+                        }
                     }
                 }
             }
         }
-        .frame(maxHeight: .infinity)
-        .animation(.easeOut(duration: 0.3), value: showCountdown)
+        
         .onAppear {
-            // Start countdown
-            startCountdown()
+            if authInfo.user != nil {
+                // Start countdown
+                startCountdown()
+            }
         }
         .onDisappear {
             // Clean up listeners and tasks
