@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import EasySkeleton
 
 struct StatsView: View {
 
@@ -157,17 +158,118 @@ struct StatsView: View {
                             ScrollView {
                                 VStack(spacing: 25) {
                                     VStack(alignment: .leading, spacing: 15) {
-                                        Text("overview")
+                                        Text("one vs one")
                                             .fontWeight(.heavy)
                                             .foregroundStyle(Color("lightPurple"))
-                                        
-                                        VStack(spacing: 20) {
-                                            StatPanel(imageName: "bolt.fill", imageColor: Color("gold"), value: String(userStats?.highScore ?? 0), label: "high score", borderColor: Color("gold"), progress: nil, isLoading: $isLoadingStats)
-                                            
-                                            StatPanel(imageName: "timer", imageColor: Color("correctGreen"), value: String(userStats?.ttHighScore ?? 0), label: "time trial best", borderColor: Color("correctGreen"), progress: nil, isLoading: $isLoadingStats)
+
+                                        HStack(spacing: device.valueByDevice(small: 8, normal: 8, ipad: 12)) {
+                                            VStack(spacing: 5) {
+                                                Text("wins")
+                                                    .foregroundStyle(Color("correctGreen"))
+                                                    .fontWeight(.bold)
+                                                    .font(device.valueByDevice(small: .headline, normal: .headline, ipad: .title3))
+                                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                                    .skeletonable()
+
+                                                Text("\(userStats?.wins ?? 0)")
+                                                    .foregroundStyle(Color("darkPurple"))
+                                                    .fontWeight(.heavy)
+                                                    .font(device.valueByDevice(small: .title2, normal: .title2, ipad: .title))
+                                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                                    .lineLimit(1)
+                                                    .skeletonable()
+                                            }
+                                            .padding(.horizontal, device.valueByDevice(small: 12, normal: 15, ipad: 20))
+                                            .padding(.vertical, device.valueByDevice(small: 10, normal: 12, ipad: 17))
+                                            .frame(maxWidth: .infinity)
+                                            .raisedButton(cornerRadius: 15, backgroundColor: Color("offWhite"), shadowColor: Color.gray.opacity(0.4), shadowOffset: device.valueByDevice(small: 5, normal: 5, ipad: 8), action: {})
+                                            .setSkeleton(
+                                                $isLoadingStats,
+                                                animationType: .gradient([
+                                                    Color("correctGreen").opacity(0.3),
+                                                    Color("correctGreen").opacity(0.2),
+                                                    Color("correctGreen").opacity(0.3)
+                                                ]),
+                                                animation: Animation.linear(duration: 0.2).repeatForever(autoreverses: false),
+                                                cornerRadius: 8
+                                            )
+
+                                            VStack(spacing: 5) {
+                                                Text("losses")
+                                                    .foregroundStyle(Color("errorRed"))
+                                                    .fontWeight(.bold)
+                                                    .font(device.valueByDevice(small: .headline, normal: .headline, ipad: .title3))
+                                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                                    .skeletonable()
+
+                                                Text("\(userStats?.losses ?? 0)")
+                                                    .foregroundStyle(Color("darkPurple"))
+                                                    .fontWeight(.heavy)
+                                                    .font(device.valueByDevice(small: .title2, normal: .title2, ipad: .title))
+                                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                                    .lineLimit(1)
+                                                    .skeletonable()
+                                            }
+                                            .padding(.horizontal, device.valueByDevice(small: 12, normal: 15, ipad: 20))
+                                            .padding(.vertical, device.valueByDevice(small: 10, normal: 12, ipad: 17))
+                                            .frame(maxWidth: .infinity)
+                                            .raisedButton(cornerRadius: 15, backgroundColor: Color("offWhite"), shadowColor: Color.gray.opacity(0.4), shadowOffset: device.valueByDevice(small: 5, normal: 5, ipad: 8), action: {})
+                                            .setSkeleton(
+                                                $isLoadingStats,
+                                                animationType: .gradient([
+                                                    Color("errorRed").opacity(0.3),
+                                                    Color("errorRed").opacity(0.2),
+                                                    Color("errorRed").opacity(0.3)
+                                                ]),
+                                                animation: Animation.linear(duration: 0.2).repeatForever(autoreverses: false),
+                                                cornerRadius: 8
+                                            )
+
+                                            VStack(spacing: 5) {
+                                                Text("best")
+                                                    .foregroundStyle(Color("lightPurple"))
+                                                    .fontWeight(.bold)
+                                                    .font(device.valueByDevice(small: .headline, normal: .headline, ipad: .title3))
+                                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                                    .skeletonable()
+
+                                                Text(userStats?.bestTime != nil ? String(format: "%.1fs", Double(userStats!.bestTime!) / 10.0) : "--")
+                                                    .foregroundStyle(Color("darkPurple"))
+                                                    .fontWeight(.heavy)
+                                                    .font(device.valueByDevice(small: .title2, normal: .title2, ipad: .title))
+                                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                                    .lineLimit(1)
+                                                    .skeletonable()
+                                            }
+                                            .padding(.horizontal, device.valueByDevice(small: 12, normal: 15, ipad: 20))
+                                            .padding(.vertical, device.valueByDevice(small: 10, normal: 12, ipad: 17))
+                                            .frame(maxWidth: .infinity)
+                                            .raisedButton(cornerRadius: 15, backgroundColor: Color("offWhite"), shadowColor: Color.gray.opacity(0.4), shadowOffset: device.valueByDevice(small: 5, normal: 5, ipad: 8), action: {})
+                                            .setSkeleton(
+                                                $isLoadingStats,
+                                                animationType: .gradient([
+                                                    Color("lightPurple").opacity(0.3),
+                                                    Color("lightPurple").opacity(0.2),
+                                                    Color("lightPurple").opacity(0.3)
+                                                ]),
+                                                animation: Animation.linear(duration: 0.2).repeatForever(autoreverses: false),
+                                                cornerRadius: 8
+                                            )
                                         }
                                     }
                                     
+                                    VStack(alignment: .leading, spacing: 15) {
+                                        Text("high scores")
+                                            .fontWeight(.heavy)
+                                            .foregroundStyle(Color("lightPurple"))
+
+                                        VStack(spacing: 20) {
+                                            StatPanel(imageName: "bolt.fill", imageColor: Color("gold"), value: String(userStats?.highScore ?? 0), label: "high score", borderColor: Color("gold"), progress: nil, isLoading: $isLoadingStats)
+
+                                            StatPanel(imageName: "timer", imageColor: Color("correctGreen"), value: String(userStats?.ttHighScore ?? 0), label: "time trial best", borderColor: Color("correctGreen"), progress: nil, isLoading: $isLoadingStats)
+                                        }
+                                    }
+
                                     VStack(alignment: .leading, spacing: 15) {
                                         Text("by section")
                                             .fontWeight(.heavy)
@@ -325,6 +427,8 @@ private struct StatsViewErrorPreview: View {
                 .environmentObject(AuthInfoModel(user: user))
                 .environmentObject(DeviceModel(screen: screen))
                 .environmentObject(AppModel(path: NavigationPath()))
+                .environmentObject(NetworkMonitor())
+            
         }
     )
 }

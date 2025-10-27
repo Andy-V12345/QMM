@@ -20,6 +20,8 @@ struct StatPanel: View {
     @Binding var isLoading: Bool
     @State var uiProgress: Double = 0
     @State var showAltValue = false
+    
+    @EnvironmentObject var device: DeviceModel
 
     init(imageName: String, imageColor: Color, value: String, altValue: String, label: String, borderColor: Color, progress: Double?, isLoading: Binding<Bool>) {
         self.imageName = imageName
@@ -45,10 +47,10 @@ struct StatPanel: View {
     
     
     var body: some View {
-        HStack(alignment: .top, spacing: 10) {
+        HStack(alignment: .top, spacing: device.valueByDevice(small: 10, normal: 10, ipad: 15)) {
             Image(systemName: imageName)
                 .foregroundStyle(imageColor)
-                .font(.title2)
+                .font(device.valueByDevice(small: .title2, normal: .title2, ipad: .title))
                 .bold()
                 .skeletonable()
             
@@ -56,15 +58,15 @@ struct StatPanel: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text("\(showAltValue ? altValue : value)")
                         .foregroundStyle(Color("darkPurple"))
-                        .font(.title2)
-                        .fontWeight(.bold)
+                        .font(device.valueByDevice(small: .title2, normal: .title2, ipad: .title))
+                        .fontWeight(.heavy)
                         .lineLimit(1)
                         .skeletonable()
                     
                     Text("\(label)")
                         .foregroundStyle(borderColor)
                         .fontWeight(.bold)
-                        .font(.headline)
+                        .font(device.valueByDevice(small: .headline, normal: .headline, ipad: .title3))
                         .skeletonable()
                 }
                 
@@ -72,7 +74,7 @@ struct StatPanel: View {
                 
                 if progress != nil {
                     Circle().stroke(Color("lightGray"), lineWidth: 5)
-                        .frame(width: 30)
+                        .frame(width: device.valueByDevice(small: 30, normal: 30, ipad: 35))
                         .overlay(
                             Circle()
                                 .trim(from: 0.0, to: uiProgress)
@@ -83,9 +85,9 @@ struct StatPanel: View {
                 }
             }
         }
-        .padding([.horizontal, .top], 15)
-        .padding(.bottom, 13)
-        .padding(.trailing, 5)
+        .padding([.horizontal, .top], device.valueByDevice(small: 15, normal: 15, ipad: 20))
+        .padding(.bottom, device.valueByDevice(small: 13, normal: 13, ipad: 18))
+        .padding(.trailing, device.valueByDevice(small: 5, normal: 5, ipad: 10))
         .frame(maxWidth: .infinity)
         .raisedButton(cornerRadius: 15, backgroundColor: Color("offWhite"), shadowColor: Color.gray.opacity(0.4), shadowOffset: 6, action: {
             showAltValue.toggle()
@@ -114,6 +116,9 @@ struct StatPanel: View {
 }
 
 #Preview {
-    StatPanel(imageName: "timer", imageColor: Color("pastelPurple"), value: "80%", altValue: "8 / 10", label: "addition", borderColor: Color("pastelPurple"), progress: 0.8, isLoading: .constant(true))
-        .padding(20)
+    GeometryReader { screen in
+        StatPanel(imageName: "timer", imageColor: Color("pastelPurple"), value: "80%", altValue: "8 / 10", label: "addition", borderColor: Color("pastelPurple"), progress: 0.8, isLoading: .constant(false))
+            .padding(20)
+            .environmentObject(DeviceModel(screen: screen))
+    }
 }

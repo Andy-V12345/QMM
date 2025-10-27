@@ -563,11 +563,11 @@ struct MultiplayerGameView: View {
                                     shadowColor: Color("darkErrorRed"),
                                     currentProgress: opponentProgress,
                                     totalNodes: numQuestions,
-                                    nodeSize: device.valueByDevice(small: 32, normal: 38, ipad: 40)
+                                    nodeSize: device.valueByDevice(small: 32, normal: 38, ipad: 38)
                                 )
                                 .animation(.easeInOut(duration: 0.15), value: opponentProgress)
                                 
-                                RacingProgressBar(playerName: "you", playerConnection: .CONNECTED, backgroundColor: Color("pastelBlue"), shadowColor: Color("darkPastelBlue"), currentProgress: questionIndex, totalNodes: numQuestions, nodeSize: device.valueByDevice(small: 32, normal: 38, ipad: 40))
+                                RacingProgressBar(playerName: "you", playerConnection: .CONNECTED, backgroundColor: Color("pastelBlue"), shadowColor: Color("darkPastelBlue"), currentProgress: questionIndex, totalNodes: numQuestions, nodeSize: device.valueByDevice(small: 32, normal: 38, ipad: 38))
                                     .animation(.easeInOut(duration: 0.15), value: questionIndex)
                             }
                             .padding(.horizontal, 20)
@@ -578,21 +578,21 @@ struct MultiplayerGameView: View {
                         // MARK: NUMBERS DISPLAY
                         VStack(spacing: 10) {
                             Text(String(Int(max(curQuestion.a, curQuestion.b))))
-                                .font(.system(size: device.screen!.size.width * numSize, weight: .bold, design: .rounded))
+                                .font(.system(size: min(device.screen!.size.width * numSize, 55), weight: .bold, design: .rounded))
                                 .foregroundColor(Color("darkPurple"))
                                 .frame(maxWidth: .infinity, alignment: .trailing)
                                 .tracking(device.valueByDevice(small: 5, normal: 8, ipad: 15))
                             
                             HStack {
                                 Text(curQuestion.op)
-                                    .font(.system(size: device.screen!.size.width * numSize, weight: .bold, design: .rounded))
+                                    .font(.system(size: min(device.screen!.size.width * numSize, 55), weight: .bold, design: .rounded))
                                     .bold()
                                     .foregroundColor(Color("darkPurple"))
                                 
                                 Spacer()
                                 
                                 Text(String(Int(min(curQuestion.a, curQuestion.b))))
-                                    .font(.system(size: device.screen!.size.width * numSize, weight: .bold, design: .rounded))
+                                    .font(.system(size: min(device.screen!.size.width * numSize, 55), weight: .bold, design: .rounded))
                                     .bold()
                                     .foregroundColor(Color("darkPurple"))
                                     .frame(maxWidth: .infinity, alignment: .trailing)
@@ -605,7 +605,7 @@ struct MultiplayerGameView: View {
                                 .cornerRadius(5)
                             
                             Text(input)
-                                .font(.system(size: device.screen!.size.width * numSize, weight: .bold, design: .rounded))
+                                .font(.system(size: min(device.screen!.size.width * numSize, 65), weight: .bold, design: .rounded))
                                 .bold()
                                 .foregroundColor(Color("darkPurple"))
                                 .opacity(input == "f" ? 0 : 1)
@@ -788,6 +788,7 @@ struct MultiplayerGameView: View {
                 .environmentObject(DeviceModel(screen: screen))
                 .environmentObject(AuthInfoModel())
                 .environmentObject(AppModel(path: NavigationPath()))
+                .environmentObject(NetworkMonitor())
         }
     )
 }

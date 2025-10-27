@@ -154,7 +154,7 @@ struct MultiplayerInfoView: View {
                     .foregroundStyle(Color("lightPurple"))
 
                     if !isErrorFetchingStats {
-                        HStack(spacing: 12) {
+                        HStack(spacing: device.valueByDevice(small: 8, normal: 8, ipad: 12)) {
                             VStack(spacing: 5) {
                                 Text("wins")
                                     .foregroundStyle(Color("correctGreen"))
