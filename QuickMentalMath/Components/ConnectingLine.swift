@@ -14,6 +14,10 @@ struct ConnectingLine: View {
     let backgroundColor: Color
     let shadowColor: Color
     let isFinished: Bool
+    let totalNodes: Int
+
+    @State private var isFlashing: Bool = false
+    @State private var flashTask: Task<Void, Never>?
 
     @EnvironmentObject var device: DeviceModel
 
@@ -28,16 +32,24 @@ struct ConnectingLine: View {
     private var isFilled: Bool {
         index < currentProgress - 1
     }
-    
+
+    private var isInFinalStretch: Bool {
+        totalNodes - currentProgress <= 5 && currentProgress < totalNodes && !isFinished
+    }
+
     var actualShadowColor: Color {
         if isFilled {
             if isFinished {
                 return Color("darkYellow")
             }
-            
+
+            if isInFinalStretch && isFlashing {
+                return Color("darkYellow")
+            }
+
             return shadowColor
         }
-        
+
         return Color.clear
     }
     
@@ -56,7 +68,7 @@ struct ConnectingLine: View {
 
             // Foreground (filled portion - animates from left to right)
             Capsule()
-                .fill(isFinished ? Color("gold") : backgroundColor)
+                .fill(isFinished ? Color("gold") : (isInFinalStretch && isFlashing ? Color("gold") : backgroundColor))
                 .frame(width: isFilled ? lineWidth : 0, height: lineHeight)
                 .shadow(
                     color: actualShadowColor,
@@ -66,6 +78,44 @@ struct ConnectingLine: View {
                 )
         }
         .frame(width: lineWidth, height: lineHeight)
+        .onAppear {
+            // Start flashing if already in final stretch
+            if isInFinalStretch {
+                startFlashing()
+            }
+        }
+        .onChange(of: currentProgress) { _ in
+            // Check if we should be flashing
+            if isInFinalStretch {
+                if flashTask == nil {
+                    startFlashing()
+                }
+            } else {
+                stopFlashing()
+            }
+        }
+        .onDisappear {
+            stopFlashing()
+        }
+    }
+
+    private func startFlashing() {
+        flashTask?.cancel()
+        flashTask = Task {
+            while !Task.isCancelled && isInFinalStretch {
+                try? await Task.sleep(nanoseconds: 400_000_000) // 0.4s
+                guard !Task.isCancelled else { break }
+                withAnimation(.easeInOut(duration: 0.2)) {
+                    isFlashing.toggle()
+                }
+            }
+        }
+    }
+
+    private func stopFlashing() {
+        flashTask?.cancel()
+        flashTask = nil
+        isFlashing = false
     }
 }
 
@@ -77,7 +127,9 @@ struct ConnectingLine: View {
                 currentProgress: 3,
                 backgroundColor: Color("lighterPurple"),
                 shadowColor: Color("lightPurple"),
-                isFinished: true
+                isFinished: true,
+                totalNodes: 10
+
             )
 
             ConnectingLine(
@@ -85,7 +137,9 @@ struct ConnectingLine: View {
                 currentProgress: 3,
                 backgroundColor: Color("lighterPurple"),
                 shadowColor: Color("lightPurple"),
-                isFinished: false
+                isFinished: false,
+                totalNodes: 10
+
             )
 
             ConnectingLine(
@@ -93,7 +147,9 @@ struct ConnectingLine: View {
                 currentProgress: 3,
                 backgroundColor: Color("lighterPurple"),
                 shadowColor: Color("lightPurple"),
-                isFinished: true
+                isFinished: true,
+                totalNodes: 10
+
             )
         }
         .padding(20)

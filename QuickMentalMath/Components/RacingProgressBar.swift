@@ -87,9 +87,10 @@ struct RacingProgressBar: View {
                                 backgroundColor: backgroundColor,
                                 shadowColor: shadowColor,
                                 nodeSize: nodeSize,
-                                isFinished: isFinished
+                                isFinished: isFinished,
+                                totalNodes: totalNodes
                             )
-                            
+
                             // Connecting line (if not the last node)
                             if index < totalNodes - 1 {
                                 ConnectingLine(
@@ -97,7 +98,8 @@ struct RacingProgressBar: View {
                                     currentProgress: currentProgress,
                                     backgroundColor: backgroundColor,
                                     shadowColor: shadowColor,
-                                    isFinished: isFinished
+                                    isFinished: isFinished,
+                                    totalNodes: totalNodes
                                 )
                             }
                         }
@@ -133,7 +135,7 @@ struct RacingProgressBar: View {
                 playerConnection: .CONNECTED,
                 backgroundColor: Color("pastelBlue"),
                 shadowColor: Color("darkPastelBlue"),
-                currentProgress: 10,
+                currentProgress: 7,
                 totalNodes: 10
             )
         }

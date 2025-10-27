@@ -15,22 +15,30 @@ struct ProgressNode: View {
     let shadowColor: Color
     let nodeSize: CGFloat
     let isFinished: Bool
+    let totalNodes: Int
 
     @State private var isVisuallyCompleted: Bool = false
+    @State private var isFlashing: Bool = false
+    @State private var flashTask: Task<Void, Never>?
 
     @EnvironmentObject var device: DeviceModel
 
     private var shouldBeCompleted: Bool {
         index < currentProgress
     }
-    
-    init(index: Int, currentProgress: Int, backgroundColor: Color, shadowColor: Color, nodeSize: CGFloat?, isFinished: Bool) {
+
+    private var isInFinalStretch: Bool {
+        totalNodes - currentProgress <= 5 && currentProgress < totalNodes && !isFinished
+    }
+
+    init(index: Int, currentProgress: Int, backgroundColor: Color, shadowColor: Color, nodeSize: CGFloat?, isFinished: Bool, totalNodes: Int) {
         self.index = index
         self.currentProgress = currentProgress
         self.backgroundColor = backgroundColor
         self.shadowColor = shadowColor
         self.nodeSize = nodeSize ?? 40
         self.isFinished = isFinished
+        self.totalNodes = totalNodes
     }
     
     var actualBackgroundColor: Color {
@@ -38,22 +46,30 @@ struct ProgressNode: View {
             if isFinished {
                 return Color("gold")
             }
-            
+
+            if isInFinalStretch && isFlashing {
+                return Color("gold")
+            }
+
             return self.backgroundColor
         }
-        
+
         return Color("silver")
     }
-    
+
     var actualShadowColor: Color {
         if isVisuallyCompleted {
             if isFinished {
                 return Color("darkYellow")
             }
-            
+
+            if isInFinalStretch && isFlashing {
+                return Color("darkYellow")
+            }
+
             return self.shadowColor
         }
-        
+
         return Color.gray.opacity(0.4)
     }
 
@@ -106,7 +122,44 @@ struct ProgressNode: View {
             .onAppear {
                 // Initialize the state based on current progress
                 isVisuallyCompleted = shouldBeCompleted
+
+                // Start flashing if already in final stretch
+                if isInFinalStretch {
+                    startFlashing()
+                }
             }
+            .onChange(of: currentProgress) { _ in
+                // Check if we should be flashing
+                if isInFinalStretch {
+                    if flashTask == nil {
+                        startFlashing()
+                    }
+                } else {
+                    stopFlashing()
+                }
+            }
+            .onDisappear {
+                stopFlashing()
+            }
+    }
+
+    private func startFlashing() {
+        flashTask?.cancel()
+        flashTask = Task {
+            while !Task.isCancelled && isInFinalStretch {
+                try? await Task.sleep(nanoseconds: 400_000_000) // 0.4s
+                guard !Task.isCancelled else { break }
+                withAnimation(.easeInOut(duration: 0.2)) {
+                    isFlashing.toggle()
+                }
+            }
+        }
+    }
+
+    private func stopFlashing() {
+        flashTask?.cancel()
+        flashTask = nil
+        isFlashing = false
     }
 }
 
@@ -119,7 +172,8 @@ struct ProgressNode: View {
                 backgroundColor: Color("lighterPurple"),
                 shadowColor: Color("lightPurple"),
                 nodeSize: nil,
-                isFinished: true
+                isFinished: true,
+                totalNodes: 10
             )
 
             ProgressNode(
@@ -128,7 +182,9 @@ struct ProgressNode: View {
                 backgroundColor: Color("lighterPurple"),
                 shadowColor: Color("lightPurple"),
                 nodeSize: nil,
-                isFinished: false
+                isFinished: false,
+                totalNodes: 10
+
             )
 
             ProgressNode(
@@ -137,7 +193,9 @@ struct ProgressNode: View {
                 backgroundColor: Color("lighterPurple"),
                 shadowColor: Color("lightPurple"),
                 nodeSize: nil,
-                isFinished: true
+                isFinished: true,
+                totalNodes: 10
+
             )
         }
         .padding(20)
