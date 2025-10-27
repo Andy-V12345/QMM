@@ -56,7 +56,7 @@ struct KeyPadButton: View {
             .font(device.valueByDevice(small: .title2, normal: .title2, ipad: .largeTitle))
             .foregroundColor(foregroundColor)
             .fontWeight(.heavy)
-            .raisedButton(impactStrength: .soft, backgroundColor: backgroundColor, shadowColor: shadowColor, shadowOffset: device.valueByDevice(small: 5, normal: 5, ipad: 8), action: {
+            .raisedButton(impactStrength: .soft, backgroundColor: backgroundColor, shadowColor: shadowColor, shadowOffset: device.valueByDevice(small: 5, normal: 5, ipad: 8), allowsDoubleTap: true, action: {
                 onClick(id)
             })
             .disabled(isDisabled)

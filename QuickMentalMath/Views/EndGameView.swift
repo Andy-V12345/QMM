@@ -182,8 +182,8 @@ struct EndGameView: View {
                             
                             HStack {
                                 Text("\(newHighScore ? (userStats?.highScore ?? 0) : (userStats?.ttHighScore ?? 0))")
-                                    .font(device.valueByDevice(small: .largeTitle, normal: .largeTitle, ipad: .largeTitle))
-                                    .fontWeight(.bold)
+                                    .font(device.valueByDevice(small: .title, normal: .title, ipad: .largeTitle))
+                                    .fontWeight(.heavy)
                                     .foregroundStyle(Color("darkPurple"))
 
                                 Image(systemName: "bolt.fill")

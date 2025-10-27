@@ -44,7 +44,6 @@ struct MultiplayerEndGameView: View {
     }
 
     // MARK: - Computed Properties
-
     var sortedPlayers: [(player: GamePlayer, timeMs: Int64?, position: Int)] {
         guard let gameSession = gameSession,
               let result = gameSession.result,
@@ -123,6 +122,10 @@ struct MultiplayerEndGameView: View {
             switch result {
             case .success(let session):
                 gameSession = session
+                
+                if let gameResult = session.result, let userId = authInfo.user?.id {
+                    isWinner = gameResult.winnerUid == String(userId)
+                }
             case .failure:
                 fetchErrors.append("game session")
             }
@@ -448,7 +451,7 @@ struct MultiplayerEndGameView: View {
                             
                             VStack(spacing: 5) {
                                 Text("losses")
-                                    .foregroundStyle(!isWinner ? Color("offWhite") : Color("errorRed"))
+                                    .foregroundStyle(isWinner == false ? Color("offWhite") : Color("errorRed"))
                                     .fontWeight(.bold)
                                     .font(device.valueByDevice(small: .subheadline, normal: .body, ipad: .title2))
                                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -463,7 +466,7 @@ struct MultiplayerEndGameView: View {
                             .padding(.horizontal, device.valueByDevice(small: 12, normal: 15, ipad: 20))
                             .padding(.vertical, device.valueByDevice(small: 10, normal: 12, ipad: 17))
                             .frame(maxWidth: .infinity)
-                            .raisedButton(cornerRadius: 15, backgroundColor: !isWinner ? Color("errorRed") : Color("offWhite"), shadowColor: !isWinner ? Color("darkErrorRed") : Color.gray.opacity(0.4), shadowOffset: device.valueByDevice(small: 5, normal: 5, ipad: 8), action: {
+                            .raisedButton(cornerRadius: 15, backgroundColor: isWinner == false ? Color("errorRed") : Color("offWhite"), shadowColor: isWinner == false ? Color("darkErrorRed") : Color.gray.opacity(0.4), shadowOffset: device.valueByDevice(small: 5, normal: 5, ipad: 8), action: {
 
                             })
 
@@ -545,7 +548,7 @@ struct MultiplayerEndGameView: View {
                                     }(),
                                     shadowOffset: device.valueByDevice(small: 5, normal: 5, ipad: 8),
                                     action: {
-                                        guard isCurrentUser && isWinner && !isConfettiOnCooldown else { return }
+                                        guard isWinner && !isConfettiOnCooldown else { return }
                                         confettiTrigger += 1
                                         HapticManager.shared.trigger(.heavy)
                                         isConfettiOnCooldown = true
@@ -566,6 +569,7 @@ struct MultiplayerEndGameView: View {
                                     repetitionInterval: 0.3,
                                     hapticFeedback: true
                                 )
+                                .zIndex(1000)
                             }
                         }
                     }
@@ -629,7 +633,6 @@ struct MultiplayerEndGameView: View {
             // Trigger confetti when loading completes and user won
             if !newValue && isWinner {
                 confettiTrigger += 1
-                isConfettiOnCooldown = true
             }
         })
         .onDisappear {
@@ -640,9 +643,9 @@ struct MultiplayerEndGameView: View {
 
 #Preview {
     GeometryReader { screen in
-        MultiplayerEndGameView(endGameModel: MultiplayerEndGameModel(gameId: "123"))
+        MultiplayerEndGameView(endGameModel: MultiplayerEndGameModel(gameId: "34xpjSq7vRsa21x33q6L"))
             .environmentObject(DeviceModel(screen: screen))
             .environmentObject(AppModel(path: NavigationPath()))
-            .environmentObject(AuthInfoModel())
+            .environmentObject(AuthInfoModel(user: User(id: 652, username: "andy.v123", jwtToken: "1234dfaf", stats: nil)))
     }
 }

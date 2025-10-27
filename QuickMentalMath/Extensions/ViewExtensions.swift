@@ -27,6 +27,7 @@ struct RaisedButtonStyle: ViewModifier {
     let toggleColor: Color?
     let isToggled: Bool?
     let shadowOffset: CGFloat
+    let allowsDoubleTap: Bool
     let action: () -> Void
     
     @Environment(\.isEnabled) var isEnabled
@@ -41,7 +42,10 @@ struct RaisedButtonStyle: ViewModifier {
                 TapGesture()
                     .onEnded {
                         Task {
-                            isAnimating = true
+                            if !allowsDoubleTap {
+                                isAnimating = true
+                            }
+                            
                             if isEnabled {
                                 withAnimation(.easeOut(duration: 0.1)) {
                                     isPressed = true
@@ -95,6 +99,7 @@ extension View {
         toggleColor: Color? = nil,
         isToggled: Bool? = nil,
         shadowOffset: CGFloat = 10,
+        allowsDoubleTap: Bool = false,
         action: @escaping () -> Void
     ) -> some View {
         self.modifier(
@@ -106,6 +111,7 @@ extension View {
                 toggleColor: toggleColor,
                 isToggled: isToggled,
                 shadowOffset: shadowOffset,
+                allowsDoubleTap: allowsDoubleTap,
                 action: action
             )
         )
