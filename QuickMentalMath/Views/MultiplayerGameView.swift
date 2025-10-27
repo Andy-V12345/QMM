@@ -27,6 +27,7 @@ struct MultiplayerGameView: View {
     @State var opponentProgressListener: ListenerRegistration?
     @State var botSubmissionTask: Task<Void, Never>?
     @State var botDifficulty: GameDifficulty = .MEDIUM
+    @State var wasPreviouslyOffline: Bool = false
 
     // Server reconciliation state
     @State var confirmedQuestionIndex: Int = 0
@@ -320,11 +321,11 @@ struct MultiplayerGameView: View {
         botDifficulty = difficulties.randomElement() ?? .MEDIUM
     }
 
-    private func startBotSimulation() {
+    private func startBotSimulation(startingIndex: Int = 0) {
         guard let user = authInfo.user else { return }
 
         botSubmissionTask = Task {
-            var botQuestionIndex = 0
+            var botQuestionIndex = startingIndex
 
             while botQuestionIndex < numQuestions {
                 // Check if task was cancelled
@@ -697,6 +698,22 @@ struct MultiplayerGameView: View {
             // Clean up listeners and tasks
             opponentProgressListener?.remove()
             botSubmissionTask?.cancel()
+        }
+        .onChange(of: networkMonitor.isConnected) { isConnected in
+            // Detect transition from offline to online
+            if !wasPreviouslyOffline && !isConnected {
+                // Just went offline
+                wasPreviouslyOffline = true
+            } else if wasPreviouslyOffline && isConnected {
+                // Just came back online
+                wasPreviouslyOffline = false
+
+                // Resume bot simulation if conditions are met
+                if isOpponentBot && opponentProgress < numQuestions && !showCountdown {
+                    print("Network reconnected - resuming bot simulation from question \(opponentProgress)")
+                    startBotSimulation(startingIndex: opponentProgress)
+                }
+            }
         }
         .alert("are you sure?", isPresented: $showAreYouSure, actions: {
             Button(role: .none, action: {
