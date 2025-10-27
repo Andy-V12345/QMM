@@ -335,11 +335,11 @@ struct MultiplayerGameView: View {
                 let randomDelay: Double
                 switch botDifficulty {
                 case .EASY:
-                    randomDelay = Double.random(in: 2.0...4.0)
+                    randomDelay = Double.random(in: 1.75...2.5)
                 case .MEDIUM:
-                    randomDelay = Double.random(in: 1.75...2.0)
+                    randomDelay = Double.random(in: 1.25...1.5)
                 case .HARD:
-                    randomDelay = Double.random(in: 0.8...1.75)
+                    randomDelay = Double.random(in: 0.8...1.25)
                 default:
                     randomDelay = Double.random(in: 1.5...2.0)
                 }
