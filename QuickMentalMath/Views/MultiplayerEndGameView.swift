@@ -161,6 +161,39 @@ struct MultiplayerEndGameView: View {
         }
     }
 
+    private func fetchOpponentProgress() async {
+        guard let gameSession = gameSession,
+              let userId = authInfo.user?.id else { return }
+
+        // Get opponent's uid
+        guard let opponent = gameSession.players.first(where: { $0.uid != String(userId) }) else { return }
+
+        let result = await withRetry {
+            return await Task<Result<PlayerProgress, Error>, Never> {
+                let db = Firestore.firestore()
+                let docRef = db.collection("games").document(endGameModel.gameId)
+                    .collection("progress").document(opponent.uid)
+
+                do {
+                    let snapshot = try await docRef.getDocument()
+                    let progress = try snapshot.data(as: PlayerProgress.self)
+                    return .success(progress)
+                } catch {
+                    return .failure(error)
+                }
+            }.value
+        }
+
+        await MainActor.run {
+            switch result {
+            case .success(let progress):
+                opponentProgress = progress
+            case .failure:
+                fetchErrors.append("opponent progress")
+            }
+        }
+    }
+
     private func fetchUserStats() async {
         guard let user = authInfo.user else { return }
 
@@ -187,18 +220,25 @@ struct MultiplayerEndGameView: View {
     private func simulateBotCompletion() async {
         guard let userProgress = userProgress,
               let userTimeMs = userProgress.elapsedMs else { return }
-        
-        // Wait a random 2-5 seconds
-        let randomDelay = Double.random(in: 2.0...5.0)
-        try? await Task.sleep(nanoseconds: UInt64(randomDelay * 1_000_000_000))
+
+        // Get bot's actual completed questions
+        let botCompleted = opponentProgress?.completed ?? 0
+        let totalQuestions = 25
+
+        // Calculate questions remaining for bot
+        let questionsRemaining = totalQuestions - botCompleted
+
+        // Calculate delay: 0.75 seconds per question remaining
+        let delay = Double(questionsRemaining) * 0.75
+        try? await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
 
         // Calculate bot's time: user's time + delay
-        let delayMs = Int64(randomDelay * 1000.0)
+        let delayMs = Int64(delay * 1000.0)
         let botTimeMs = userTimeMs + delayMs
 
         // Create simulated PlayerProgress for bot
         let simulatedProgress = PlayerProgress(
-            completed: 25,
+            completed: totalQuestions,
             status: "FINISHED",
             lastAnswerAt: Timestamp(),
             finishedAt: Timestamp(),
@@ -336,9 +376,12 @@ struct MultiplayerEndGameView: View {
             // Fetch user progress first (needed for bot simulation)
             await fetchUserProgress()
 
+            // Fetch opponent progress (needed for bot simulation delay calculation)
+            await fetchOpponentProgress()
+
             // Fetch user stats
             await fetchUserStats()
-            
+
             // Calculate and update stats after all data loaded
             await calculateAndUpdateStats()
 
@@ -346,7 +389,7 @@ struct MultiplayerEndGameView: View {
             await MainActor.run {
                 isLoading = false
             }
-            
+
             await startOpponentProgressListener()
         }
     }
@@ -548,7 +591,7 @@ struct MultiplayerEndGameView: View {
                                     }(),
                                     shadowOffset: device.valueByDevice(small: 5, normal: 5, ipad: 8),
                                     action: {
-                                        guard isWinner && !isConfettiOnCooldown else { return }
+                                        guard isCurrentUser && isWinner && !isConfettiOnCooldown else { return }
                                         confettiTrigger += 1
                                         HapticManager.shared.trigger(.heavy)
                                         isConfettiOnCooldown = true
