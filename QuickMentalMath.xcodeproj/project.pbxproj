@@ -56,6 +56,8 @@
 		D89798902EA81DB600440837 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = D897988F2EA81DB600440837 /* FirebaseCore */; };
 		D89798922EA8AD5900440837 /* MultiplayerEndGameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D89798912EA8AD5900440837 /* MultiplayerEndGameView.swift */; };
 		D89798942EA987FC00440837 /* MultiplayerEndGameModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D89798932EA987FC00440837 /* MultiplayerEndGameModel.swift */; };
+		D897989A2EAAD88C00440837 /* EasySkeleton in Frameworks */ = {isa = PBXBuildFile; productRef = D89798992EAAD88C00440837 /* EasySkeleton */; };
+		D897989C2EAC578200440837 /* NetworkMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D897989B2EAC578200440837 /* NetworkMonitor.swift */; };
 		D89C3C462E8FB2CD00C265A1 /* KeyPadButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D89C3C452E8FB2CD00C265A1 /* KeyPadButton.swift */; };
 		D8BAFEF62A09A12400D49C49 /* QuickMentalMathApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8BAFEF52A09A12400D49C49 /* QuickMentalMathApp.swift */; };
 		D8BAFEF82A09A12400D49C49 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8BAFEF72A09A12400D49C49 /* ContentView.swift */; };
@@ -130,6 +132,7 @@
 		D89798892EA81D7D00440837 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		D89798912EA8AD5900440837 /* MultiplayerEndGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiplayerEndGameView.swift; sourceTree = "<group>"; };
 		D89798932EA987FC00440837 /* MultiplayerEndGameModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiplayerEndGameModel.swift; sourceTree = "<group>"; };
+		D897989B2EAC578200440837 /* NetworkMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkMonitor.swift; sourceTree = "<group>"; };
 		D89C3C452E8FB2CD00C265A1 /* KeyPadButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyPadButton.swift; sourceTree = "<group>"; };
 		D8BAFEF22A09A12400D49C49 /* QuickMentalMath.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = QuickMentalMath.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D8BAFEF52A09A12400D49C49 /* QuickMentalMathApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickMentalMathApp.swift; sourceTree = "<group>"; };
@@ -153,6 +156,7 @@
 			files = (
 				D88AD2C12E8FAB450036BF62 /* ConfettiSwiftUI in Frameworks */,
 				D89798702EA4160A00440837 /* FirebaseFirestore in Frameworks */,
+				D897989A2EAAD88C00440837 /* EasySkeleton in Frameworks */,
 				D89798902EA81DB600440837 /* FirebaseCore in Frameworks */,
 				D897988E2EA81DB600440837 /* FirebaseAnalytics in Frameworks */,
 			);
@@ -234,6 +238,7 @@
 		D872828B2E8DA67F00C36890 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				D897989B2EAC578200440837 /* NetworkMonitor.swift */,
 				D89798792EA5A42C00440837 /* HapticManager.swift */,
 				D87282912E8DA76700C36890 /* AppModel.swift */,
 				D872828E2E8DA6EF00C36890 /* AuthInfoModel.swift */,
@@ -418,6 +423,7 @@
 			packageReferences = (
 				D88AD2BF2E8FAB450036BF62 /* XCRemoteSwiftPackageReference "ConfettiSwiftUI" */,
 				D897986E2EA4160A00440837 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				D89798982EAAD88C00440837 /* XCRemoteSwiftPackageReference "EasySkeleton" */,
 			);
 			productRefGroup = D8BAFEF32A09A12400D49C49 /* Products */;
 			projectDirPath = "";
@@ -492,6 +498,7 @@
 				D80930F22E961CF300FEAEE3 /* EndGameModel.swift in Sources */,
 				D87282892E8D920C00C36890 /* TimeTrialView.swift in Sources */,
 				D87282922E8DA76700C36890 /* AppModel.swift in Sources */,
+				D897989C2EAC578200440837 /* NetworkMonitor.swift in Sources */,
 				D863BB622BF8049600A8825C /* TimeSelector.swift in Sources */,
 				D8BAFEF82A09A12400D49C49 /* ContentView.swift in Sources */,
 				D84ED7E22C44AA0B0043995D /* LeaderboardEntry.swift in Sources */,
@@ -902,6 +909,14 @@
 				minimumVersion = 12.4.0;
 			};
 		};
+		D89798982EAAD88C00440837 /* XCRemoteSwiftPackageReference "EasySkeleton" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SpectralDragon/EasySkeleton";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.2.1;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -924,6 +939,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = D897986E2EA4160A00440837 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseCore;
+		};
+		D89798992EAAD88C00440837 /* EasySkeleton */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D89798982EAAD88C00440837 /* XCRemoteSwiftPackageReference "EasySkeleton" */;
+			productName = EasySkeleton;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

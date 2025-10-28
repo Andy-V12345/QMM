@@ -1,5 +1,5 @@
 {
-  "originHash" : "57881c1a12f0df3cb18c54c1353324218f02935f2ae5aea34421277f8354ea43",
+  "originHash" : "77f09b6fb9203c16983b1f86b49295dc330fbabff737029b2206c3527bec5f50",
   "pins" : [
     {
       "identity" : "abseil-cpp-binary",
@@ -26,6 +26,15 @@
       "state" : {
         "revision" : "79666d42b882bf7921b1941fa7c636d681d77980",
         "version" : "2.0.3"
+      }
+    },
+    {
+      "identity" : "easyskeleton",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/SpectralDragon/EasySkeleton",
+      "state" : {
+        "revision" : "54f616e5f58cbb2aabb5b671921e470689c91ca5",
+        "version" : "1.2.1"
       }
     },
     {
