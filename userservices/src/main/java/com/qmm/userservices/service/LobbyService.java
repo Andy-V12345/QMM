@@ -238,6 +238,64 @@ public class LobbyService {
     }
 
     /**
+     * Leave the lobby. If host leaves or all players leave, lobby is cancelled.
+     */
+    public LobbyResponse leaveLobby(String lobbyId, Long userId) throws ExecutionException, InterruptedException {
+        String uid = userId.toString();
+
+        ApiFuture<LobbyResponse> future = db.runTransaction(transaction -> {
+            DocumentReference lobbyRef = db.collection(LOBBIES_COLLECTION).document(lobbyId);
+            DocumentSnapshot lobbyDoc = transaction.get(lobbyRef).get();
+
+            if (!lobbyDoc.exists()) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Lobby not found");
+            }
+
+            Lobby lobby = lobbyDoc.toObject(Lobby.class);
+
+            if (lobby == null || lobby.getPlayers() == null) {
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to load lobby");
+            }
+
+            // Validate lobby state - cannot leave after game has started
+            if (lobby.getState() == STARTED) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Cannot leave lobby after game has started");
+            }
+
+            // Validate user is in the lobby
+            boolean isInLobby = lobby.getPlayers().stream()
+                    .anyMatch(player -> player.getUid().equals(uid));
+
+            if (!isInLobby) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found in this lobby");
+            }
+
+            // Check if leaving player is host
+            boolean isHost = lobby.getHostUid().equals(uid);
+
+            // Remove player from lobby
+            lobby.getPlayers().removeIf(player -> player.getUid().equals(uid));
+
+            // If host leaves or no players remain, cancel the lobby
+            if (isHost || lobby.getPlayers().isEmpty()) {
+                lobby.setState(CANCELLED);
+            } else {
+                // If players count falls below minimum, set state back to WAITING
+                if (lobby.getPlayers().size() < lobby.getMinPlayers()) {
+                    lobby.setState(WAITING);
+                }
+            }
+
+            transaction.set(lobbyRef, lobby);
+
+            return toLobbyResponse(lobby);
+        });
+
+        return future.get();
+    }
+
+    /**
      * Cancel the lobby (any player can cancel).
      */
     public void cancelLobby(String lobbyId, Long userId) throws ExecutionException, InterruptedException {

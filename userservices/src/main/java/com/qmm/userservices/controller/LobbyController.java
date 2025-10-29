@@ -109,6 +109,34 @@ public class LobbyController {
     }
 
     /**
+     * DELETE /api/v1/lobbies/{lobbyId}/leave
+     * Leave the lobby. If host leaves, lobby is cancelled.
+     */
+    @DeleteMapping("/{lobbyId}/leave")
+    public ResponseEntity<?> leaveLobby(@PathVariable String lobbyId, @RequestBody LeaveLobbyRequest request) {
+        try {
+            LobbyResponse response = lobbyService.leaveLobby(lobbyId, request.getUserId());
+            return ResponseEntity.ok(response);
+
+        } catch (ExecutionException e) {
+            System.err.println("Firestore error: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to leave lobby: " + e.getMessage());
+
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            System.err.println("Thread interrupted: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+                    .body("Service interrupted");
+
+        } catch (Exception e) {
+            System.err.println("Unexpected error: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Unexpected error: " + e.getMessage());
+        }
+    }
+
+    /**
      * DELETE /api/v1/lobbies/{lobbyId}
      * Cancel the lobby (host or guest)
      */
