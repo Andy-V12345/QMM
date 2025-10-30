@@ -71,7 +71,7 @@ struct RaisedButtonStyle: ViewModifier {
                     isPressed = true
                 }
             }
-            .onChange(of: isEnabled, perform: { newValue in
+            .onChange(of: isEnabled) { _, newValue in
                 if newValue {
                     withAnimation(.easeOut(duration: 0.15)) {
                         isPressed = false
@@ -82,7 +82,7 @@ struct RaisedButtonStyle: ViewModifier {
                         isPressed = true
                     }
                 }
-            })
+            }
     }
 }
 
@@ -98,7 +98,7 @@ extension View {
         shadowColor: Color = Color("lightPurple"),
         toggleColor: Color? = nil,
         isToggled: Bool? = nil,
-        shadowOffset: CGFloat = 10,
+        shadowOffset: CGFloat = 8,
         allowsDoubleTap: Bool = false,
         action: @escaping () -> Void
     ) -> some View {

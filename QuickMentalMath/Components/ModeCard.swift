@@ -34,10 +34,10 @@ struct ModeCard: View {
         })
         .padding(15)
         .raisedButton(
-            cornerRadius: 17,
+            cornerRadius: device.valueByDevice(small: 18, normal: 20, ipad: 20),
             backgroundColor: backgroundColor,
             shadowColor: shadowColor,
-            shadowOffset: device.valueByDevice(small: 11, normal: 11, ipad: 13),
+            shadowOffset: device.valueByDevice(small: 8, normal: 8, ipad: 12),
             action: action
         )
     }

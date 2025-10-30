@@ -55,11 +55,11 @@ struct TimeTrialView: View {
                         
                         HStack(spacing: 15) {
                             Text("time trial")
-                                .font(.largeTitle)
+                                .font(device.valueByDevice(small: .title, normal: .largeTitle, ipad: .largeTitle))
                                 .fontWeight(.heavy)
                             
                             Image(systemName: "timer")
-                                .font(.title)
+                                .font(device.valueByDevice(small: .title, normal: .largeTitle, ipad: .largeTitle))
                                 .bold()
                             
                             Spacer()
@@ -108,7 +108,7 @@ struct TimeTrialView: View {
                     })
                     .padding(device.valueByDevice(small: 12, normal: 15, ipad: 15))
                     .frame(maxWidth: .infinity)
-                    .raisedButton(impactStrength: .heavy, cornerRadius: 20, backgroundColor: Color("lighterPurple"), shadowColor: Color("lightPurple"), shadowOffset: device.valueByDevice(small: 11, normal: 11, ipad: 13),
+                    .raisedButton(impactStrength: .heavy, cornerRadius: device.valueByDevice(small: 18, normal: 20, ipad: 20), backgroundColor: Color("lighterPurple"), shadowColor: Color("lightPurple"), shadowOffset: device.valueByDevice(small: 8, normal: 8, ipad: 12),
                                   action: {
                         handleStart()
                     })
@@ -154,10 +154,11 @@ struct TimeTrialView: View {
     }
 }
 
-//#Preview {
-//    GeometryReader { screen in
-//        TimeTrialView()
-//            .environmentObject(AppModel(path: NavigationPath()))
-//            .environmentObject(DeviceModel(screen: screen))
-//    }
-//}
+#Preview {
+    GeometryReader { screen in
+        TimeTrialView(gameConfigsModel: GameConfigsModel(mode: .MULTIPLICATION, difficulty: .MEDIUM, timeLimit: .ONE_MIN, numQuestions: 10))
+            .environmentObject(AppModel(path: NavigationPath()))
+            .environmentObject(DeviceModel(screen: screen))
+            .environmentObject(AuthInfoModel())
+    }
+}

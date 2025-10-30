@@ -53,7 +53,7 @@ class HapticManager {
 
         let generator = getGenerator(for: style)
         
-        for i in 0..<count {
+        for _ in 0..<count {
             generator.impactOccurred()
             generator.prepare()
         }

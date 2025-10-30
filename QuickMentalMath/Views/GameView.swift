@@ -389,14 +389,14 @@ struct GameView: View {
                 newQuestion(mode: mode.rawValue)
             }
         }
-        .onChange(of: isGameOver, perform: { new in
+        .onChange(of: isGameOver) { _, new in
             if new {
                 timer.upstream.connect().cancel()
                 let config = GameConfigsModel(mode: mode, difficulty: difficulty, timeLimit: timeLimit, numQuestions: numQuestions)
                 let gameModel = GameModel(numCorrect: numCorrect, numIncorrect: numIncorrect, missedQuestions: missedQuestions, questionCount: questionCount, gameConfigs: config)
                 appModel.path.append(EndGameModel(game: gameModel))
             }
-        })
+        }
         .alert("Are You Sure?", isPresented: $showAreYouSure, actions: {
             Button(role: .none, action: {
                 timer.upstream.connect().cancel()

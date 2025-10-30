@@ -103,7 +103,7 @@ struct ProgressNode: View {
                 y: device.valueByDevice(small: 3, normal: 3, ipad: 5)
             )
             .id(index)
-            .onChange(of: shouldBeCompleted) { newValue in
+            .onChange(of: shouldBeCompleted) { _, newValue in
                 if newValue {
                     // Delay the node completion to let the connecting line animate first
                     Task {
@@ -128,7 +128,7 @@ struct ProgressNode: View {
                     startFlashing()
                 }
             }
-            .onChange(of: currentProgress) { _ in
+            .onChange(of: currentProgress) {
                 // Check if we should be flashing
                 if isInFinalStretch {
                     if flashTask == nil {

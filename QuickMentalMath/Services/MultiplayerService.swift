@@ -6,10 +6,16 @@
 //
 
 import Foundation
+import SwiftUI
+import FirebaseFirestore
 
 // MARK: - Common Models
 
-struct FirebaseTimestamp: Codable {
+struct FirebaseTimestamp: Codable, Hashable {
+    static func == (lhs: FirebaseTimestamp, rhs: FirebaseTimestamp) -> Bool {
+        return lhs.seconds == rhs.seconds && lhs.nanos == rhs.nanos
+    }
+    
     var seconds: Int64
     var nanos: Int
 
@@ -43,6 +49,13 @@ enum WinDecision: String, Codable {
     case BOTH_FINISHED
     case GRACE_TIMEOUT
     case FORFEIT
+}
+
+enum LobbyState: String, Codable, Hashable {
+    case WAITING
+    case READY
+    case STARTED
+    case CANCELLED
 }
 
 // MARK: - Matchmaking Request/Response Models
@@ -110,6 +123,95 @@ struct GameResult: Codable {
 
 struct GenericSuccessResponse: Codable {
     var success: Bool
+}
+
+// MARK: - Lobby Request/Response Models
+
+struct CreateLobbyRequest: Codable {
+    var userId: Int
+    var username: String
+}
+
+struct JoinLobbyRequest: Codable {
+    var userId: Int
+    var username: String
+}
+
+struct StartGameRequest: Codable {
+    var hostUid: String
+}
+
+struct CancelLobbyRequest: Codable {
+    var userId: Int
+}
+
+struct LeaveLobbyRequest: Codable {
+    var userId: Int
+}
+
+struct LobbyPlayer: Codable, Hashable {
+    static func ==(lhs: LobbyPlayer, rhs: LobbyPlayer) -> Bool {
+        return lhs.uid == rhs.uid
+    }
+    
+    var uid: String
+    var username: String
+    var joinedAt: FirebaseTimestamp
+}
+
+struct LobbyDocPlayer: Codable, Hashable {
+    static func ==(lhs: LobbyDocPlayer, rhs: LobbyDocPlayer) -> Bool {
+        return lhs.uid == rhs.uid
+    }
+    
+    var uid: String
+    var username: String
+    var joinedAt: Timestamp
+    
+    func asLobbyPlayer() -> LobbyPlayer {
+        return LobbyPlayer(uid: uid, username: username, joinedAt: FirebaseTimestamp(seconds: self.joinedAt.seconds, nanos: Int(self.joinedAt.nanoseconds)))
+    }
+}
+
+struct LobbyResponse: Codable, Hashable {
+    var lobbyId: String
+    var code: String
+    var players: [LobbyPlayer]
+    var hostUid: String
+    var minPlayers: Int
+    var maxPlayers: Int
+    var state: LobbyState
+    var gameId: String?
+    var createdAt: FirebaseTimestamp
+}
+
+struct LobbyDocument: Codable {
+    var id: String
+    var code: String
+    var players: [LobbyDocPlayer]
+    var hostUid: String
+    var minPlayers: Int
+    var maxPlayers: Int
+    var state: LobbyState
+    var gameId: String?
+    var createdAt: Timestamp
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case code
+        case players
+        case hostUid
+        case minPlayers
+        case maxPlayers
+        case state
+        case gameId
+        case createdAt
+    }
+}
+
+struct StartGameResponse: Codable {
+    var gameId: String
+    var startAt: FirebaseTimestamp
 }
 
 // MARK: - Multiplayer Service
@@ -350,6 +452,192 @@ class MultiplayerService {
                 }
                 else {
                     let errorMessage = String(data: data, encoding: .utf8) ?? "Unknown error"
+                    return .failure(NSError(domain: "MultiplayerService", code: response.statusCode, userInfo: [NSLocalizedDescriptionKey: errorMessage]))
+                }
+            }
+            catch {
+                return .failure(error)
+            }
+        }
+    }
+
+    // MARK: - Lobbies
+
+    static func createLobby(userId: Int, username: String, jwtToken: String) async -> Result<LobbyResponse, Error> {
+        return await withRetry {
+            var request = URLRequest(url: URL(string: baseUrl + "/lobbies/create")!)
+            request.httpMethod = "POST"
+            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            request.setValue("Bearer \(jwtToken)", forHTTPHeaderField: "Authorization")
+
+            do {
+                request.httpBody = try JSONEncoder().encode(CreateLobbyRequest(userId: userId, username: username))
+                let (data, httpResponse) = try await URLSession.shared.data(for: request)
+
+                guard let response = httpResponse as? HTTPURLResponse else {
+                    return .failure(NSError(domain: "MultiplayerService", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid response"]))
+                }
+
+                if response.statusCode == 200 {
+                    let lobbyResponse = try JSONDecoder().decode(LobbyResponse.self, from: data)
+                    return .success(lobbyResponse)
+                }
+                else {
+                    let errorMessage = String(data: data, encoding: .utf8) ?? "Failed to create lobby"
+                    return .failure(NSError(domain: "MultiplayerService", code: response.statusCode, userInfo: [NSLocalizedDescriptionKey: errorMessage]))
+                }
+            }
+            catch {
+                return .failure(error)
+            }
+        }
+    }
+
+    static func joinLobby(code: String, userId: Int, username: String, jwtToken: String) async -> Result<LobbyResponse, Error> {
+        return await withRetry {
+            var request = URLRequest(url: URL(string: baseUrl + "/lobbies/\(code)/join")!)
+            request.httpMethod = "POST"
+            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            request.setValue("Bearer \(jwtToken)", forHTTPHeaderField: "Authorization")
+
+            do {
+                request.httpBody = try JSONEncoder().encode(JoinLobbyRequest(userId: userId, username: username))
+                let (data, httpResponse) = try await URLSession.shared.data(for: request)
+
+                guard let response = httpResponse as? HTTPURLResponse else {
+                    return .failure(NSError(domain: "MultiplayerService", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid response"]))
+                }
+
+                if response.statusCode == 200 {
+                    let lobbyResponse = try JSONDecoder().decode(LobbyResponse.self, from: data)
+                    return .success(lobbyResponse)
+                }
+
+                // Parse error from response body
+                let errorBody = String(data: data, encoding: .utf8) ?? ""
+
+                // Extract actual error code and message from Spring exception format
+                if errorBody.contains("409") || errorBody.contains("Lobby is already full") {
+                    return .failure(NSError(domain: "MultiplayerService", code: 409, userInfo: [NSLocalizedDescriptionKey: "Lobby is already full"]))
+                }
+                else if errorBody.contains("404") || errorBody.contains("Lobby not found or already started") {
+                    return .failure(NSError(domain: "MultiplayerService", code: 404, userInfo: [NSLocalizedDescriptionKey: "Lobby not found or already started"]))
+                }
+                else if errorBody.contains("400") || errorBody.contains("Already in this lobby") {
+                    return .failure(NSError(domain: "MultiplayerService", code: 400, userInfo: [NSLocalizedDescriptionKey: "Already in this lobby"]))
+                }
+                else {
+                    return .failure(NSError(domain: "MultiplayerService", code: response.statusCode, userInfo: [NSLocalizedDescriptionKey: "Failed to join lobby"]))
+                }
+            }
+            catch {
+                return .failure(error)
+            }
+        }
+    }
+
+    static func startGame(lobbyId: String, hostUid: String, jwtToken: String) async -> Result<StartGameResponse, Error> {
+        return await withRetry {
+            var request = URLRequest(url: URL(string: baseUrl + "/lobbies/\(lobbyId)/start")!)
+            request.httpMethod = "POST"
+            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            request.setValue("Bearer \(jwtToken)", forHTTPHeaderField: "Authorization")
+
+            do {
+                request.httpBody = try JSONEncoder().encode(StartGameRequest(hostUid: hostUid))
+                let (data, httpResponse) = try await URLSession.shared.data(for: request)
+
+                guard let response = httpResponse as? HTTPURLResponse else {
+                    return .failure(NSError(domain: "MultiplayerService", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid response"]))
+                }
+
+                if response.statusCode == 200 {
+                    let startGameResponse = try JSONDecoder().decode(StartGameResponse.self, from: data)
+                    return .success(startGameResponse)
+                }
+                else if response.statusCode == 404 {
+                    return .failure(NSError(domain: "MultiplayerService", code: 404, userInfo: [NSLocalizedDescriptionKey: "Lobby not found"]))
+                }
+                else if response.statusCode == 403 {
+                    return .failure(NSError(domain: "MultiplayerService", code: 403, userInfo: [NSLocalizedDescriptionKey: "Only the host can start the game"]))
+                }
+                else if response.statusCode == 400 {
+                    let errorMessage = String(data: data, encoding: .utf8) ?? "Lobby is not ready to start"
+                    return .failure(NSError(domain: "MultiplayerService", code: 400, userInfo: [NSLocalizedDescriptionKey: errorMessage]))
+                }
+                else {
+                    let errorMessage = String(data: data, encoding: .utf8) ?? "Failed to start game"
+                    return .failure(NSError(domain: "MultiplayerService", code: response.statusCode, userInfo: [NSLocalizedDescriptionKey: errorMessage]))
+                }
+            }
+            catch {
+                return .failure(error)
+            }
+        }
+    }
+
+    static func leaveLobby(lobbyId: String, userId: Int, jwtToken: String) async -> Result<LobbyResponse, Error> {
+        return await withRetry {
+            var request = URLRequest(url: URL(string: baseUrl + "/lobbies/\(lobbyId)/leave")!)
+            request.httpMethod = "DELETE"
+            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            request.setValue("Bearer \(jwtToken)", forHTTPHeaderField: "Authorization")
+
+            do {
+                request.httpBody = try JSONEncoder().encode(LeaveLobbyRequest(userId: userId))
+                let (data, httpResponse) = try await URLSession.shared.data(for: request)
+
+                guard let response = httpResponse as? HTTPURLResponse else {
+                    return .failure(NSError(domain: "MultiplayerService", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid response"]))
+                }
+
+                if response.statusCode == 200 {
+                    let lobbyResponse = try JSONDecoder().decode(LobbyResponse.self, from: data)
+                    return .success(lobbyResponse)
+                }
+                else if response.statusCode == 404 {
+                    return .failure(NSError(domain: "MultiplayerService", code: 404, userInfo: [NSLocalizedDescriptionKey: "Lobby not found or user not in lobby"]))
+                }
+                else if response.statusCode == 400 {
+                    return .failure(NSError(domain: "MultiplayerService", code: 400, userInfo: [NSLocalizedDescriptionKey: "Cannot leave lobby after game has started"]))
+                }
+                else {
+                    let errorMessage = String(data: data, encoding: .utf8) ?? "Failed to leave lobby"
+                    return .failure(NSError(domain: "MultiplayerService", code: response.statusCode, userInfo: [NSLocalizedDescriptionKey: errorMessage]))
+                }
+            }
+            catch {
+                return .failure(error)
+            }
+        }
+    }
+
+    static func cancelLobby(lobbyId: String, userId: Int, jwtToken: String) async -> Result<Bool, Error> {
+        return await withRetry {
+            var request = URLRequest(url: URL(string: baseUrl + "/lobbies/\(lobbyId)")!)
+            request.httpMethod = "DELETE"
+            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            request.setValue("Bearer \(jwtToken)", forHTTPHeaderField: "Authorization")
+
+            do {
+                request.httpBody = try JSONEncoder().encode(CancelLobbyRequest(userId: userId))
+                let (data, httpResponse) = try await URLSession.shared.data(for: request)
+
+                guard let response = httpResponse as? HTTPURLResponse else {
+                    return .failure(NSError(domain: "MultiplayerService", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid response"]))
+                }
+
+                if response.statusCode == 200 {
+                    return .success(true)
+                }
+                else if response.statusCode == 404 {
+                    return .failure(NSError(domain: "MultiplayerService", code: 404, userInfo: [NSLocalizedDescriptionKey: "Lobby not found"]))
+                }
+                else if response.statusCode == 403 {
+                    return .failure(NSError(domain: "MultiplayerService", code: 403, userInfo: [NSLocalizedDescriptionKey: "Not authorized to cancel this lobby"]))
+                }
+                else {
+                    let errorMessage = String(data: data, encoding: .utf8) ?? "Failed to cancel lobby"
                     return .failure(NSError(domain: "MultiplayerService", code: response.statusCode, userInfo: [NSLocalizedDescriptionKey: errorMessage]))
                 }
             }

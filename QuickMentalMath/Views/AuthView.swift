@@ -44,6 +44,7 @@ struct AuthView: View {
     
     @EnvironmentObject var authInfo: AuthInfoModel
     @EnvironmentObject var appModel: AppModel
+    @EnvironmentObject var device: DeviceModel
     
     @Namespace var namespace
     
@@ -268,7 +269,7 @@ struct AuthView: View {
                         .foregroundStyle(Color("darkPurple"))
                         .frame(height: 55)
                         .frame(maxWidth: .infinity)
-                        .raisedButton(cornerRadius: 20, backgroundColor: Color("lighterPurple"), shadowColor: Color("lightPurple"), shadowOffset: 9, action: {
+                        .raisedButton(cornerRadius: device.valueByDevice(small: 18, normal: 20, ipad: 20), backgroundColor: Color("lighterPurple"), shadowColor: Color("lightPurple"), shadowOffset: 9, action: {
                             handleButtonClick()
                         })
                         .disabled(authViewState == .LOADING || ((authMode == .SIGNUP && usernameText.isEmpty) || email.isEmpty || password.isEmpty))
@@ -345,14 +346,14 @@ struct AuthView: View {
                 
             } //: ZStack
             .disabled(authViewState == .LOADING)
-            .onChange(of: authViewState, perform: { value in
+            .onChange(of: authViewState) { _, value in
                 if value == .ERROR {
                     showError = true
                 }
                 else {
                     showError = false
                 }
-            })
+            }
             .alert(errorTitle, isPresented: $showError, actions: {
                 Button(role: .cancel, action: {
                     authViewState = .DEFAULT
@@ -373,7 +374,8 @@ struct AuthView: View {
     
 }
 
-#Preview {
-    AuthView()
-        .environmentObject(AuthInfoModel())
-}
+//#Preview {
+//    AuthView()
+//        .environmentObject(AuthInfoModel())
+//        .environmentObject(AppModel(path: NavigationPath()))
+//}

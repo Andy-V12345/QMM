@@ -84,7 +84,7 @@ struct ConnectingLine: View {
                 startFlashing()
             }
         }
-        .onChange(of: currentProgress) { _ in
+        .onChange(of: currentProgress) {
             // Check if we should be flashing
             if isInFinalStretch {
                 if flashTask == nil {

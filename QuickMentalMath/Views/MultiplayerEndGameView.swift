@@ -400,36 +400,7 @@ struct MultiplayerEndGameView: View {
 
             // Check if user is signed in
             if authInfo.user == nil {
-                VStack(spacing: 15) {
-                    Text("looks like you're not signed in")
-                        .foregroundStyle(Color("errorRed"))
-                        .fontWeight(.semibold)
-                        .font(device.valueByDevice(small: .body, normal: .body, ipad: .title2))
-
-                    Button(action: {}, label: {
-                        Text("sign in")
-                            .foregroundStyle(Color("offWhite"))
-                            .font(device.valueByDevice(small: .body, normal: .body, ipad: .title2))
-                            .fontWeight(.bold)
-                            .padding(.horizontal, device.valueByDevice(small: 12, normal: 14, ipad: 16))
-                            .padding(.vertical, 4)
-                            .raisedButton(
-                                cornerRadius: 12,
-                                backgroundColor: Color("errorRed"),
-                                shadowColor: Color("darkErrorRed"),
-                                shadowOffset: device.valueByDevice(small: 3, normal: 4, ipad: 6),
-                                action: {
-                                    authInfo.user = nil
-                                    authInfo.authState = .UNAUTHORIZED
-                                    jwtToken = ""
-                                    username = ""
-                                    id = 0
-                                    authState = authInfo.authState
-                                    appModel.path = NavigationPath([AuthState.UNAUTHORIZED])
-                                }
-                            )
-                    })
-                }
+                SignInNeededView()
             } else {
                 VStack(spacing: device.valueByDevice(small: 20, normal: 20, ipad: 30)) {
                 
@@ -537,85 +508,89 @@ struct MultiplayerEndGameView: View {
                         }
                     }
                     
-                    VStack(spacing: device.valueByDevice(small: 10, normal: 10, ipad: 15)) {
-                        Text("results")
-                            .foregroundStyle(Color("lightPurple"))
-                            .font(device.valueByDevice(small: .body, normal: .body, ipad: .title2))
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .fontWeight(.bold)
-                        
-                        VStack(spacing: device.valueByDevice(small: 20, normal: 20, ipad: 30)) {
-                            ForEach(sortedPlayers, id: \.player.uid) { item in
-                                let isCurrentUser = item.player.uid == String(authInfo.user?.id ?? 0)
-
-                                HStack(spacing: 20) {
-                                    Text("\(item.position)")
-                                        .fontWeight(.semibold)
-
-                                    Text(item.player.displayName)
-                                        .fontWeight(.heavy)
-                                        .lineLimit(1)
-
-                                    Spacer()
-
-                                    if let timeMs = item.timeMs {
-                                        Text(String(format: "%.1fs", Double(timeMs) / 1000.0))
+                    ScrollView {
+                        VStack(spacing: device.valueByDevice(small: 10, normal: 10, ipad: 15)) {
+                            Text("results")
+                                .foregroundStyle(Color("lightPurple"))
+                                .font(device.valueByDevice(small: .body, normal: .body, ipad: .title2))
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .fontWeight(.bold)
+                            
+                            VStack(spacing: device.valueByDevice(small: 20, normal: 20, ipad: 30)) {
+                                ForEach(sortedPlayers, id: \.player.uid) { item in
+                                    let isCurrentUser = item.player.uid == String(authInfo.user?.id ?? 0)
+                                    
+                                    HStack(spacing: 20) {
+                                        Text("\(item.position)")
+                                            .fontWeight(.semibold)
+                                        
+                                        Text(item.player.displayName)
                                             .fontWeight(.heavy)
-                                    } else {
-                                        Text("--")
-                                            .fontWeight(.heavy)
+                                            .lineLimit(1)
+                                        
+                                        Spacer()
+                                        
+                                        if let timeMs = item.timeMs {
+                                            Text(String(format: "%.1fs", Double(timeMs) / 1000.0))
+                                                .fontWeight(.heavy)
+                                        } else {
+                                            Text("--")
+                                                .fontWeight(.heavy)
+                                        }
                                     }
+                                    .padding(device.valueByDevice(small: 20, normal: 20, ipad: 25))
+                                    .font(device.valueByDevice(small: .title3, normal: .title3, ipad: .title))
+                                    .foregroundStyle(Color("darkPurple"))
+                                    .raisedButton(
+                                        cornerRadius: 20,
+                                        backgroundColor: {
+                                            if isCurrentUser && isWinner {
+                                                return Color("gold")
+                                            } else if isCurrentUser && !isWinner {
+                                                return Color("errorRed")
+                                            } else {
+                                                return Color("offWhite")
+                                            }
+                                        }(),
+                                        shadowColor: {
+                                            if isCurrentUser && isWinner {
+                                                return Color("darkYellow")
+                                            } else if isCurrentUser && !isWinner {
+                                                return Color("darkErrorRed")
+                                            } else {
+                                                return Color.gray.opacity(0.4)
+                                            }
+                                        }(),
+                                        shadowOffset: device.valueByDevice(small: 5, normal: 5, ipad: 8),
+                                        action: {
+                                            guard isCurrentUser && isWinner && !isConfettiOnCooldown else { return }
+                                            confettiTrigger += 1
+                                            HapticManager.shared.trigger(.heavy)
+                                            isConfettiOnCooldown = true
+                                            Task {
+                                                try? await Task.sleep(nanoseconds: 2_700_000_000)
+                                                isConfettiOnCooldown = false
+                                            }
+                                        }
+                                    )
+                                    .confettiCannon(
+                                        trigger: $confettiTrigger,
+                                        num: 50,
+                                        colors: [Color("gold"), Color("lightPurple"), Color("lighterPurple")],
+                                        openingAngle: Angle(degrees: 0),
+                                        closingAngle: Angle(degrees: 360),
+                                        radius: 200,
+                                        repetitions: 4,
+                                        repetitionInterval: 0.3,
+                                        hapticFeedback: true
+                                    )
+                                    .zIndex(1000)
                                 }
-                                .padding(device.valueByDevice(small: 20, normal: 20, ipad: 25))
-                                .font(device.valueByDevice(small: .title3, normal: .title3, ipad: .title))
-                                .foregroundStyle(Color("darkPurple"))
-                                .raisedButton(
-                                    cornerRadius: 20,
-                                    backgroundColor: {
-                                        if isCurrentUser && isWinner {
-                                            return Color("gold")
-                                        } else if isCurrentUser && !isWinner {
-                                            return Color("errorRed")
-                                        } else {
-                                            return Color("offWhite")
-                                        }
-                                    }(),
-                                    shadowColor: {
-                                        if isCurrentUser && isWinner {
-                                            return Color("darkYellow")
-                                        } else if isCurrentUser && !isWinner {
-                                            return Color("darkErrorRed")
-                                        } else {
-                                            return Color.gray.opacity(0.4)
-                                        }
-                                    }(),
-                                    shadowOffset: device.valueByDevice(small: 5, normal: 5, ipad: 8),
-                                    action: {
-                                        guard isCurrentUser && isWinner && !isConfettiOnCooldown else { return }
-                                        confettiTrigger += 1
-                                        HapticManager.shared.trigger(.heavy)
-                                        isConfettiOnCooldown = true
-                                        Task {
-                                            try? await Task.sleep(nanoseconds: 2_700_000_000)
-                                            isConfettiOnCooldown = false
-                                        }
-                                    }
-                                )
-                                .confettiCannon(
-                                    trigger: $confettiTrigger,
-                                    num: 50,
-                                    colors: [Color("gold"), Color("lightPurple"), Color("lighterPurple")],
-                                    openingAngle: Angle(degrees: 0),
-                                    closingAngle: Angle(degrees: 360),
-                                    radius: 200,
-                                    repetitions: 4,
-                                    repetitionInterval: 0.3,
-                                    hapticFeedback: true
-                                )
-                                .zIndex(1000)
                             }
                         }
                     }
+                    .scrollIndicators(.hidden)
+                    .padding(.bottom, 10)
                 }
                 
                 Spacer()
@@ -629,7 +604,7 @@ struct MultiplayerEndGameView: View {
                     })
                     .padding(device.valueByDevice(small: 12, normal: 15, ipad: 15))
                     .frame(maxWidth: .infinity)
-                    .raisedButton(impactStrength: .heavy, cornerRadius: 20, backgroundColor: Color("lighterPurple"), shadowColor: Color("lightPurple"), shadowOffset: device.valueByDevice(small: 11, normal: 11, ipad: 13),
+                    .raisedButton(impactStrength: .heavy, cornerRadius: device.valueByDevice(small: 18, normal: 20, ipad: 20), backgroundColor: Color("lighterPurple"), shadowColor: Color("lightPurple"), shadowOffset: device.valueByDevice(small: 8, normal: 8, ipad: 12),
                                   action: {
                         
                         appModel.findingGame = true
@@ -672,12 +647,12 @@ struct MultiplayerEndGameView: View {
                 loadInitialData()
             }
         }
-        .onChange(of: isLoading, perform: { newValue in
+        .onChange(of: isLoading) { _, newValue in
             // Trigger confetti when loading completes and user won
             if !newValue && isWinner {
                 confettiTrigger += 1
             }
-        })
+        }
         .onDisappear {
             opponentProgressListener?.remove()
         }

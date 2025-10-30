@@ -102,37 +102,7 @@ struct StatsView: View {
                     .padding([.top, .horizontal], device.valueByDevice(small: 15, normal: 20, ipad: 30))
                 } else if authInfo.user == nil {
                     // Check if user is signed in
-                    VStack(spacing: 15) {
-                        Text("looks like you're not signed in")
-                            .foregroundStyle(Color("errorRed"))
-                            .fontWeight(.semibold)
-                            .font(device.valueByDevice(small: .body, normal: .body, ipad: .title2))
-
-                        Button(action: {}, label: {
-                            Text("sign in")
-                                .foregroundStyle(Color("offWhite"))
-                                .font(device.valueByDevice(small: .body, normal: .body, ipad: .title2))
-                                .fontWeight(.bold)
-                                .padding(.horizontal, device.valueByDevice(small: 12, normal: 14, ipad: 16))
-                                .padding(.vertical, 4)
-                                .raisedButton(
-                                    cornerRadius: 12,
-                                    backgroundColor: Color("errorRed"),
-                                    shadowColor: Color("darkErrorRed"),
-                                    shadowOffset: device.valueByDevice(small: 3, normal: 4, ipad: 6),
-                                    action: {
-                                        authInfo.user = nil
-                                        authInfo.authState = .UNAUTHORIZED
-                                        jwtToken = ""
-                                        username = ""
-                                        id = 0
-                                        authState = authInfo.authState
-                                        dismiss()
-                                        appModel.path.removeLast()
-                                    }
-                                )
-                        })
-                    }
+                    SignInNeededView()
                 } else {
                     VStack(spacing: 25) {
                         HStack {

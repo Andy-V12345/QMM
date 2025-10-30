@@ -84,8 +84,18 @@ struct ContentView: View {
                         MultiplayerEndGameView(endGameModel: endGameModel)
                             .navigationBarBackButtonHidden()
                     })
+                    .navigationDestination(for: CustomLobbyInfoModel.self, destination: { infoModel in
+                        
+                        CustomLobbyInfoView()
+                            .navigationBarBackButtonHidden()
+                    })
+                    .navigationDestination(for: LobbyResponse.self, destination: { lobbyResponse in
+                        
+                        LobbyView(lobbyModel: lobbyResponse)
+                            .navigationBarBackButtonHidden()
+                    })
             }
-            .onChange(of: scenePhase) { phase in
+            .onChange(of: scenePhase) { _, phase in
                 switch phase {
                 case .active:
                     authInfo.user = User(id: id, username: username, jwtToken: jwtToken)
@@ -128,7 +138,8 @@ struct ContentView: View {
             .environmentObject(networkMonitor)
             .dynamicTypeSize(.large)
             .fullScreenCover(isPresented: $appModel.findingGame, content: {
-                WaitingRoomView(device: deviceModel, authInfo: authInfo, appModel: appModel, networkMonitor: networkMonitor)
+                WaitingRoomView(authInfo: authInfo, appModel: appModel, networkMonitor: networkMonitor)
+                    .environmentObject(deviceModel)
             })
         }
     }

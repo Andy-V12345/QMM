@@ -106,7 +106,7 @@ struct RacingProgressBar: View {
                     }
                     .padding(.vertical, device.valueByDevice(small: 5, normal: 8, ipad: 15))
                 }
-                .onChange(of: currentProgress) { newProgress in
+                .onChange(of: currentProgress) { _, newProgress in
                     withAnimation(.easeInOut(duration: 0.3)) {
                         if newProgress > 0 && newProgress <= totalNodes {
                             proxy.scrollTo(newProgress - 1, anchor: .center)

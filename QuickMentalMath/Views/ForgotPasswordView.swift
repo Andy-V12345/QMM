@@ -310,14 +310,14 @@ struct ForgotPasswordView: View {
             .padding(.horizontal, 40)
             .padding(.bottom, 15)
             
-            .onChange(of: viewState, perform: { new in
+            .onChange(of: viewState) { _, new in
                 if new == .ERROR {
                     showError = true
                 }
                 else {
                     showError = false
                 }
-            })
+            }
             .alert(errorTitle, isPresented: $showError, actions: {
                 Button(role: .cancel, action: {
                     viewState = .DEFAULT

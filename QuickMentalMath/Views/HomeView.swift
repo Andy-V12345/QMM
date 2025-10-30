@@ -30,17 +30,17 @@ struct HomeView: View {
             VStack(alignment: .leading, spacing: device.valueByDevice(small: 30, normal: 40, ipad: 60)) {
                 HStack {
                     VStack {
-                        Text("welcome to qmm!")
+                        Text("welcome to qmm")
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .foregroundStyle(Color("darkPurple"))
-                            .font(device.valueByDevice(small: .title3, normal: .title2, ipad: .title))
-                            .fontWeight(.semibold)
+                            .font(device.valueByDevice(small: .headline, normal: .title2, ipad: .title))
+                            .fontWeight(.bold)
                         
                         Text("choose a mode")
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .foregroundStyle(Color("lightPurple"))
-                            .font(device.valueByDevice(small: .title, normal: .title, ipad: .largeTitle))
-                            .bold()
+                            .font(device.valueByDevice(small: .title, normal: .largeTitle, ipad: .largeTitle))
+                            .fontWeight(.heavy)
                     }
                     
                     Spacer()
@@ -75,38 +75,56 @@ struct HomeView: View {
                         VStack(spacing: device.valueByDevice(small: 10, normal: 10, ipad: 15)) {
                             SectionHeader(title: "compete")
                             
-                            HStack(spacing: device.valueByDevice(small: 10, normal: 10, ipad: 15)) {
-                                ModeCard(
-                                    title: "one vs one",
-                                    iconName: "figure.run",
-                                    backgroundColor: Color("pastelOrange"),
-                                    shadowColor: Color("darkPastelOrange"),
-                                    action: {
-                                        if authInfo.authState != .AUTHORIZED {
-                                            showNoAccountAlert = true
+                            VStack(spacing: device.valueByDevice(small: 20, normal: 20, ipad: 25)) {
+                                HStack(spacing: device.valueByDevice(small: 10, normal: 10, ipad: 15)) {
+                                    ModeCard(
+                                        title: "one vs one",
+                                        iconName: "figure.run",
+                                        backgroundColor: Color("pastelOrange"),
+                                        shadowColor: Color("darkPastelOrange"),
+                                        action: {
+                                            if authInfo.authState != .AUTHORIZED {
+                                                showNoAccountAlert = true
+                                            }
+                                            else {
+                                                appModel.path.append(GamePlayer(uid: String(authInfo.user!.id), displayName: authInfo.user!.username))
+                                            }
                                         }
-                                        else {
-                                            appModel.path.append(GamePlayer(uid: String(authInfo.user!.id), displayName: authInfo.user!.username))
+                                    )
+                                    
+                                    ModeCard(title: "custom lobby", iconName: "arcade.stick", backgroundColor: Color("pastelGray"), shadowColor: Color("darkPastelGray"), action: {
+                                        appModel.path.append(CustomLobbyInfoModel())
+                                    })
+                                } //: HStack
+                                
+                                HStack(spacing: device.valueByDevice(small: 10, normal: 10, ipad: 15)) {
+                                    ModeCard(
+                                        title: "time trial",
+                                        iconName: "timer",
+                                        backgroundColor: Color("pastelPink"),
+                                        shadowColor: Color("darkPastelPink"),
+                                        action: {
+                                            appModel.path.append(GameConfigsModel(mode: .TIME, difficulty: .MEDIUM, timeLimit: .ONE_MIN, numQuestions: 10))
                                         }
-                                    }
-                                )
-
-                                ModeCard(
-                                    title: "time trial",
-                                    iconName: "timer",
-                                    backgroundColor: Color("pastelPink"),
-                                    shadowColor: Color("darkPastelPink"),
-                                    action: {
-                                        appModel.path.append(GameConfigsModel(mode: .TIME, difficulty: .MEDIUM, timeLimit: .ONE_MIN, numQuestions: 10))
-                                    }
-                                )
-                            }
+                                    )
+                                    
+                                    // Used for offset
+                                    ModeCard(
+                                        title: "time trial",
+                                        iconName: "timer",
+                                        backgroundColor: Color("pastelPink"),
+                                        shadowColor: Color("darkPastelPink"),
+                                        action: {}
+                                    )
+                                    .hidden()
+                                } //: HStack
+                            } //: VStack
                         }
                         
                         VStack(spacing: device.valueByDevice(small: 10, normal: 10, ipad: 15)) {
                             SectionHeader(title: "solo practice")
                             
-                            VStack(spacing: device.valueByDevice(small: 22, normal: 22, ipad: 27)) {
+                            VStack(spacing: device.valueByDevice(small: 20, normal: 20, ipad: 25)) {
                                 HStack(spacing: device.valueByDevice(small: 10, normal: 10, ipad: 15)) {
                                     ModeCard(
                                         title: "addition",

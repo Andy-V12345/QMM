@@ -167,7 +167,7 @@ struct LastPracticeDisplay: View {
             })
             .padding(device.valueByDevice(small: 12, normal: 15, ipad: 15))
             .frame(maxWidth: .infinity)
-            .raisedButton(impactStrength: .heavy, cornerRadius: 20, shadowOffset: device.valueByDevice(small: 11, normal: 11, ipad: 13), action: {
+            .raisedButton(impactStrength: .heavy, cornerRadius: 20, shadowOffset: device.valueByDevice(small: 8, normal: 8, ipad: 12), action: {
                 // Create a new game with the same configuration
                 let newGame = GameModel(gameConfigs: gameModel.gameConfigs)
                 appModel.path.append(gameModel.gameConfigs)

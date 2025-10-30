@@ -133,7 +133,7 @@ class AuthService {
             }
             else {
                 if let res = try? JSONDecoder().decode(AuthResponse.self, from: data!) {
-                    var user = User(id: res.id!, username: res.username!, jwtToken: res.jwtToken!)
+                    let user = User(id: res.id!, username: res.username!, jwtToken: res.jwtToken!)
                     
                     return (user, res.status)
                 }
@@ -159,9 +159,9 @@ class AuthService {
             
             if let response = try? JSONDecoder().decode(AuthResponse.self, from: data) {
                 if response.status == "USER_CREATED" {
-                    var user = User(id: response.id!, username: response.username!, jwtToken: response.jwtToken!)
+                    let user = User(id: response.id!, username: response.username!, jwtToken: response.jwtToken!)
                     let statsRequest = UserStatsRequest()
-                    let success = await createUserStats(userId: user.id, jwtToken: user.jwtToken, statsRequest: statsRequest)
+                    await createUserStats(userId: user.id, jwtToken: user.jwtToken, statsRequest: statsRequest)
                                                             
                     return (user, response.status)
                 }

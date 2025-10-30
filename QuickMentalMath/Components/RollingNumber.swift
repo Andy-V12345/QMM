@@ -36,11 +36,11 @@ struct RollingNumber: View {
                 hasAppeared = true
             }
         }
-        .onChange(of: number, perform: { newValue in
+        .onChange(of: number) { _, newValue in
             withAnimation(.linear(duration: 0.2)) {
                 setOffsets()
             }
-        })
+        }
     }
     
     func setOffsets() {

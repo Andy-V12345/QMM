@@ -130,6 +130,217 @@ paths:
         '500':
           description: Internal server error
 
+  /api/v1/lobbies/create:
+    post:
+      summary: Create private lobby
+      description: |
+        Creates a private lobby with a unique 6-character invite code.
+        Returns lobby details including the code to share with friends.
+      tags:
+        - Private Lobbies
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - userId
+                - username
+              properties:
+                userId:
+                  type: integer
+                  format: int64
+                  example: 123
+                username:
+                  type: string
+                  example: "PlayerOne"
+      responses:
+        '200':
+          description: Lobby created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LobbyResponse'
+        '500':
+          description: Internal server error
+
+  /api/v1/lobbies/{code}/join:
+    post:
+      summary: Join private lobby by code
+      description: |
+        Join a private lobby using the 6-character invite code.
+        Client should then listen to `/lobbies/{lobbyId}` for real-time updates.
+      tags:
+        - Private Lobbies
+      parameters:
+        - name: code
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "A3X7K9"
+          description: 6-character invite code (case-insensitive)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - userId
+                - username
+              properties:
+                userId:
+                  type: integer
+                  format: int64
+                  example: 456
+                username:
+                  type: string
+                  example: "PlayerTwo"
+      responses:
+        '200':
+          description: Successfully joined lobby
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LobbyResponse'
+        '404':
+          description: Lobby not found or already started
+        '409':
+          description: Lobby is full
+        '400':
+          description: Already in this lobby
+        '500':
+          description: Internal server error
+
+  /api/v1/lobbies/{lobbyId}/start:
+    post:
+      summary: Start the game (host only)
+      description: |
+        Host starts the game once minimum players have joined.
+        Creates a GameSession and transitions lobby to STARTED state.
+      tags:
+        - Private Lobbies
+      parameters:
+        - name: lobbyId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "lobby123"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - hostUid
+              properties:
+                hostUid:
+                  type: string
+                  example: "123"
+                  description: Must match the lobby host's UID
+      responses:
+        '200':
+          description: Game started successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StartGameResponse'
+        '404':
+          description: Lobby not found
+        '403':
+          description: Only the host can start the game
+        '400':
+          description: Lobby is not ready to start (not enough players)
+        '500':
+          description: Internal server error
+
+  /api/v1/lobbies/{lobbyId}/leave:
+    delete:
+      summary: Leave lobby
+      description: |
+        Leave the lobby. Player is removed from the lobby.
+        - If the leaving player is the host, the lobby is cancelled (state = CANCELLED)
+        - If all players leave, the lobby is cancelled
+        - If players count falls below minimum after leaving, state changes back to WAITING
+        - Can only be called before the game starts (lobby state must be WAITING or READY)
+      tags:
+        - Private Lobbies
+      parameters:
+        - name: lobbyId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "lobby123"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - userId
+              properties:
+                userId:
+                  type: integer
+                  format: int64
+                  example: 123
+      responses:
+        '200':
+          description: Successfully left lobby
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LobbyResponse'
+        '400':
+          description: Cannot leave lobby after game has started
+        '404':
+          description: Lobby not found or user not in lobby
+        '500':
+          description: Internal server error
+
+  /api/v1/lobbies/{lobbyId}:
+    delete:
+      summary: Cancel lobby
+      description: |
+        Cancel the lobby. Any player in the lobby can cancel it.
+        Sets lobby state to CANCELLED.
+      tags:
+        - Private Lobbies
+      parameters:
+        - name: lobbyId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "lobby123"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - userId
+              properties:
+                userId:
+                  type: integer
+                  format: int64
+                  example: 123
+      responses:
+        '200':
+          description: Lobby cancelled successfully
+        '404':
+          description: Lobby not found
+        '403':
+          description: Not authorized to cancel this lobby
+        '500':
+          description: Internal server error
+
   /api/v1/games/{gameId}/submit:
     post:
       summary: Submit an answer
@@ -359,6 +570,83 @@ components:
           type: string
           enum: [FIRST_TO_FINISH, BOTH_FINISHED, GRACE_TIMEOUT, FORFEIT]
           example: "FIRST_TO_FINISH"
+
+    LobbyResponse:
+      type: object
+      properties:
+        lobbyId:
+          type: string
+          example: "lobby123"
+        code:
+          type: string
+          example: "A3X7K9"
+          description: 6-character invite code
+        players:
+          type: array
+          items:
+            type: object
+            properties:
+              uid:
+                type: string
+                example: "123"
+              username:
+                type: string
+                example: "PlayerOne"
+              joinedAt:
+                type: object
+                properties:
+                  seconds:
+                    type: integer
+                    format: int64
+                  nanos:
+                    type: integer
+        hostUid:
+          type: string
+          example: "123"
+          description: UID of the player who created the lobby
+        minPlayers:
+          type: integer
+          example: 2
+          description: Minimum players required to start
+        maxPlayers:
+          type: integer
+          example: 2
+          description: Maximum players allowed
+        state:
+          type: string
+          enum: [WAITING, READY, STARTED, CANCELLED]
+          example: "WAITING"
+          description: WAITING = < minPlayers, READY = >= minPlayers, STARTED = game created, CANCELLED = lobby closed
+        gameId:
+          type: string
+          nullable: true
+          example: null
+          description: Set when game is started
+        createdAt:
+          type: object
+          properties:
+            seconds:
+              type: integer
+              format: int64
+            nanos:
+              type: integer
+
+    StartGameResponse:
+      type: object
+      properties:
+        gameId:
+          type: string
+          example: "abc123xyz"
+        startAt:
+          type: object
+          properties:
+            seconds:
+              type: integer
+              format: int64
+              example: 1234567890
+            nanos:
+              type: integer
+              example: 0
 ```
 
 ---
@@ -470,6 +758,44 @@ interface PlayerProgress {
 
 ---
 
+### 4. Lobby (Private Matches)
+**Path:** `/lobbies/{lobbyId}`
+
+**Purpose:** Manages private lobby state for invite-based matches
+
+**Schema:**
+```typescript
+interface Lobby {
+  id: string;
+  code: string;                     // 6-character invite code (e.g., "A3X7K9")
+  players: LobbyPlayer[];           // List of players in lobby
+  hostUid: string;                  // Host's UID (can start game)
+  minPlayers: number;               // Minimum to start (default: 2)
+  maxPlayers: number;               // Maximum allowed (default: 2)
+  state: "WAITING" | "READY" | "STARTED" | "CANCELLED";
+  gameId: string | null;            // Set when game starts
+  createdAt: Timestamp;
+}
+
+interface LobbyPlayer {
+  uid: string;
+  username: string;
+  joinedAt: Timestamp;
+}
+```
+
+**State Transitions:**
+- WAITING: `players.length < minPlayers`
+- READY: `players.length >= minPlayers` (host can start)
+- STARTED: Game has been created
+- CANCELLED: Lobby was cancelled
+
+**Client Listeners:**
+- Host and all players listen to `/lobbies/{lobbyId}` for real-time lobby updates
+- When state → STARTED: navigate to game with `gameId`
+
+---
+
 ## Typical Game Flow
 
 ### 1. Matchmaking
@@ -521,6 +847,34 @@ interface PlayerProgress {
 4. Server validates all submissions normally
 ```
 
+### 6. Private Lobby (Invite-Based Matches)
+```
+HOST FLOW:
+1. Client calls POST /api/v1/lobbies/create
+2. Server returns lobby with 6-digit code (e.g., "A3X7K9")
+3. Client shows code to share with friend
+4. Client listens to /lobbies/{lobbyId}
+5. When player joins → lobby.state changes to READY
+6. Host clicks "Start Game" → POST /api/v1/lobbies/{lobbyId}/start
+7. Server creates game, returns gameId
+8. Firestore listener fires with state: STARTED, gameId
+9. Navigate to game screen
+
+GUEST FLOW:
+1. Friend enters 6-digit code in app
+2. Client calls POST /api/v1/lobbies/{code}/join
+3. Server adds player to lobby, returns lobby details
+4. Client listens to /lobbies/{lobbyId}
+5. When host starts → lobby.state changes to STARTED
+6. Firestore listener fires with gameId
+7. Navigate to game screen
+
+GAME PLAY:
+- Once game starts, follows same flow as matchmaking (see section 2-4)
+- Both players answer questions via POST /api/v1/games/{gameId}/submit
+- Progress tracked in /games/{gameId}/progress/{uid}
+```
+
 ---
 
 ## Error Handling
@@ -547,6 +901,21 @@ interface PlayerProgress {
 "Incorrect answer"
 ```
 
+**409 Conflict - Lobby Full**
+```json
+"Lobby is already full"
+```
+
+**400 Bad Request - Already in Lobby**
+```json
+"Already in this lobby"
+```
+
+**400 Bad Request - Not Ready**
+```json
+"Lobby is not ready to start"
+```
+
 **500 Internal Server Error**
 ```json
 "Failed to submit answer: <error details>"
@@ -562,3 +931,7 @@ interface PlayerProgress {
 - Question generation uses random operations with difficulty-appropriate ranges
 - Server-authoritative validation prevents cheating
 - Tie-breaking: first to finish wins; if both finish simultaneously, winner determined by elapsed time
+- Lobby codes: 6-character alphanumeric (A-Z, 0-9), case-insensitive
+- Lobby system supports 2+ players (currently configured for 1v1 with minPlayers=2, maxPlayers=2)
+- Future extensibility: Can support 2v2, 3-player, 4-player by adjusting min/max player counts
+- No lobby timeout: Lobbies persist until started or cancelled (no expiration)

@@ -100,37 +100,7 @@ struct MultiplayerInfoView: View {
                 .padding(device.valueByDevice(small: 15, normal: 20, ipad: 30))
             } else if authInfo.user == nil {
                 // Check if user is signed in
-                VStack(spacing: 15) {
-                    Text("looks like you're not signed in")
-                        .foregroundStyle(Color("errorRed"))
-                        .fontWeight(.semibold)
-                        .font(device.valueByDevice(small: .body, normal: .body, ipad: .title2))
-
-                    Button(action: {}, label: {
-                        Text("sign in")
-                            .foregroundStyle(Color("offWhite"))
-                            .font(device.valueByDevice(small: .body, normal: .body, ipad: .title2))
-                            .fontWeight(.bold)
-                            .padding(.horizontal, device.valueByDevice(small: 12, normal: 14, ipad: 16))
-                            .padding(.vertical, 4)
-                            .raisedButton(
-                                cornerRadius: 12,
-                                backgroundColor: Color("errorRed"),
-                                shadowColor: Color("darkErrorRed"),
-                                shadowOffset: device.valueByDevice(small: 3, normal: 4, ipad: 6),
-                                action: {
-                                    authInfo.user = nil
-                                    authInfo.authState = .UNAUTHORIZED
-                                    jwtToken = ""
-                                    username = ""
-                                    id = 0
-                                    authState = authInfo.authState
-                                    appModel.path.removeLast()
-                                    appModel.path.removeLast()
-                                }
-                            )
-                    })
-                }
+                SignInNeededView()
             } else {
                 VStack(spacing: 30) {
                 VStack {
@@ -142,7 +112,7 @@ struct MultiplayerInfoView: View {
                     
                     HStack(spacing: 15) {
                         Text("one v one")
-                            .font(.largeTitle)
+                            .font(device.valueByDevice(small: .title, normal: .largeTitle, ipad: .largeTitle))
                             .fontWeight(.heavy)
                         
                         Image(systemName: "figure.run")
@@ -278,7 +248,7 @@ struct MultiplayerInfoView: View {
                                     )
                             })
                         }
-                        .padding(.top, 8)
+                        .padding(.top, 20)
                     }
                 } //: Text Title VStack
                 
@@ -317,7 +287,7 @@ struct MultiplayerInfoView: View {
                     })
                     .padding(device.valueByDevice(small: 12, normal: 15, ipad: 15))
                     .frame(maxWidth: .infinity)
-                    .raisedButton(impactStrength: .heavy, cornerRadius: 20, backgroundColor: Color("lighterPurple"), shadowColor: Color("lightPurple"), shadowOffset: device.valueByDevice(small: 11, normal: 11, ipad: 13),
+                    .raisedButton(impactStrength: .heavy, cornerRadius: device.valueByDevice(small: 18, normal: 20, ipad: 20), backgroundColor: Color("lighterPurple"), shadowColor: Color("lightPurple"), shadowOffset: device.valueByDevice(small: 8, normal: 8, ipad: 12),
                                   action: {
                         
                         appModel.findingGame = true
@@ -350,7 +320,7 @@ struct MultiplayerInfoView: View {
                 stopRacingAnimation()
             }
         }
-        .onChange(of: appModel.findingGame, perform: { new in
+        .onChange(of: appModel.findingGame) { _, new in
             if authInfo.user != nil {
                 if new {
                     // Sheet appeared - stop animations
@@ -360,7 +330,7 @@ struct MultiplayerInfoView: View {
                     startRacingAnimation()
                 }
             }
-        })
+        }
     }
     
     // MARK: - Racing Animation Logic
@@ -477,7 +447,7 @@ private struct MultiplayerInfoErrorPreview: View {
                                         )
                                 })
                             }
-                            .padding(.top, 5)
+                            .padding(.top, 20)
                         }
                     }
 

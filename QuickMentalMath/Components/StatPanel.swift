@@ -107,11 +107,11 @@ struct StatPanel: View {
                 uiProgress = progress ?? 0
             }
         }
-        .onChange(of: progress, perform: { newValue in
+        .onChange(of: progress) { _, newValue in
             withAnimation(.linear(duration: 0.85)) {
                 uiProgress = newValue ?? 0
             }
-        })
+        }
     }
 }
 

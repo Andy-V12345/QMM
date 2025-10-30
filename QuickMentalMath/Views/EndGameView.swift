@@ -327,7 +327,7 @@ struct EndGameView: View {
                         })
                         .padding(device.valueByDevice(small: 12, normal: 15, ipad: 15))
                         .frame(maxWidth: .infinity)
-                        .raisedButton(impactStrength: .heavy, cornerRadius: 20, backgroundColor: Color("lighterPurple"), shadowColor: Color("lightPurple"), shadowOffset: device.valueByDevice(small: 11, normal: 11, ipad: 13),
+                        .raisedButton(impactStrength: .heavy, cornerRadius: device.valueByDevice(small: 18, normal: 20, ipad: 20), backgroundColor: Color("lighterPurple"), shadowColor: Color("lightPurple"), shadowOffset: device.valueByDevice(small: 8, normal: 8, ipad: 12),
                                       action: {
                             
                             let newGame = GameModel(gameConfigs: gameConfigs)
