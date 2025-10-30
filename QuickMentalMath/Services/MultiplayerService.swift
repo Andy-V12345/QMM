@@ -442,6 +442,8 @@ class MultiplayerService {
                     if let successResponse = try? JSONDecoder().decode(GenericSuccessResponse.self, from: data) {
                         return .success(successResponse.success)
                     }
+                    
+                    
                     return .success(true)
                 }
                 else if response.statusCode == 404 {

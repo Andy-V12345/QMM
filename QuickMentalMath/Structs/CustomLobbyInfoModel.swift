@@ -7,6 +7,7 @@
 
 import Foundation
 
+// Used for Navigation purposes
 struct CustomLobbyInfoModel: Hashable {
     
 }

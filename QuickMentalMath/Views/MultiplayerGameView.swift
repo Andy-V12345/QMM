@@ -170,7 +170,14 @@ struct MultiplayerGameView: View {
                 userId: user.id,
                 jwtToken: user.jwtToken
             )
-
+            
+            // Update user stats to account for loss
+            if var curStats = try? await AuthService.loadUserStats(userId: user.id, jwtToken: user.jwtToken) {
+                
+                curStats.losses = curStats.losses == nil ? 1 : curStats.losses! + 1
+                let _ = await AuthService.updateUserStats(userId: user.id, statId: curStats.id, jwtToken: user.jwtToken, statsRequest: UserStatsRequest(userStats: curStats))
+            }
+            
             await MainActor.run {
                 switch result {
                 case .success:
@@ -642,16 +649,16 @@ struct MultiplayerGameView: View {
                 // Leave Game Loading Overlay
                 if showLeaveGameOverlay {
                     ZStack {
-                        Color.white.opacity(0.7)
+                        Color.white.opacity(0.9)
                             .ignoresSafeArea()
                             .allowsHitTesting(true)
                         
                         VStack(spacing: 20) {
-                            LoadingSpinner(size: 25, color: Color("lightPurple"), width: 6)
+                            BouncingDotsLoader(dotSize: 12)
                             
                             Text("leaving game...")
                                 .font(device.valueByDevice(small: .title3, normal: .title2, ipad: .title))
-                                .fontWeight(.semibold)
+                                .fontWeight(.bold)
                                 .foregroundStyle(Color("darkPurple"))
                         }
                     }
@@ -757,7 +764,7 @@ struct MultiplayerGameView: View {
         GeometryReader { screen in
             MultiplayerGameView(gameSession: gameSession)
                 .environmentObject(DeviceModel(screen: screen))
-                .environmentObject(AuthInfoModel())
+                .environmentObject(AuthInfoModel(user: User(id: 12, username: "andy.v", jwtToken: "1234")))
                 .environmentObject(AppModel(path: NavigationPath()))
                 .environmentObject(NetworkMonitor())
         }
