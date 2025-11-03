@@ -208,6 +208,7 @@ public class LobbyService {
             gameSession.setCreatedAt(now);
             gameSession.setSchemaVersion(SCHEMA_VERSION);
             gameSession.setState(ACTIVE);
+            gameSession.setLobbyId(lobbyId);  // Link to lobby for custom lobby games
 
             // Initialize postgame
             GamePostgame postgame = new GamePostgame(true, null);

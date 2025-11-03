@@ -6,6 +6,7 @@ import com.google.cloud.firestore.DocumentReference;
 import com.google.cloud.firestore.DocumentSnapshot;
 import com.google.cloud.firestore.Firestore;
 import com.google.cloud.firestore.SetOptions;
+import com.qmm.userservices.controller.SetPlayAgainReadyResponse;
 import com.qmm.userservices.controller.SubmitAnswerResponse;
 import com.qmm.userservices.firestore.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,8 @@ import static com.qmm.userservices.firestore.DecidedBy.*;
 import static com.qmm.userservices.firestore.GameStatus.*;
 import static com.qmm.userservices.firestore.ProgressStatus.*;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 @Service
@@ -195,5 +198,95 @@ public class GameService {
         }
 
         return true;
+    }
+
+    /**
+     * Set player's ready status for playing again (custom lobby games only).
+     * If all players are ready, automatically resets the game with new questions.
+     * Uses Firestore transaction to prevent race conditions when multiple players click simultaneously.
+     */
+    public SetPlayAgainReadyResponse setPlayAgainReady(String gameId, Long userId, Boolean ready)
+            throws ExecutionException, InterruptedException {
+        String uid = userId.toString();
+        DocumentReference gameRef = db.collection(GAMES_COLLECTION).document(gameId);
+
+        ApiFuture<SetPlayAgainReadyResponse> future = db.runTransaction(transaction -> {
+            // Read game session inside transaction for atomicity
+            DocumentSnapshot gameDoc = transaction.get(gameRef).get();
+
+            if (!gameDoc.exists()) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Game not found");
+            }
+
+            GameSession game = gameDoc.toObject(GameSession.class);
+
+            if (game == null) {
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Game object couldn't be created");
+            }
+
+            // Verify this is a custom lobby game
+            if (game.getLobbyId() == null || game.getLobbyId().isEmpty()) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                        "Play again is only available for custom lobby games");
+            }
+
+            // Validate player is in this game
+            boolean isPlayer = game.getPlayers().stream()
+                    .anyMatch(p -> p.getUid().equals(uid));
+            if (!isPlayer) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not a player in this game");
+            }
+
+            // Initialize playAgainReady map if null
+            Map<String, Boolean> playAgainReady = game.getPlayAgainReady();
+            if (playAgainReady == null) {
+                playAgainReady = new HashMap<>();
+            }
+
+            // Update this player's ready status
+            playAgainReady.put(uid, ready);
+
+            final Map<String, Boolean> finalPlayAgainReady = playAgainReady;
+
+            // Check if all players are ready
+            boolean allReady = game.getPlayers().stream()
+                    .allMatch(p -> Boolean.TRUE.equals(finalPlayAgainReady.get(p.getUid())));
+
+            boolean gameReset = false;
+
+            if (allReady) {
+                // All players ready - reset the game
+                game.setResult(null);  // Clear result to signal game reset
+                game.setPlayAgainReady(null);  // Clear ready statuses
+
+                // Generate new question set
+                QuestionSet newQuestionSet = questionSetService.generateQuestionSet();
+                game.setQuestionSet(newQuestionSet);
+
+                // Update game session
+                transaction.set(gameRef, game);
+
+                // Reset all player progress
+                for (GamePlayer player : game.getPlayers()) {
+                    DocumentReference progressRef = gameRef.collection("progress").document(player.getUid());
+                    PlayerProgress resetProgress = new PlayerProgress(0, PLAYING, null, null, null);
+                    transaction.set(progressRef, resetProgress);
+                }
+
+                gameReset = true;
+
+                // Return response with null playAgainReady since game was reset
+                return new SetPlayAgainReadyResponse(gameId, null, gameReset);
+            } else {
+                // Not all ready yet - just update the map
+                game.setPlayAgainReady(finalPlayAgainReady);
+                transaction.set(gameRef, game);
+
+                // Return response with updated playAgainReady map
+                return new SetPlayAgainReadyResponse(gameId, finalPlayAgainReady, gameReset);
+            }
+        });
+
+        return future.get();
     }
 }
