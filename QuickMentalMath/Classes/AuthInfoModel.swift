@@ -10,7 +10,8 @@ import SwiftUI
 class AuthInfoModel: ObservableObject {
     @Published var user: User? = nil
     @Published var authState: AuthState = .UNAUTHORIZED
-    
+    @Published var pendingLobbyCode: String? = nil
+
     init() {}
     
     init(user: User) {
@@ -76,13 +77,18 @@ class AuthInfoModel: ObservableObject {
         return await AuthService.resetPassword(body: body)
     }
     
-    @MainActor 
+    @MainActor
     func deleteAccount() async -> Bool {
         let success = await AuthService.deleteStats(userId: user!.id, statId: user!.stats!.id, jwtToken: user!.jwtToken)
         if success {
             return await AuthService.deleteUser(userId: user!.id, jwtToken: user!.jwtToken)
         }
-        
+
         return false
+    }
+
+    /// Clear the pending lobby code after it has been processed
+    func clearPendingLobbyCode() {
+        pendingLobbyCode = nil
     }
 }

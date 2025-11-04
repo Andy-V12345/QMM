@@ -21,6 +21,7 @@
 		D85BB2732EB9454900D1D25F /* EndGameErrorBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = D85BB2692EB9454900D1D25F /* EndGameErrorBanner.swift */; };
 		D85BB2742EB9454900D1D25F /* EndGameLoadingOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = D85BB26B2EB9454900D1D25F /* EndGameLoadingOverlay.swift */; };
 		D85BB2752EB9454900D1D25F /* EndGameStatsCards.swift in Sources */ = {isa = PBXBuildFile; fileRef = D85BB26D2EB9454900D1D25F /* EndGameStatsCards.swift */; };
+		D85BB28F2EBA763800D1D25F /* DeepLinkHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = D85BB28E2EBA763800D1D25F /* DeepLinkHandler.swift */; };
 		D863BB622BF8049600A8825C /* TimeSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = D863BB612BF8049600A8825C /* TimeSelector.swift */; };
 		D87282802E8D920C00C36890 /* AuthView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D87282752E8D920C00C36890 /* AuthView.swift */; };
 		D87282812E8D920C00C36890 /* EndGameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D87282762E8D920C00C36890 /* EndGameView.swift */; };
@@ -123,6 +124,7 @@
 		D85BB26B2EB9454900D1D25F /* EndGameLoadingOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EndGameLoadingOverlay.swift; sourceTree = "<group>"; };
 		D85BB26C2EB9454900D1D25F /* EndGameResultsList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EndGameResultsList.swift; sourceTree = "<group>"; };
 		D85BB26D2EB9454900D1D25F /* EndGameStatsCards.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EndGameStatsCards.swift; sourceTree = "<group>"; };
+		D85BB28E2EBA763800D1D25F /* DeepLinkHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLinkHandler.swift; sourceTree = "<group>"; };
 		D863BB612BF8049600A8825C /* TimeSelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeSelector.swift; sourceTree = "<group>"; };
 		D87282752E8D920C00C36890 /* AuthView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthView.swift; sourceTree = "<group>"; };
 		D87282762E8D920C00C36890 /* EndGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EndGameView.swift; sourceTree = "<group>"; };
@@ -296,6 +298,7 @@
 		D872828B2E8DA67F00C36890 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				D85BB28E2EBA763800D1D25F /* DeepLinkHandler.swift */,
 				D897989B2EAC578200440837 /* NetworkMonitor.swift */,
 				D89798792EA5A42C00440837 /* HapticManager.swift */,
 				D87282912E8DA76700C36890 /* AppModel.swift */,
@@ -567,6 +570,7 @@
 				D87282882E8D920C00C36890 /* StatsView.swift in Sources */,
 				D80930F22E961CF300FEAEE3 /* EndGameModel.swift in Sources */,
 				D89306772EB0896D007057AC /* SignInNeededView.swift in Sources */,
+				D85BB28F2EBA763800D1D25F /* DeepLinkHandler.swift in Sources */,
 				D87282892E8D920C00C36890 /* TimeTrialView.swift in Sources */,
 				D87282922E8DA76700C36890 /* AppModel.swift in Sources */,
 				D897989C2EAC578200440837 /* NetworkMonitor.swift in Sources */,

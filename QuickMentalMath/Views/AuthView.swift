@@ -53,6 +53,33 @@ struct AuthView: View {
     @AppStorage("username") var username = ""
     @AppStorage("id") var id = 0
     
+    private func joinPendingLobby(code: String) async {
+        guard let user = authInfo.user else { return }
+
+        let result = await MultiplayerService.joinLobby(
+            code: code,
+            userId: user.id,
+            username: user.username,
+            jwtToken: user.jwtToken
+        )
+
+        // Clear pending code
+        authInfo.clearPendingLobbyCode()
+
+        switch result {
+        case .success(let lobbyResponse):
+            // Navigate to lobby view with full navigation stack
+            await MainActor.run {
+                // Dismiss any open sheets before navigation
+                appModel.dismissAllSheets()
+                appModel.path = NavigationPath([AuthState.UNAUTHORIZED, AuthState.AUTHORIZED])
+                appModel.path.append(CustomLobbyInfoModel())
+                appModel.path.append(lobbyResponse)
+            }
+        default: break
+        }
+    }
+
     private func handleButtonClick() {
         authViewState = .LOADING
         
@@ -76,12 +103,19 @@ struct AuthView: View {
                         id = authInfo.user!.id
                         authState = .AUTHORIZED
                         authViewState = .DEFAULT
-                        
+
                         email = ""
                         password = ""
                         usernameText = ""
-                        
+
                         appModel.path.append(authState)
+
+                        // Handle pending lobby code if exists
+                        if let pendingCode = authInfo.pendingLobbyCode {
+                            Task {
+                                await joinPendingLobby(code: pendingCode)
+                            }
+                        }
                     }
                 }
             }
@@ -122,12 +156,19 @@ struct AuthView: View {
                         id = authInfo.user!.id
                         authState = .AUTHORIZED
                         authViewState = .DEFAULT
-                        
+
                         email = ""
                         password = ""
                         usernameText = ""
-                        
+
                         appModel.path.append(authState)
+
+                        // Handle pending lobby code if exists
+                        if let pendingCode = authInfo.pendingLobbyCode {
+                            Task {
+                                await joinPendingLobby(code: pendingCode)
+                            }
+                        }
                     }
                 }
             }
@@ -323,7 +364,10 @@ struct AuthView: View {
                         Button(action: {
                             authInfo.authState = .NO_ACCOUNT
                             authState = .NO_ACCOUNT
-                            
+
+                            // Clear pending lobby code for guest users
+                            authInfo.clearPendingLobbyCode()
+
                             appModel.path.append(authState)
                         }, label: {
                             HStack {

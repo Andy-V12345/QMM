@@ -17,6 +17,80 @@ struct CustomLobbyInfoView: View {
     @State private var showingCreateLobby = false
     @State private var showingJoinLobby = false
     @State private var lobbyCode: String = ""
+    
+    @State private var player1Progress: Int = 0
+    @State private var player2Progress: Int = 0
+    @State private var winner: String? = nil
+    @State private var player1AnimationTask: Task<Void, Never>?
+    @State private var player2AnimationTask: Task<Void, Never>?
+    
+    private func reset() async {
+        // Reset after reaching the end
+        try? await Task.sleep(nanoseconds: 1_000_000_000) // 1 second pause
+        
+        withAnimation(.easeInOut(duration: 0.1)) {
+            player1Progress = 1
+            player2Progress = 1
+            
+        }
+    }
+    
+    // MARK: - Racing Animation Logic
+    
+    private func startRacingAnimation() {
+        // Animate Player 1
+        player1AnimationTask = Task {
+            while true {
+                // Check if task was cancelled
+                if Task.isCancelled { return }
+
+                let randomDelay = Double.random(in: 0.7...1.3)
+                try? await Task.sleep(nanoseconds: UInt64(randomDelay * 1_000_000_000))
+
+                // Check again after sleep
+                if Task.isCancelled { return }
+
+                if player1Progress < 10 {
+                    withAnimation(.easeInOut(duration: 0.1)) {
+                        player1Progress += 1
+                    }
+                } else {
+                    if player2Progress == 10 {
+                        await reset()
+                    }
+                }
+            }
+        }
+
+        // Animate Player 2
+        player2AnimationTask = Task {
+            while true {
+                // Check if task was cancelled
+                if Task.isCancelled { return }
+
+                let randomDelay = Double.random(in: 0.9...1.5)
+                try? await Task.sleep(nanoseconds: UInt64(randomDelay * 1_000_000_000))
+
+                // Check again after sleep
+                if Task.isCancelled { return }
+
+                if player2Progress < 10 {
+                    withAnimation(.easeInOut(duration: 0.1)) {
+                        player2Progress += 1
+                    }
+                } else {
+                    if player1Progress == 10 {
+                        await reset()
+                    }
+                }
+            }
+        }
+    }
+
+    private func stopRacingAnimation() {
+        player1AnimationTask?.cancel()
+        player2AnimationTask?.cancel()
+    }
 
     var body: some View {
         ZStack {
@@ -83,6 +157,32 @@ struct CustomLobbyInfoView: View {
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .padding(.top, 5)
                     }
+                    
+                    Spacer()
+                    
+                    // Racing progress bars
+                    VStack(spacing: device.valueByDevice(small: 25, normal: 30, ipad: 45)) {
+                        RacingProgressBar(
+                            backgroundColor: Color("errorRed"),
+                            shadowColor: Color("darkPastelRed"),
+                            currentProgress: player1Progress,
+                            totalNodes: 10
+                        )
+                        
+                        RacingProgressBar(
+                            backgroundColor: Color("pastelBlue"),
+                            shadowColor: Color("darkPastelBlue"),
+                            currentProgress: player2Progress,
+                            totalNodes: 10
+                        )
+                        
+                        Text("be the first to the finish line")
+                            .foregroundStyle(Color("darkPurple"))
+                            .fontWeight(.heavy)
+                            .font(device.valueByDevice(small: .body, normal: .body, ipad: .title))
+                    }
+                    
+                    Spacer()
 
                     VStack(spacing: device.valueByDevice(small: 25, normal: 30, ipad: 40)) {
                         
@@ -113,8 +213,6 @@ struct CustomLobbyInfoView: View {
                         }
                     }
 
-                    Spacer()
-
                     // Bottom actions
                     VStack(spacing: 35) {
                         Button(action: {
@@ -130,6 +228,38 @@ struct CustomLobbyInfoView: View {
                 .padding(device.valueByDevice(small: 15, normal: 20, ipad: 30))
             }
         } //: ZStack
+        .onAppear {
+            if authInfo.user != nil {
+                startRacingAnimation()
+            }
+        }
+        .onDisappear {
+            if authInfo.user != nil {
+                stopRacingAnimation()
+            }
+        }
+        .onChange(of: showingJoinLobby) { _, new in
+            if authInfo.user != nil {
+                if new {
+                    // Sheet appeared - stop animations
+                    stopRacingAnimation()
+                } else {
+                    // Sheet dismissed - resume animations
+                    startRacingAnimation()
+                }
+            }
+        }
+        .onChange(of: showingCreateLobby) { _, new in
+            if authInfo.user != nil {
+                if new {
+                    // Sheet appeared - stop animations
+                    stopRacingAnimation()
+                } else {
+                    // Sheet dismissed - resume animations
+                    startRacingAnimation()
+                }
+            }
+        }
         .fullScreenCover(isPresented: $showingJoinLobby, content: {
             EnterCodeView()
         })

@@ -11,5 +11,18 @@
 	<array>
 		<string>NunitoSans.ttf</string>
 	</array>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>com.andyvu.QuickMentalMath</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>qmm</string>
+			</array>
+		</dict>
+	</array>
 </dict>
 </plist>

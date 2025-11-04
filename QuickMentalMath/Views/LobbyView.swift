@@ -219,29 +219,34 @@ struct LobbyView: View {
             Color.white.ignoresSafeArea()
             
             VStack {
-                ShareLink(item: code, label: {
-                    HStack {
-                        VStack(spacing: 5) {
-                            Text("lobby code")
-                                .foregroundStyle(Color("lightPurple"))
-                                .font(device.valueByDevice(small: .body, normal: .body, ipad: .title3))
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .fontWeight(.bold)
-                            
-                            Text(code)
-                                .tracking(3)
-                                .font(device.valueByDevice(small: .title, normal: .title, ipad: .largeTitle))
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                            
+                ShareLink(
+                    item: URL(string: "qmm://lobby/\(code)")!,
+                    subject: Text("Join my QuickMentalMath lobby!"),
+                    message: Text("Join my lobby with code \(code)"),
+                    label: {
+                        HStack {
+                            VStack(spacing: 5) {
+                                Text("lobby code")
+                                    .foregroundStyle(Color("lightPurple"))
+                                    .font(device.valueByDevice(small: .body, normal: .body, ipad: .title3))
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                    .fontWeight(.bold)
+
+                                Text(code)
+                                    .tracking(3)
+                                    .font(device.valueByDevice(small: .title, normal: .title, ipad: .largeTitle))
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+
+                            }
+
+                            Spacer()
+
+                            Image(systemName: "square.and.arrow.up")
+                                .font(device.valueByDevice(small: .body, normal: .title3, ipad: .title))
                         }
-                        
-                        Spacer()
-                        
-                        Image(systemName: "square.and.arrow.up")
-                            .font(device.valueByDevice(small: .body, normal: .title3, ipad: .title))
+                        .foregroundStyle(Color("darkPurple"))
                     }
-                    .foregroundStyle(Color("darkPurple"))
-                })
+                )
                 .fontWeight(.heavy)
                 .padding(.vertical, device.valueByDevice(small: 12, normal: 18, ipad: 24))
                 .padding(.horizontal, device.valueByDevice(small: 15, normal: 20, ipad: 25))

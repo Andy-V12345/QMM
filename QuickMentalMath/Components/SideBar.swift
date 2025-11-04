@@ -17,12 +17,9 @@ struct SideBar: View {
     @State var errorMsg = ""
     @State var errorTitle = ""
     @State var isLoading = false
-    
+
     @State var usernameText = ""
-    
-    @State var displayStats = false
-    @State var displayLeaderboard = false
-    
+
     @EnvironmentObject var authInfo: AuthInfoModel
     @EnvironmentObject var appModel: AppModel
     
@@ -95,7 +92,7 @@ struct SideBar: View {
                             .padding(.horizontal, 10)
                             .frame(maxWidth: .infinity)
                             .raisedButton(cornerRadius: 20, backgroundColor: Color("offWhite"), shadowColor: Color("lightGray"), shadowOffset: 4, action: {
-                                displayStats = true
+                                appModel.showStats = true
                             })
                             
                             Button(action: {}, label: {
@@ -113,7 +110,7 @@ struct SideBar: View {
                             .padding(.horizontal, 10)
                             .frame(maxWidth: .infinity)
                             .raisedButton(cornerRadius: 20, backgroundColor: Color("offWhite"), shadowColor: Color("lightGray"), shadowOffset: 4, action: {
-                                displayLeaderboard = true
+                                appModel.showLeaderboard = true
                             })
                             
                             Spacer()
@@ -182,10 +179,10 @@ struct SideBar: View {
         }
         .ignoresSafeArea(edges: .all)
         .preferredColorScheme(.light)
-        .fullScreenCover(isPresented: $displayStats, content: {
+        .fullScreenCover(isPresented: $appModel.showStats, content: {
             StatsView()
         })
-        .fullScreenCover(isPresented: $displayLeaderboard, content: {
+        .fullScreenCover(isPresented: $appModel.showLeaderboard, content: {
             LeaderboardView()
         })
         .alert(errorTitle, isPresented: $deleteError) {

@@ -8,18 +8,21 @@
 import SwiftUI
 
 struct ContentView: View {
-    
+
     @StateObject var authInfo = AuthInfoModel()
     @StateObject var appModel = AppModel(path: NavigationPath())
     @StateObject var deviceModel = DeviceModel()
     @StateObject var networkMonitor = NetworkMonitor()
 
     @Environment(\.scenePhase) var scenePhase
-    
+
     @AppStorage("authState") var authState: AuthState = .UNAUTHORIZED
     @AppStorage("jwtToken") var jwtToken = ""
     @AppStorage("username") var username = ""
     @AppStorage("id") var id = 0
+
+    @State private var showDeepLinkError = false
+    @State private var deepLinkErrorMessage = ""
     
     var body: some View {
         GeometryReader { screen in
@@ -146,6 +149,17 @@ struct ContentView: View {
             .environmentObject(appModel)
             .environmentObject(deviceModel)
             .environmentObject(networkMonitor)
+            .onOpenURL { url in
+                handleDeepLink(url)
+            }
+            .alert("unable to join lobby", isPresented: $showDeepLinkError) {
+                Button("ok") {
+                    // Navigate to HomeView on error
+                    appModel.path = NavigationPath([AuthState.UNAUTHORIZED, AuthState.AUTHORIZED])
+                }
+            } message: {
+                Text(deepLinkErrorMessage.lowercased())
+            }
             .dynamicTypeSize(.large)
             .fullScreenCover(isPresented: $appModel.findingGame, content: {
                 WaitingRoomView(authInfo: authInfo, appModel: appModel, networkMonitor: networkMonitor)
@@ -153,7 +167,66 @@ struct ContentView: View {
             })
         }
     }
-    
+
+    /// Handle deep link URL
+    private func handleDeepLink(_ url: URL) {
+        let deepLink = DeepLinkHandler.parse(url)
+
+        switch deepLink {
+        case .lobby(let code):
+            // Check if user is authenticated
+            if authInfo.authState == .AUTHORIZED, let user = authInfo.user {
+                // User is authenticated, join lobby immediately
+                Task {
+                    let result = await MultiplayerService.joinLobby(
+                        code: code,
+                        userId: user.id,
+                        username: user.username,
+                        jwtToken: user.jwtToken
+                    )
+
+                    switch result {
+                    case .success(let lobbyResponse):
+                        // Navigate to lobby view with full navigation stack
+                        await MainActor.run {
+                            // Dismiss any open sheets before navigation
+                            appModel.dismissAllSheets()
+                            appModel.path = NavigationPath([AuthState.UNAUTHORIZED, AuthState.AUTHORIZED])
+                            appModel.path.append(CustomLobbyInfoModel())
+                            appModel.path.append(lobbyResponse)
+                        }
+                    case .failure(let error):
+                        // Check if user is already in this lobby - if so, do nothing
+                        if let nsError = error as NSError?,
+                           nsError.code == 400,
+                           nsError.localizedDescription.contains("Already in this lobby") {
+                            // Silently ignore - user is already in the lobby
+                            return
+                        }
+
+                        // Show error and navigate to CustomLobbyInfoView
+                        await MainActor.run {
+                            deepLinkErrorMessage = "Failed to join lobby: \(error.localizedDescription)"
+                            showDeepLinkError = true
+                        }
+                    }
+                }
+            } else {
+                // User not authenticated, store pending code
+                authInfo.pendingLobbyCode = code
+                // Navigate to auth screen if not already there
+                if authInfo.authState != .UNAUTHORIZED {
+                    appModel.path = NavigationPath([AuthState.UNAUTHORIZED])
+                }
+            }
+
+        case .invalid:
+            // Invalid deep link format
+            deepLinkErrorMessage = "Invalid lobby link format"
+            showDeepLinkError = true
+        }
+    }
+
 }
 
 struct ContentView_Previews: PreviewProvider {

@@ -109,17 +109,17 @@ public class LobbyService {
                 throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to load lobby");
             }
 
-            // Check if lobby is full
-            if (lobby.getPlayers().size() >= lobby.getMaxPlayers()) {
-                throw new ResponseStatusException(HttpStatus.CONFLICT, "Lobby is already full");
-            }
-
             // Check if player is already in the lobby
             boolean alreadyInLobby = lobby.getPlayers().stream()
                     .anyMatch(player -> player.getUid().equals(uid));
 
             if (alreadyInLobby) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Already in this lobby");
+            }
+
+            // Check if lobby is full
+            if (lobby.getPlayers().size() >= lobby.getMaxPlayers()) {
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "Lobby is already full");
             }
 
             // Add new player to lobby
