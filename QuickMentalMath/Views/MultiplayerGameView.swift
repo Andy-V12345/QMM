@@ -40,11 +40,6 @@ struct MultiplayerGameView: View {
     @State var countdownValue: Int = 3
     @State var showCountdown: Bool = true
 
-    // Leave game state
-    @State var showLeaveGameOverlay: Bool = false
-    @State var showLeaveGameError: Bool = false
-    @State var leaveGameErrorMessage: String = ""
-
     @EnvironmentObject var device: DeviceModel
     @EnvironmentObject var authInfo: AuthInfoModel
     @EnvironmentObject var appModel: AppModel
@@ -56,7 +51,7 @@ struct MultiplayerGameView: View {
     @AppStorage("id") var id = 0
 
     let numQuestions: Int
-    let gameSession: GameSession
+    @ObservedObject var gameSession: GameSession
     
     init(gameSession: GameSession) {
         self.gameSession = gameSession
@@ -71,85 +66,6 @@ struct MultiplayerGameView: View {
         opponent.uid.starts(with: "bot")
     }
 
-    var infoText: String {
-        let lead = questionIndex - opponentProgress
-        let isEarlyGame = questionIndex < 4
-        let isEndGame = numQuestions - questionIndex <= 5
-        let cycleIndex = (questionIndex / 3)  // Cycle every 3 questions
-
-        // Early game messages
-        if isEarlyGame {
-            let messages = ["let's get it", "time to lock in", "show what you got"]
-            return messages[cycleIndex % messages.count]
-        }
-
-        // Message selection based on lead and game phase
-        if lead == 0 {
-            // Tied
-            if isEndGame {
-                let messages = ["final stretch!", "this is it!", "crunch time!", "clutch up"]
-                return messages[cycleIndex % messages.count]
-            } else {
-                let messages = ["neck and neck fr", "too close rn", "y'all are tied", "it's anyone's game"]
-                return messages[cycleIndex % messages.count]
-            }
-        } else if lead == 1 {
-            // Ahead by 1
-            if isEndGame {
-                let messages = ["don't fumble!", "don't choke!", "so close!"]
-                return messages[cycleIndex % messages.count]
-            } else {
-                let messages = ["barely winning rn", "keep it up", "stay focused"]
-                return messages[cycleIndex % messages.count]
-            }
-        } else if lead == 2 {
-            // Ahead by 2
-            if isEndGame {
-                let messages = ["almost there!", "you got this", "secure the bag!"]
-                return messages[cycleIndex % messages.count]
-            } else {
-                let messages = ["you're in the lead", "W player", "highkey winning"]
-                return messages[cycleIndex % messages.count]
-            }
-        } else if lead >= 3 {
-            // Ahead by 3+
-            if isEndGame {
-                let messages = ["gg ez", "it's over!", "too easy fr"]
-                return messages[cycleIndex % messages.count]
-            } else {
-                let messages = ["absolutely cooking", "they're cooked", "diff is crazy", "so free"]
-                return messages[cycleIndex % messages.count]
-            }
-        } else if lead == -1 {
-            // Behind by 1
-            if isEndGame {
-                let messages = ["you gotta clutch up", "go go go!"]
-                return messages[cycleIndex % messages.count]
-            } else {
-                let messages = ["so close!", "catch up!", "almost there"]
-                return messages[cycleIndex % messages.count]
-            }
-        } else if lead == -2 {
-            // Behind by 2
-            if isEndGame {
-                let messages = ["it's not over yet!", "move move move!"]
-                return messages[cycleIndex % messages.count]
-            } else {
-                let messages = ["lowkey falling behind", "lock in bro", "step it up", "wake up"]
-                return messages[cycleIndex % messages.count]
-            }
-        } else {
-            // Behind by 3+
-            if isEndGame {
-                let messages = ["it's wraps", "you're cooked", "gg go next", "sheesh not good"]
-                return messages[cycleIndex % messages.count]
-            } else {
-                let messages = ["you're cooked", "oof that's rough", "taking a big L rn", "nah this is bad", "yikes..."]
-                return messages[cycleIndex % messages.count]
-            }
-        }
-    }
-
     var curQuestion: QuestionItem {
         self.gameSession.questionSet.questions[min(questionIndex, numQuestions - 1)]
     }
@@ -158,45 +74,13 @@ struct MultiplayerGameView: View {
         return curQuestion.correct == Int(input)
     }
     
-    private func handleLeaveGame() {
-        guard let user = authInfo.user else { return }
-
-        // Show loading overlay
-        showLeaveGameOverlay = true
-
-        Task {
-            let result = await MultiplayerService.forfeit(
-                gameId: gameSession.id,
-                userId: user.id,
-                jwtToken: user.jwtToken
-            )
-            
-            // Update user stats to account for loss
-            if var curStats = try? await AuthService.loadUserStats(userId: user.id, jwtToken: user.jwtToken) {
-                
-                curStats.losses = curStats.losses == nil ? 1 : curStats.losses! + 1
-                let _ = await AuthService.updateUserStats(userId: user.id, statId: curStats.id, jwtToken: user.jwtToken, statsRequest: UserStatsRequest(userStats: curStats))
-            }
-            
-            await MainActor.run {
-                switch result {
-                case .success:
-                    // Navigate back
-                    showLeaveGameOverlay = false
-                    appModel.path.removeLast()
-
-                case .failure(let error):
-                    // Hide overlay and show error alert
-                    showLeaveGameOverlay = false
-                    leaveGameErrorMessage = error.localizedDescription
-                    showLeaveGameError = true
-                }
-            }
-        }
-    }
-    
     private func handleGameOver() {
-        appModel.path.append(MultiplayerEndGameModel(gameId: gameSession.id))
+        if gameSession is RegularGameSession {
+            appModel.path.append(RegularMultiplayerEndGameModel(gameId: gameSession.id))
+        }
+        else if gameSession is CustomGameSession {
+            appModel.path.append(CustomMultiplayerEndGameModel(gameId: gameSession.id))
+        }
     }
     
     private func updateProgress() {
@@ -370,7 +254,7 @@ struct MultiplayerGameView: View {
                     botQuestionIndex += 1
                 case .failure(let error):
                     let nsError = error as NSError
-                    
+
                     if nsError.code != NSURLErrorCancelled {
                         print("Bot submission failed: \(error.localizedDescription)")
                     }
@@ -379,6 +263,40 @@ struct MultiplayerGameView: View {
                 }
             }
         }
+    }
+
+    private func resetGameState() {
+        // Clean up listeners and tasks first
+        opponentProgressListener?.remove()
+        botSubmissionTask?.cancel()
+
+        // Reset game state
+        input = "f"
+        isGameOver = false
+        showAreYouSure = false
+        questionIndex = 0
+
+        // Reset opponent state
+        opponentProgress = 0
+        opponentStatus = "PLAYING"
+        opponentConnection = .CONNECTED
+        opponentProgressListener = nil
+        botSubmissionTask = nil
+        botDifficulty = .MEDIUM
+
+        // Reset network state
+        wasPreviouslyOffline = false
+
+        // Reset server reconciliation state
+        confirmedQuestionIndex = 0
+        pendingSubmissions = []
+        confirmedQuestions = []
+        showConnectionWarning = false
+        isSubmittingAnswer = false
+
+        // Reset countdown state
+        countdownValue = 3
+        showCountdown = true
     }
 
     // MARK: - Game Logic
@@ -500,19 +418,6 @@ struct MultiplayerGameView: View {
                                     .allowsHitTesting(false)
                                     .transition(.move(edge: .top).combined(with: .opacity))
                                     .animation(.easeInOut(duration: 0.3), value: showConnectionWarning)
-                                }
-                                else {
-                                    Text(infoText)
-                                        .font(device.valueByDevice(small: .subheadline, normal: .subheadline, ipad: .title3))
-                                        .foregroundStyle(Color("darkPurple"))
-                                        .fontWeight(.bold)
-                                        .lineLimit(1)
-                                        .padding(.horizontal, 12)
-                                        .padding(.vertical, 6)
-                                        .raisedButton(shadowOffset: 2, action: {})
-                                        .allowsHitTesting(false)
-                                        .transition(.move(edge: .top).combined(with: .opacity))
-                                        .animation(.easeInOut(duration: 0.3), value: showConnectionWarning)
                                 }
                                 
                                 Spacer()
@@ -647,7 +552,7 @@ struct MultiplayerGameView: View {
                 }
                 
                 // Leave Game Loading Overlay
-                if showLeaveGameOverlay {
+                if gameSession.showLeaveGameOverlay {
                     ZStack {
                         Color.white.opacity(0.9)
                             .ignoresSafeArea()
@@ -667,6 +572,8 @@ struct MultiplayerGameView: View {
         }
         
         .onAppear {
+            resetGameState()
+            
             if authInfo.user != nil {
                 // Start countdown
                 startCountdown()
@@ -695,7 +602,7 @@ struct MultiplayerGameView: View {
         }
         .alert("are you sure?", isPresented: $showAreYouSure, actions: {
             Button(role: .none, action: {
-                handleLeaveGame()
+                gameSession.handleLeaveGame(authInfo: authInfo, appModel: appModel)
             }, label: {
                 Text("yes")
             })
@@ -706,16 +613,16 @@ struct MultiplayerGameView: View {
         }, message: {
             Text("you won't be able to rejoin and you'll forfeit the game!")
         })
-        .alert("failed to leave game", isPresented: $showLeaveGameError, actions: {
+        .alert("failed to leave game", isPresented: $gameSession.showLeaveGameError, actions: {
             Button("retry", action: {
-                handleLeaveGame()
+                gameSession.handleLeaveGame(authInfo: authInfo, appModel: appModel)
             })
 
             Button("cancel", role: .cancel, action: {
-                showLeaveGameOverlay = false
+                gameSession.showLeaveGameOverlay = false
             })
         }, message: {
-            Text(leaveGameErrorMessage)
+            Text(gameSession.leaveGameErrorMessage)
         })
     }
 }

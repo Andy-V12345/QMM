@@ -149,6 +149,18 @@ struct LeaveLobbyRequest: Codable {
     var userId: Int
 }
 
+struct SetPlayAgainReadyRequest: Codable {
+    var userId: Int
+    var ready: Bool
+}
+
+struct SetPlayAgainReadyResponse: Codable {
+    var gameId: String
+    var playAgainReady: [String: Bool]?
+    var gameReset: Bool
+    var newGameId: String?
+}
+
 struct LobbyPlayer: Codable, Hashable {
     static func ==(lhs: LobbyPlayer, rhs: LobbyPlayer) -> Bool {
         return lhs.uid == rhs.uid
@@ -648,4 +660,46 @@ class MultiplayerService {
             }
         }
     }
+
+    static func setPlayAgainReady(gameId: String, userId: Int, ready: Bool, jwtToken: String) async -> Result<SetPlayAgainReadyResponse, Error> {
+        return await withRetry {
+            var request = URLRequest(url: URL(string: baseUrl + "/games/\(gameId)/playAgainReady")!)
+            request.httpMethod = "POST"
+            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            request.setValue("Bearer \(jwtToken)", forHTTPHeaderField: "Authorization")
+
+            do {
+                request.httpBody = try JSONEncoder().encode(SetPlayAgainReadyRequest(userId: userId, ready: ready))
+                let (data, httpResponse) = try await URLSession.shared.data(for: request)
+
+                guard let response = httpResponse as? HTTPURLResponse else {
+                    return .failure(NSError(domain: "MultiplayerService", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid response"]))
+                }
+
+                if response.statusCode == 200 {
+                    let playAgainResponse = try JSONDecoder().decode(SetPlayAgainReadyResponse.self, from: data)
+                    return .success(playAgainResponse)
+                }
+                else if response.statusCode == 404 {
+                    return .failure(NSError(domain: "MultiplayerService", code: 404, userInfo: [NSLocalizedDescriptionKey: "Game not found"]))
+                }
+                else if response.statusCode == 403 {
+                    return .failure(NSError(domain: "MultiplayerService", code: 403, userInfo: [NSLocalizedDescriptionKey: "Not a player in this game"]))
+                }
+                else if response.statusCode == 400 {
+                    let errorMessage = String(data: data, encoding: .utf8) ?? "Not a custom lobby game"
+                    return .failure(NSError(domain: "MultiplayerService", code: 400, userInfo: [NSLocalizedDescriptionKey: errorMessage]))
+                }
+                else {
+                    let errorMessage = String(data: data, encoding: .utf8) ?? "Failed to set play again ready"
+                    return .failure(NSError(domain: "MultiplayerService", code: response.statusCode, userInfo: [NSLocalizedDescriptionKey: errorMessage]))
+                }
+            }
+            catch {
+                return .failure(error)
+            }
+        }
+    }
+
+
 }

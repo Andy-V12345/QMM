@@ -15,4 +15,5 @@ public class SetPlayAgainReadyResponse {
     private String gameId;
     private Map<String, Boolean> playAgainReady;  // Map of player uid -> ready status
     private Boolean gameReset;  // true if all players were ready and game was reset
+    private String newGameId;  // New game ID when game is reset (null if not reset)
 }

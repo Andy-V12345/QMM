@@ -11,6 +11,16 @@
 		D80930F22E961CF300FEAEE3 /* EndGameModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D80930F12E961CF300FEAEE3 /* EndGameModel.swift */; };
 		D823EE752E8FD2370074C071 /* StatPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D823EE742E8FD2370074C071 /* StatPanel.swift */; };
 		D84ED7E22C44AA0B0043995D /* LeaderboardEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = D84ED7E12C44AA0B0043995D /* LeaderboardEntry.swift */; };
+		D85BB2612EB33D5000D1D25F /* RegularGameSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = D85BB2602EB33D5000D1D25F /* RegularGameSession.swift */; };
+		D85BB2632EB33EEE00D1D25F /* CustomGameSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = D85BB2622EB33EEE00D1D25F /* CustomGameSession.swift */; };
+		D85BB2652EB40E7A00D1D25F /* RegularMultiplayerEndGameModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D85BB2642EB40E7A00D1D25F /* RegularMultiplayerEndGameModel.swift */; };
+		D85BB2672EB42E4700D1D25F /* CustomMultiplayerEndGameModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D85BB2662EB42E4700D1D25F /* CustomMultiplayerEndGameModel.swift */; };
+		D85BB26F2EB9454900D1D25F /* EndGameActionButtons.swift in Sources */ = {isa = PBXBuildFile; fileRef = D85BB2682EB9454900D1D25F /* EndGameActionButtons.swift */; };
+		D85BB2702EB9454900D1D25F /* EndGameHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = D85BB26A2EB9454900D1D25F /* EndGameHeader.swift */; };
+		D85BB2722EB9454900D1D25F /* EndGameResultsList.swift in Sources */ = {isa = PBXBuildFile; fileRef = D85BB26C2EB9454900D1D25F /* EndGameResultsList.swift */; };
+		D85BB2732EB9454900D1D25F /* EndGameErrorBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = D85BB2692EB9454900D1D25F /* EndGameErrorBanner.swift */; };
+		D85BB2742EB9454900D1D25F /* EndGameLoadingOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = D85BB26B2EB9454900D1D25F /* EndGameLoadingOverlay.swift */; };
+		D85BB2752EB9454900D1D25F /* EndGameStatsCards.swift in Sources */ = {isa = PBXBuildFile; fileRef = D85BB26D2EB9454900D1D25F /* EndGameStatsCards.swift */; };
 		D863BB622BF8049600A8825C /* TimeSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = D863BB612BF8049600A8825C /* TimeSelector.swift */; };
 		D87282802E8D920C00C36890 /* AuthView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D87282752E8D920C00C36890 /* AuthView.swift */; };
 		D87282812E8D920C00C36890 /* EndGameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D87282762E8D920C00C36890 /* EndGameView.swift */; };
@@ -34,6 +44,17 @@
 		D886E8D22C3AD8350054DD61 /* AuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D886E8D12C3AD8350054DD61 /* AuthService.swift */; };
 		D886E8D42C3ADA290054DD61 /* LoadingSpinner.swift in Sources */ = {isa = PBXBuildFile; fileRef = D886E8D32C3ADA290054DD61 /* LoadingSpinner.swift */; };
 		D88AD2C12E8FAB450036BF62 /* ConfettiSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = D88AD2C02E8FAB450036BF62 /* ConfettiSwiftUI */; };
+		D89306752EB08722007057AC /* CustomLobbyInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D89306742EB08722007057AC /* CustomLobbyInfoView.swift */; };
+		D89306772EB0896D007057AC /* SignInNeededView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D89306762EB0896D007057AC /* SignInNeededView.swift */; };
+		D89306792EB08D39007057AC /* CustomLobbyInfoModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D89306782EB08D39007057AC /* CustomLobbyInfoModel.swift */; };
+		D893067B2EB1026B007057AC /* EnterCodeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D893067A2EB1026B007057AC /* EnterCodeView.swift */; };
+		D893067D2EB1178D007057AC /* CreatingLobbyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D893067C2EB1178D007057AC /* CreatingLobbyView.swift */; };
+		D893067F2EB11C4E007057AC /* LobbyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D893067E2EB11C4E007057AC /* LobbyView.swift */; };
+		D89306812EB17170007057AC /* BouncingDotsLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = D89306802EB17170007057AC /* BouncingDotsLoader.swift */; };
+		D89306832EB1CBC9007057AC /* LobbyPlayerSlot.swift in Sources */ = {isa = PBXBuildFile; fileRef = D89306822EB1CBC9007057AC /* LobbyPlayerSlot.swift */; };
+		D89306852EB1D8EA007057AC /* AnimatedCheckmark.swift in Sources */ = {isa = PBXBuildFile; fileRef = D89306842EB1D8EA007057AC /* AnimatedCheckmark.swift */; };
+		D89306872EB2A0B9007057AC /* AnimatedErrorMark.swift in Sources */ = {isa = PBXBuildFile; fileRef = D89306862EB2A0B9007057AC /* AnimatedErrorMark.swift */; };
+		D89306892EB2B68B007057AC /* LobbyStatusDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = D89306882EB2B68B007057AC /* LobbyStatusDisplay.swift */; };
 		D897986B2EA4157700440837 /* MultiplayerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D897986A2EA4157700440837 /* MultiplayerService.swift */; };
 		D897986D2EA4158700440837 /* FirestoreModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = D897986C2EA4158700440837 /* FirestoreModels.swift */; };
 		D89798702EA4160A00440837 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = D897986F2EA4160A00440837 /* FirebaseFirestore */; };
@@ -92,6 +113,16 @@
 		D80930F12E961CF300FEAEE3 /* EndGameModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EndGameModel.swift; sourceTree = "<group>"; };
 		D823EE742E8FD2370074C071 /* StatPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatPanel.swift; sourceTree = "<group>"; };
 		D84ED7E12C44AA0B0043995D /* LeaderboardEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeaderboardEntry.swift; sourceTree = "<group>"; };
+		D85BB2602EB33D5000D1D25F /* RegularGameSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegularGameSession.swift; sourceTree = "<group>"; };
+		D85BB2622EB33EEE00D1D25F /* CustomGameSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomGameSession.swift; sourceTree = "<group>"; };
+		D85BB2642EB40E7A00D1D25F /* RegularMultiplayerEndGameModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegularMultiplayerEndGameModel.swift; sourceTree = "<group>"; };
+		D85BB2662EB42E4700D1D25F /* CustomMultiplayerEndGameModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomMultiplayerEndGameModel.swift; sourceTree = "<group>"; };
+		D85BB2682EB9454900D1D25F /* EndGameActionButtons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EndGameActionButtons.swift; sourceTree = "<group>"; };
+		D85BB2692EB9454900D1D25F /* EndGameErrorBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EndGameErrorBanner.swift; sourceTree = "<group>"; };
+		D85BB26A2EB9454900D1D25F /* EndGameHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EndGameHeader.swift; sourceTree = "<group>"; };
+		D85BB26B2EB9454900D1D25F /* EndGameLoadingOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EndGameLoadingOverlay.swift; sourceTree = "<group>"; };
+		D85BB26C2EB9454900D1D25F /* EndGameResultsList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EndGameResultsList.swift; sourceTree = "<group>"; };
+		D85BB26D2EB9454900D1D25F /* EndGameStatsCards.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EndGameStatsCards.swift; sourceTree = "<group>"; };
 		D863BB612BF8049600A8825C /* TimeSelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeSelector.swift; sourceTree = "<group>"; };
 		D87282752E8D920C00C36890 /* AuthView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthView.swift; sourceTree = "<group>"; };
 		D87282762E8D920C00C36890 /* EndGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EndGameView.swift; sourceTree = "<group>"; };
@@ -115,6 +146,17 @@
 		D886E8D12C3AD8350054DD61 /* AuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthService.swift; sourceTree = "<group>"; };
 		D886E8D32C3ADA290054DD61 /* LoadingSpinner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingSpinner.swift; sourceTree = "<group>"; };
 		D88D273D2A2D8B2C00E0EA63 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		D89306742EB08722007057AC /* CustomLobbyInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomLobbyInfoView.swift; sourceTree = "<group>"; };
+		D89306762EB0896D007057AC /* SignInNeededView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInNeededView.swift; sourceTree = "<group>"; };
+		D89306782EB08D39007057AC /* CustomLobbyInfoModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomLobbyInfoModel.swift; sourceTree = "<group>"; };
+		D893067A2EB1026B007057AC /* EnterCodeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnterCodeView.swift; sourceTree = "<group>"; };
+		D893067C2EB1178D007057AC /* CreatingLobbyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreatingLobbyView.swift; sourceTree = "<group>"; };
+		D893067E2EB11C4E007057AC /* LobbyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LobbyView.swift; sourceTree = "<group>"; };
+		D89306802EB17170007057AC /* BouncingDotsLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BouncingDotsLoader.swift; sourceTree = "<group>"; };
+		D89306822EB1CBC9007057AC /* LobbyPlayerSlot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LobbyPlayerSlot.swift; sourceTree = "<group>"; };
+		D89306842EB1D8EA007057AC /* AnimatedCheckmark.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimatedCheckmark.swift; sourceTree = "<group>"; };
+		D89306862EB2A0B9007057AC /* AnimatedErrorMark.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimatedErrorMark.swift; sourceTree = "<group>"; };
+		D89306882EB2B68B007057AC /* LobbyStatusDisplay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LobbyStatusDisplay.swift; sourceTree = "<group>"; };
 		D897986A2EA4157700440837 /* MultiplayerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiplayerService.swift; sourceTree = "<group>"; };
 		D897986C2EA4158700440837 /* FirestoreModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreModels.swift; sourceTree = "<group>"; };
 		D89798712EA4394B00440837 /* LastPracticeDisplay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LastPracticeDisplay.swift; sourceTree = "<group>"; };
@@ -186,7 +228,7 @@
 				D80930F12E961CF300FEAEE3 /* EndGameModel.swift */,
 				D87282932E8DA8EC00C36890 /* GameModel.swift */,
 				D80930EF2E96109900FEAEE3 /* GameConfigsModel.swift */,
-				D89798932EA987FC00440837 /* MultiplayerEndGameModel.swift */,
+				D89306782EB08D39007057AC /* CustomLobbyInfoModel.swift */,
 			);
 			path = Structs;
 			sourceTree = "<group>";
@@ -207,6 +249,11 @@
 				D897987F2EA6C21600440837 /* MultiplayerInfoView.swift */,
 				D89798872EA7463300440837 /* MultiplayerGameView.swift */,
 				D89798912EA8AD5900440837 /* MultiplayerEndGameView.swift */,
+				D89306742EB08722007057AC /* CustomLobbyInfoView.swift */,
+				D89306762EB0896D007057AC /* SignInNeededView.swift */,
+				D893067A2EB1026B007057AC /* EnterCodeView.swift */,
+				D893067C2EB1178D007057AC /* CreatingLobbyView.swift */,
+				D893067E2EB11C4E007057AC /* LobbyView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -214,6 +261,17 @@
 		D872828A2E8DA44600C36890 /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				D85BB2682EB9454900D1D25F /* EndGameActionButtons.swift */,
+				D85BB2692EB9454900D1D25F /* EndGameErrorBanner.swift */,
+				D85BB26A2EB9454900D1D25F /* EndGameHeader.swift */,
+				D85BB26B2EB9454900D1D25F /* EndGameLoadingOverlay.swift */,
+				D85BB26C2EB9454900D1D25F /* EndGameResultsList.swift */,
+				D85BB26D2EB9454900D1D25F /* EndGameStatsCards.swift */,
+				D89306882EB2B68B007057AC /* LobbyStatusDisplay.swift */,
+				D89306862EB2A0B9007057AC /* AnimatedErrorMark.swift */,
+				D89306842EB1D8EA007057AC /* AnimatedCheckmark.swift */,
+				D89306822EB1CBC9007057AC /* LobbyPlayerSlot.swift */,
+				D89306802EB17170007057AC /* BouncingDotsLoader.swift */,
 				D89798832EA6CF6F00440837 /* ConnectingLine.swift */,
 				D89798842EA6CF6F00440837 /* ProgressNode.swift */,
 				D89798812EA6C63B00440837 /* RacingProgressBar.swift */,
@@ -243,6 +301,11 @@
 				D87282912E8DA76700C36890 /* AppModel.swift */,
 				D872828E2E8DA6EF00C36890 /* AuthInfoModel.swift */,
 				D872828C2E8DA69900C36890 /* DeviceModel.swift */,
+				D89798932EA987FC00440837 /* MultiplayerEndGameModel.swift */,
+				D85BB2602EB33D5000D1D25F /* RegularGameSession.swift */,
+				D85BB2622EB33EEE00D1D25F /* CustomGameSession.swift */,
+				D85BB2642EB40E7A00D1D25F /* RegularMultiplayerEndGameModel.swift */,
+				D85BB2662EB42E4700D1D25F /* CustomMultiplayerEndGameModel.swift */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -472,11 +535,16 @@
 			buildActionMask = 2147483647;
 			files = (
 				D87282802E8D920C00C36890 /* AuthView.swift in Sources */,
+				D85BB2672EB42E4700D1D25F /* CustomMultiplayerEndGameModel.swift in Sources */,
 				D87283162E8E428F00C36890 /* CollectionExtensions.swift in Sources */,
 				D87282812E8D920C00C36890 /* EndGameView.swift in Sources */,
 				D89C3C462E8FB2CD00C265A1 /* KeyPadButton.swift in Sources */,
 				D872828D2E8DA69900C36890 /* DeviceModel.swift in Sources */,
+				D893067B2EB1026B007057AC /* EnterCodeView.swift in Sources */,
 				D897987A2EA5A42C00440837 /* HapticManager.swift in Sources */,
+				D89306892EB2B68B007057AC /* LobbyStatusDisplay.swift in Sources */,
+				D85BB2612EB33D5000D1D25F /* RegularGameSession.swift in Sources */,
+				D893067F2EB11C4E007057AC /* LobbyView.swift in Sources */,
 				D87282822E8D920C00C36890 /* ExtraOptionsView.swift in Sources */,
 				D87282832E8D920C00C36890 /* ForgotPasswordView.swift in Sources */,
 				D897986D2EA4158700440837 /* FirestoreModels.swift in Sources */,
@@ -484,8 +552,10 @@
 				D897987C2EA61B1900440837 /* MissedQuestionCard.swift in Sources */,
 				D87282842E8D920C00C36890 /* GameView.swift in Sources */,
 				D87282852E8D920C00C36890 /* HomeView.swift in Sources */,
+				D89306832EB1CBC9007057AC /* LobbyPlayerSlot.swift in Sources */,
 				D89798882EA7463300440837 /* MultiplayerGameView.swift in Sources */,
 				D89798942EA987FC00440837 /* MultiplayerEndGameModel.swift in Sources */,
+				D85BB2652EB40E7A00D1D25F /* RegularMultiplayerEndGameModel.swift in Sources */,
 				D872828F2E8DA6EF00C36890 /* AuthInfoModel.swift in Sources */,
 				D80930F02E96109900FEAEE3 /* GameConfigsModel.swift in Sources */,
 				D87282862E8D920C00C36890 /* LeaderboardView.swift in Sources */,
@@ -496,11 +566,13 @@
 				D89798782EA4AB6900440837 /* SectionHeader.swift in Sources */,
 				D87282882E8D920C00C36890 /* StatsView.swift in Sources */,
 				D80930F22E961CF300FEAEE3 /* EndGameModel.swift in Sources */,
+				D89306772EB0896D007057AC /* SignInNeededView.swift in Sources */,
 				D87282892E8D920C00C36890 /* TimeTrialView.swift in Sources */,
 				D87282922E8DA76700C36890 /* AppModel.swift in Sources */,
 				D897989C2EAC578200440837 /* NetworkMonitor.swift in Sources */,
 				D863BB622BF8049600A8825C /* TimeSelector.swift in Sources */,
 				D8BAFEF82A09A12400D49C49 /* ContentView.swift in Sources */,
+				D89306752EB08722007057AC /* CustomLobbyInfoView.swift in Sources */,
 				D84ED7E22C44AA0B0043995D /* LeaderboardEntry.swift in Sources */,
 				D87283142E8E40C600C36890 /* RollingNumber.swift in Sources */,
 				D87282C02E8DAE2100C36890 /* ViewExtensions.swift in Sources */,
@@ -508,15 +580,27 @@
 				D89798722EA4394B00440837 /* LastPracticeDisplay.swift in Sources */,
 				D89798822EA6C63B00440837 /* RacingProgressBar.swift in Sources */,
 				D897987E2EA6C16000440837 /* WaitingRoomView.swift in Sources */,
+				D89306792EB08D39007057AC /* CustomLobbyInfoModel.swift in Sources */,
 				D886E8D22C3AD8350054DD61 /* AuthService.swift in Sources */,
 				D87283102E8E043B00C36890 /* InGameStats.swift in Sources */,
 				D8BAFEF62A09A12400D49C49 /* QuickMentalMathApp.swift in Sources */,
 				D886E8D42C3ADA290054DD61 /* LoadingSpinner.swift in Sources */,
 				D89798802EA6C21600440837 /* MultiplayerInfoView.swift in Sources */,
+				D893067D2EB1178D007057AC /* CreatingLobbyView.swift in Sources */,
+				D85BB2632EB33EEE00D1D25F /* CustomGameSession.swift in Sources */,
+				D85BB26F2EB9454900D1D25F /* EndGameActionButtons.swift in Sources */,
+				D85BB2702EB9454900D1D25F /* EndGameHeader.swift in Sources */,
+				D85BB2722EB9454900D1D25F /* EndGameResultsList.swift in Sources */,
+				D85BB2732EB9454900D1D25F /* EndGameErrorBanner.swift in Sources */,
+				D85BB2742EB9454900D1D25F /* EndGameLoadingOverlay.swift in Sources */,
+				D85BB2752EB9454900D1D25F /* EndGameStatsCards.swift in Sources */,
 				D823EE752E8FD2370074C071 /* StatPanel.swift in Sources */,
+				D89306872EB2A0B9007057AC /* AnimatedErrorMark.swift in Sources */,
+				D89306812EB17170007057AC /* BouncingDotsLoader.swift in Sources */,
 				D89798922EA8AD5900440837 /* MultiplayerEndGameView.swift in Sources */,
 				D89798742EA497DA00440837 /* GameStorageExtension.swift in Sources */,
 				D8F7B7BB2C3FB0CE005CFCF0 /* SideBar.swift in Sources */,
+				D89306852EB1D8EA007057AC /* AnimatedCheckmark.swift in Sources */,
 				D8E279222BB8E36D009B029E /* DifficultySelector.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -701,7 +785,7 @@
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UIUserInterfaceStyle = Light;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
@@ -748,7 +832,7 @@
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UIUserInterfaceStyle = Light;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 13.0;

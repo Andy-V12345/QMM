@@ -29,10 +29,18 @@ struct UserMatchStatus: Codable {
 // MARK: - Game Session
 // Path: /games/{gameId}
 
-struct GameSession: Codable, Hashable {
+class GameSession: Codable, Hashable, ObservableObject {
     static func == (lhs: GameSession, rhs: GameSession) -> Bool {
         return lhs.id == rhs.id
     }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(self.id)
+    }
+    
+    @Published var showLeaveGameOverlay: Bool = false
+    @Published var leaveGameErrorMessage: String = ""
+    @Published var showLeaveGameError = false
     
     var id: String
     var mode: String           // "MIXED"
@@ -43,14 +51,34 @@ struct GameSession: Codable, Hashable {
     var startAt: Timestamp
     var createdAt: Timestamp
     var schemaVersion: Int
+    var lobbyId: String?       // Lobby ID if game was created from custom lobby (null for matchmaking)
     var state: String          // WAITING, READY, ACTIVE, FINISHED, CANCELLED
     var result: GameResultFirestore?
+    var playAgainReady: [String: Bool]?  // Map of player uid -> ready status for play again (custom lobbies)
     var postgame: GamePostgame
+
+    enum CodingKeys : String, CodingKey {
+        case id
+        case mode
+        case difficulty
+        case targetCount
+        case players
+        case questionSet
+        case startAt
+        case createdAt
+        case schemaVersion
+        case lobbyId
+        case state
+        case result
+        case playAgainReady
+        case postgame
+    }
 
     init(id: String, mode: String = "MIXED", difficulty: String = "MEDIUM", targetCount: Int = 25,
          players: [GamePlayer], questionSet: QuestionSet, startAt: Timestamp,
-         createdAt: Timestamp = Timestamp(), schemaVersion: Int = 1, state: String = "WAITING",
-         result: GameResultFirestore? = nil, postgame: GamePostgame) {
+         createdAt: Timestamp = Timestamp(), schemaVersion: Int = 1, lobbyId: String? = nil,
+         state: String = "WAITING", result: GameResultFirestore? = nil,
+         playAgainReady: [String: Bool]? = nil, postgame: GamePostgame) {
         self.id = id
         self.mode = mode
         self.difficulty = difficulty
@@ -60,10 +88,14 @@ struct GameSession: Codable, Hashable {
         self.startAt = startAt
         self.createdAt = createdAt
         self.schemaVersion = schemaVersion
+        self.lobbyId = lobbyId
         self.state = state
         self.result = result
+        self.playAgainReady = playAgainReady
         self.postgame = postgame
     }
+    
+    func handleLeaveGame(authInfo: AuthInfoModel, appModel: AppModel) {}
 }
 
 struct GamePlayer: Codable, Hashable {

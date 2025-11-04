@@ -74,13 +74,23 @@ struct ContentView: View {
                         MultiplayerInfoView(gamePlayer: gamePlayer)
                             .navigationBarBackButtonHidden()
                     })
-                    .navigationDestination(for: GameSession.self, destination: { gameSession in
+                    .navigationDestination(for: RegularGameSession.self, destination: { gameSession in
                             
                         MultiplayerGameView(gameSession: gameSession)
                             .navigationBarBackButtonHidden()
                     })
-                    .navigationDestination(for: MultiplayerEndGameModel.self, destination: { endGameModel in
+                    .navigationDestination(for: CustomGameSession.self, destination: { gameSession in
                             
+                        MultiplayerGameView(gameSession: gameSession)
+                            .navigationBarBackButtonHidden()
+                    })
+                    .navigationDestination(for: RegularMultiplayerEndGameModel.self, destination: { endGameModel in
+
+                        MultiplayerEndGameView(endGameModel: endGameModel)
+                            .navigationBarBackButtonHidden()
+                    })
+                    .navigationDestination(for: CustomMultiplayerEndGameModel.self, destination: { endGameModel in
+
                         MultiplayerEndGameView(endGameModel: endGameModel)
                             .navigationBarBackButtonHidden()
                     })

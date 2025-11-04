@@ -4,7 +4,7 @@ COPY pom.xml .
 COPY src ./src
 RUN mvn clean install
 
-FROM openjdk:17-alpine
+FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
 COPY --from=build /app/target/userservices-0.0.1-SNAPSHOT.jar ./qmm-backend.jar
 EXPOSE 8443

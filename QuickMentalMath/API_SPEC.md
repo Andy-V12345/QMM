@@ -505,6 +505,62 @@ paths:
         '500':
           description: Internal server error
 
+  /api/v1/games/{gameId}/playAgainReady:
+    post:
+      summary: Set play again ready status
+      description: |-
+        Set player's ready status for playing again (custom lobby games only).
+        When all players mark ready, a new game is automatically created with:
+        - New game ID (returned in response)
+        - New question set
+        - Reset player progress (all back to 0 completed)
+        - Lobby's gameId updated to new game
+
+        The original game remains in Firestore for history/analytics.
+        Uses Firestore transaction to prevent race conditions when multiple players click simultaneously.
+      tags:
+        - Game
+      parameters:
+        - name: gameId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "abc123xyz"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - userId
+                - ready
+              properties:
+                userId:
+                  type: integer
+                  format: int64
+                  example: 123
+                ready:
+                  type: boolean
+                  example: true
+                  description: true = wants to play again, false = doesn't want to
+      responses:
+        '200':
+          description: Ready status updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SetPlayAgainReadyResponse'
+        '404':
+          description: Game not found
+        '403':
+          description: Not a player in this game
+        '400':
+          description: Play again is only available for custom lobby games
+        '500':
+          description: Internal server error
+
 components:
   schemas:
     JoinMatchResponseWaiting:
@@ -647,6 +703,30 @@ components:
             nanos:
               type: integer
               example: 0
+
+    SetPlayAgainReadyResponse:
+      type: object
+      properties:
+        gameId:
+          type: string
+          example: "abc123xyz"
+          description: The original game ID
+        playAgainReady:
+          type: object
+          nullable: true
+          additionalProperties:
+            type: boolean
+          example: {"123": true, "456": false}
+          description: Map of player uid -> ready status. Null if new game was created (all players ready).
+        gameReset:
+          type: boolean
+          example: false
+          description: true if all players were ready and new game was automatically created, false otherwise
+        newGameId:
+          type: string
+          nullable: true
+          example: "xyz789abc"
+          description: The new game ID when all players are ready. Null if not all players ready yet.
 ```
 
 ---
@@ -694,8 +774,10 @@ interface GameSession {
   startAt: Timestamp;               // When game starts (countdown + 3s)
   createdAt: Timestamp;
   schemaVersion: number;
+  lobbyId?: string;                 // Lobby ID if created from custom lobby (null for matchmaking)
   state: "WAITING" | "READY" | "ACTIVE" | "FINISHED" | "CANCELLED";
   result?: GameResult;              // Only present when state = FINISHED
+  playAgainReady?: { [uid: string]: boolean };  // Player ready status for play again (custom lobbies only)
   postgame: GamePostgame;
 }
 
@@ -875,6 +957,59 @@ GAME PLAY:
 - Progress tracked in /games/{gameId}/progress/{uid}
 ```
 
+### 7. Play Again (Custom Lobbies Only)
+```
+After a custom lobby game ends, players can play again with the same opponent:
+
+END GAME SCREEN:
+1. Client shows end game results with "Play Again" button
+2. Client listens to:
+   - /games/{gameId} for real-time playAgainReady updates
+   - /lobbies/{lobbyId} for new game creation
+3. UI displays real-time ready status for all players
+
+PLAYER CLICKS "PLAY AGAIN":
+1. Client calls POST /api/v1/games/{gameId}/playAgainReady with ready=true
+2. Server updates playAgainReady map in Firestore (transaction-protected)
+3. Server checks if all players are ready
+4. If not all ready:
+   - Returns updated playAgainReady map
+   - Client shows "waiting for others..." state
+   - Other players see checkmark next to ready player
+5. If all players ready:
+   - Server automatically creates new game:
+     * Creates new game document with new ID
+     * Copies players from old game
+     * Generates new question set
+     * Resets all player progress to 0
+     * Updates lobby's gameId to new game ID
+   - Returns gameReset=true and newGameId
+
+CLIENT DETECTS NEW GAME:
+1. Firestore listener on /lobbies/{lobbyId} fires: lobby.gameId changed
+2. Client detects gameId change as new game signal
+3. Both clients fetch new game session document
+4. Navigate to game view with new gameId
+5. Game starts with new questions, fresh progress
+
+PLAYER LEAVES TO HOME:
+1. Client calls POST /api/v1/games/{gameId}/playAgainReady with ready=false
+2. Other players see player is no longer ready
+3. New game not created until all players mark ready again
+
+RACE CONDITION PREVENTION:
+- Uses Firestore transaction for atomic read-modify-write
+- If both players click simultaneously:
+  * Transaction ensures both ready statuses are recorded
+  * No lost updates, new game created exactly once
+  * Automatic retry on conflicts with exponential backoff
+
+GAME HISTORY PRESERVATION:
+- Old game documents remain in Firestore
+- Useful for analytics, replays, and debugging
+- Each play-again creates a new game document
+```
+
 ---
 
 ## Error Handling
@@ -914,6 +1049,11 @@ GAME PLAY:
 **400 Bad Request - Not Ready**
 ```json
 "Lobby is not ready to start"
+```
+
+**400 Bad Request - Not Custom Lobby**
+```json
+"Play again is only available for custom lobby games"
 ```
 
 **500 Internal Server Error**

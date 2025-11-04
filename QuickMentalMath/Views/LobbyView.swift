@@ -194,7 +194,7 @@ struct LobbyView: View {
 
         do {
             let snapshot = try await gameRef.getDocument()
-            let gameSession = try snapshot.data(as: GameSession.self)
+            let gameSession = try snapshot.data(as: CustomGameSession.self)
 
             await MainActor.run {
                 appModel.path.removeLast() // Remove LobbyView from stack

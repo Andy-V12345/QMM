@@ -174,7 +174,7 @@ struct WaitingRoomView: View {
             let snapshot = try await docRef.getDocument()
             
             // Use Firestore's built-in decoding to handle Timestamp objects
-            let gameSession = try snapshot.data(as: GameSession.self)
+            let gameSession = try snapshot.data(as: RegularGameSession.self)
             
             // Navigate to game on main thread
             await MainActor.run {

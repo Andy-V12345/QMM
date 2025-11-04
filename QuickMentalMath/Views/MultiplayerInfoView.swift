@@ -308,6 +308,7 @@ struct MultiplayerInfoView: View {
             } // else
         } //: ZStack
         .onAppear {
+            print("info appeared")
             if authInfo.user != nil {
                 startRacingAnimation()
                 Task {

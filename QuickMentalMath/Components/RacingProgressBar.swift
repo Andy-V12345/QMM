@@ -113,6 +113,10 @@ struct RacingProgressBar: View {
                         }
                     }
                 }
+                .onAppear {
+                    // Scroll to the beginning when view first loads
+                    proxy.scrollTo(0, anchor: .leading)
+                }
             } //: VStack
         }
     }

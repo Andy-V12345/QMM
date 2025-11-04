@@ -253,37 +253,71 @@ public class GameService {
                     .allMatch(p -> Boolean.TRUE.equals(finalPlayAgainReady.get(p.getUid())));
 
             boolean gameReset = false;
+            String newGameId = null;
 
             if (allReady) {
-                // All players ready - reset the game
-                game.setResult(null);  // Clear result to signal game reset
-                game.setPlayAgainReady(null);  // Clear ready statuses
+                // All players ready - create a new game
 
-                // Generate new question set
-                QuestionSet newQuestionSet = questionSetService.generateQuestionSet();
-                game.setQuestionSet(newQuestionSet);
+                // Get the lobby document
+                DocumentReference lobbyRef = db.collection("lobbies").document(game.getLobbyId());
+                DocumentSnapshot lobbyDoc = transaction.get(lobbyRef).get();
 
-                // Update game session
-                transaction.set(gameRef, game);
-
-                // Reset all player progress
-                for (GamePlayer player : game.getPlayers()) {
-                    DocumentReference progressRef = gameRef.collection("progress").document(player.getUid());
-                    PlayerProgress resetProgress = new PlayerProgress(0, PLAYING, null, null, null);
-                    transaction.set(progressRef, resetProgress);
+                if (!lobbyDoc.exists()) {
+                    throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Lobby not found");
                 }
+
+                // Create new game document
+                DocumentReference newGameRef = db.collection(GAMES_COLLECTION).document();
+                newGameId = newGameRef.getId();
+
+                // Set timestamps
+                Timestamp now = Timestamp.now();
+                Timestamp startAt = Timestamp.ofTimeSecondsAndNanos(
+                    now.getSeconds() + 3,  // 3 second countdown
+                    now.getNanos()
+                );
+
+                // Create new game session
+                GameSession newGame = new GameSession();
+                newGame.setId(newGameId);
+                newGame.setQuestionSet(questionSetService.generateQuestionSet());
+                newGame.setMode(game.getMode());
+                newGame.setDifficulty(game.getDifficulty());
+                newGame.setPlayers(game.getPlayers());  // Copy players from old game
+                newGame.setStartAt(startAt);
+                newGame.setCreatedAt(now);
+                newGame.setSchemaVersion(game.getSchemaVersion());
+                newGame.setState(ACTIVE);
+                newGame.setLobbyId(game.getLobbyId());  // Link to same lobby
+
+                // Initialize postgame
+                GamePostgame postgame = new GamePostgame(true, null);
+                newGame.setPostgame(postgame);
+
+                // Write new game to Firestore
+                transaction.set(newGameRef, newGame);
+
+                // Create progress documents for all players
+                for (GamePlayer player : game.getPlayers()) {
+                    DocumentReference progressRef = newGameRef.collection("progress").document(player.getUid());
+                    PlayerProgress progress = new PlayerProgress(0, PLAYING, null, null, null);
+                    transaction.set(progressRef, progress);
+                }
+
+                // Update lobby with new game ID
+                transaction.update(lobbyRef, "gameId", newGameId);
 
                 gameReset = true;
 
-                // Return response with null playAgainReady since game was reset
-                return new SetPlayAgainReadyResponse(gameId, null, gameReset);
+                // Return response with new game ID
+                return new SetPlayAgainReadyResponse(gameId, null, gameReset, newGameId);
             } else {
                 // Not all ready yet - just update the map
                 game.setPlayAgainReady(finalPlayAgainReady);
                 transaction.set(gameRef, game);
 
                 // Return response with updated playAgainReady map
-                return new SetPlayAgainReadyResponse(gameId, finalPlayAgainReady, gameReset);
+                return new SetPlayAgainReadyResponse(gameId, finalPlayAgainReady, gameReset, null);
             }
         });
 
