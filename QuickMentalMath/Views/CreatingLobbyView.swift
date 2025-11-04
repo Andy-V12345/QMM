@@ -90,9 +90,6 @@ struct CreatingLobbyView: View {
                 }
                 .padding(device.valueByDevice(small: 15, normal: 20, ipad: 30))
             }
-            else if authInfoModel.user == nil {
-                SignInNeededView()
-            }
             else {
                 VStack(spacing: 10) {
                     Spacer()

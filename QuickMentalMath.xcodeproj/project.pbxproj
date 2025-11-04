@@ -46,7 +46,6 @@
 		D886E8D42C3ADA290054DD61 /* LoadingSpinner.swift in Sources */ = {isa = PBXBuildFile; fileRef = D886E8D32C3ADA290054DD61 /* LoadingSpinner.swift */; };
 		D88AD2C12E8FAB450036BF62 /* ConfettiSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = D88AD2C02E8FAB450036BF62 /* ConfettiSwiftUI */; };
 		D89306752EB08722007057AC /* CustomLobbyInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D89306742EB08722007057AC /* CustomLobbyInfoView.swift */; };
-		D89306772EB0896D007057AC /* SignInNeededView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D89306762EB0896D007057AC /* SignInNeededView.swift */; };
 		D89306792EB08D39007057AC /* CustomLobbyInfoModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D89306782EB08D39007057AC /* CustomLobbyInfoModel.swift */; };
 		D893067B2EB1026B007057AC /* EnterCodeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D893067A2EB1026B007057AC /* EnterCodeView.swift */; };
 		D893067D2EB1178D007057AC /* CreatingLobbyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D893067C2EB1178D007057AC /* CreatingLobbyView.swift */; };
@@ -149,7 +148,6 @@
 		D886E8D32C3ADA290054DD61 /* LoadingSpinner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingSpinner.swift; sourceTree = "<group>"; };
 		D88D273D2A2D8B2C00E0EA63 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		D89306742EB08722007057AC /* CustomLobbyInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomLobbyInfoView.swift; sourceTree = "<group>"; };
-		D89306762EB0896D007057AC /* SignInNeededView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInNeededView.swift; sourceTree = "<group>"; };
 		D89306782EB08D39007057AC /* CustomLobbyInfoModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomLobbyInfoModel.swift; sourceTree = "<group>"; };
 		D893067A2EB1026B007057AC /* EnterCodeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnterCodeView.swift; sourceTree = "<group>"; };
 		D893067C2EB1178D007057AC /* CreatingLobbyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreatingLobbyView.swift; sourceTree = "<group>"; };
@@ -252,7 +250,6 @@
 				D89798872EA7463300440837 /* MultiplayerGameView.swift */,
 				D89798912EA8AD5900440837 /* MultiplayerEndGameView.swift */,
 				D89306742EB08722007057AC /* CustomLobbyInfoView.swift */,
-				D89306762EB0896D007057AC /* SignInNeededView.swift */,
 				D893067A2EB1026B007057AC /* EnterCodeView.swift */,
 				D893067C2EB1178D007057AC /* CreatingLobbyView.swift */,
 				D893067E2EB11C4E007057AC /* LobbyView.swift */,
@@ -569,7 +566,6 @@
 				D89798782EA4AB6900440837 /* SectionHeader.swift in Sources */,
 				D87282882E8D920C00C36890 /* StatsView.swift in Sources */,
 				D80930F22E961CF300FEAEE3 /* EndGameModel.swift in Sources */,
-				D89306772EB0896D007057AC /* SignInNeededView.swift in Sources */,
 				D85BB28F2EBA763800D1D25F /* DeepLinkHandler.swift in Sources */,
 				D87282892E8D920C00C36890 /* TimeTrialView.swift in Sources */,
 				D87282922E8DA76700C36890 /* AppModel.swift in Sources */,
@@ -793,7 +789,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
-				MARKETING_VERSION = 13.8;
+				MARKETING_VERSION = 14.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.andyvu.Math-Facts";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
@@ -840,7 +836,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
-				MARKETING_VERSION = 13.8;
+				MARKETING_VERSION = 14.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.andyvu.Math-Facts";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;

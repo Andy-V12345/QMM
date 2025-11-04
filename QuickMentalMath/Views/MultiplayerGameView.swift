@@ -380,9 +380,6 @@ struct MultiplayerGameView: View {
 
                     Spacer()
                 }
-            } else if authInfo.user == nil {
-                // Check if user is signed in
-                SignInNeededView()
             } else {
                 VStack(spacing: 0) {
                     VStack {

@@ -100,9 +100,6 @@ struct StatsView: View {
                         Spacer()
                     }
                     .padding([.top, .horizontal], device.valueByDevice(small: 15, normal: 20, ipad: 30))
-                } else if authInfo.user == nil {
-                    // Check if user is signed in
-                    SignInNeededView()
                 } else {
                     VStack(spacing: 25) {
                         HStack {

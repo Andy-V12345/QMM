@@ -67,86 +67,81 @@ struct MultiplayerEndGameView: View {
         ZStack {
             Color.white.ignoresSafeArea()
             
-            // Check if user is signed in
-            if authInfo.user == nil {
-                SignInNeededView()
-            } else {
-                VStack(spacing: device.valueByDevice(small: 20, normal: 20, ipad: 30)) {
-                    VStack(spacing: 15) {
-                        EndGameErrorBanner(
-                            fetchErrors: endGameModel.fetchErrors,
-                            isLoading: endGameModel.isLoading
-                        )
-                        
-                        EndGameHeader(isWinner: endGameModel.isWinner)
-                    }
-                    .animation(.easeInOut(duration: 0.3), value: endGameModel.fetchErrors)
-                    
-                    
-                    VStack(spacing: device.valueByDevice(small: 30, normal: 30, ipad: 40)) {
-                        if endGameModel is RegularMultiplayerEndGameModel {
-                            EndGameStatsCards(
-                                isWinner: endGameModel.isWinner,
-                                updatedStats: endGameModel.updatedStats,
-                                isNewBestTime: endGameModel.isNewBestTime
-                            )
-                        }
-                        
-                        
-                        let isCustom = endGameModel is CustomMultiplayerEndGameModel
-                        
-                        EndGameResultsList(
-                            sortedPlayers: sortedPlayers,
-                            isWinner: endGameModel.isWinner,
-                            confettiTrigger: $endGameModel.confettiTrigger,
-                            isConfettiOnCooldown: $endGameModel.isConfettiOnCooldown,
-                            currentUserId: authInfo.user?.id ?? 0, playAgainReady: isCustom ? endGameModel.gameSession?.playAgainReady : nil, isCustomGame: isCustom)
-                        .confettiCannon(
-                            trigger: $endGameModel.confettiTrigger,
-                            num: 50,
-                            colors: [Color("gold"), Color("lightPurple"), Color("lighterPurple")],
-                            openingAngle: Angle(degrees: 0),
-                            closingAngle: Angle(degrees: 360),
-                            repetitions: 4,
-                            repetitionInterval: 0.3,
-                            hapticFeedback: true
-                        )
-
-                        
-                    }
-                    
-                    Spacer()
-                    
-                    EndGameActionButtons(
-                        endGameModel: endGameModel,
-                        handlePlayAgain: {
-                            endGameModel.handlePlayAgain(appModel: appModel, authInfo: authInfo)
-                        },
-                        handleBackToHome: {
-                            // Mark as not ready if custom lobby
-                            if let _ = endGameModel as? CustomMultiplayerEndGameModel,
-                               let user = authInfo.user {
-                                Task {
-                                    _ = await MultiplayerService.setPlayAgainReady(
-                                        gameId: endGameModel.gameId,
-                                        userId: user.id,
-                                        ready: false,
-                                        jwtToken: user.jwtToken
-                                    )
-                                }
-                            }
-                            
-                            appModel.path = NavigationPath([AuthState.UNAUTHORIZED, authInfo.authState])
-                        }
+            VStack(spacing: device.valueByDevice(small: 20, normal: 20, ipad: 30)) {
+                VStack(spacing: 15) {
+                    EndGameErrorBanner(
+                        fetchErrors: endGameModel.fetchErrors,
+                        isLoading: endGameModel.isLoading
                     )
-                    .zIndex(0)
+                    
+                    EndGameHeader(isWinner: endGameModel.isWinner)
+                }
+                .animation(.easeInOut(duration: 0.3), value: endGameModel.fetchErrors)
+                
+                
+                VStack(spacing: device.valueByDevice(small: 30, normal: 30, ipad: 40)) {
+                    if endGameModel is RegularMultiplayerEndGameModel {
+                        EndGameStatsCards(
+                            isWinner: endGameModel.isWinner,
+                            updatedStats: endGameModel.updatedStats,
+                            isNewBestTime: endGameModel.isNewBestTime
+                        )
+                    }
+                    
+                    
+                    let isCustom = endGameModel is CustomMultiplayerEndGameModel
+                    
+                    EndGameResultsList(
+                        sortedPlayers: sortedPlayers,
+                        isWinner: endGameModel.isWinner,
+                        confettiTrigger: $endGameModel.confettiTrigger,
+                        isConfettiOnCooldown: $endGameModel.isConfettiOnCooldown,
+                        currentUserId: authInfo.user?.id ?? 0, playAgainReady: isCustom ? endGameModel.gameSession?.playAgainReady : nil, isCustomGame: isCustom)
+                    .confettiCannon(
+                        trigger: $endGameModel.confettiTrigger,
+                        num: 50,
+                        colors: [Color("gold"), Color("lightPurple"), Color("lighterPurple")],
+                        openingAngle: Angle(degrees: 0),
+                        closingAngle: Angle(degrees: 360),
+                        repetitions: 4,
+                        repetitionInterval: 0.3,
+                        hapticFeedback: true
+                    )
+                    
                     
                 }
-                .padding(device.valueByDevice(small: 15, normal: 20, ipad: 30))
                 
-                // Loading Overlay
-                EndGameLoadingOverlay(isLoading: endGameModel.isLoading)
+                Spacer()
+                
+                EndGameActionButtons(
+                    endGameModel: endGameModel,
+                    handlePlayAgain: {
+                        endGameModel.handlePlayAgain(appModel: appModel, authInfo: authInfo)
+                    },
+                    handleBackToHome: {
+                        // Mark as not ready if custom lobby
+                        if let _ = endGameModel as? CustomMultiplayerEndGameModel,
+                           let user = authInfo.user {
+                            Task {
+                                _ = await MultiplayerService.setPlayAgainReady(
+                                    gameId: endGameModel.gameId,
+                                    userId: user.id,
+                                    ready: false,
+                                    jwtToken: user.jwtToken
+                                )
+                            }
+                        }
+                        
+                        appModel.path = NavigationPath([AuthState.UNAUTHORIZED, authInfo.authState])
+                    }
+                )
+                .zIndex(0)
+                
             }
+            .padding(device.valueByDevice(small: 15, normal: 20, ipad: 30))
+            
+            // Loading Overlay
+            EndGameLoadingOverlay(isLoading: endGameModel.isLoading)
         }
         .onAppear {
             if authInfo.user != nil {
@@ -164,23 +159,23 @@ struct MultiplayerEndGameView: View {
             if let customModel = endGameModel as? CustomMultiplayerEndGameModel,
                let newGameId = newValue {
                 print("Detected new game ID from lobby: \(newGameId)")
-
+                
                 // Clean up listeners before navigating
                 customModel.gameSessionListener?.remove()
                 customModel.lobbyListener?.remove()
                 customModel.opponentProgressListener?.remove()
-
-
+                
+                
                 // Fetch the new game session and navigate
                 Task {
                     let db = Firestore.firestore()
                     let gameRef = db.collection("games").document(newGameId)
-
+                    
                     do {
                         let snapshot = try await gameRef.getDocument()
                         if snapshot.exists {
                             let newGameSession = try snapshot.data(as: CustomGameSession.self)
-
+                            
                             await MainActor.run {
                                 appModel.path.removeLast()
                                 appModel.path.removeLast()
@@ -195,7 +190,7 @@ struct MultiplayerEndGameView: View {
         }
         .onDisappear {
             endGameModel.opponentProgressListener?.remove()
-
+            
             // Clean up listeners for custom lobbies
             if let customModel = endGameModel as? CustomMultiplayerEndGameModel {
                 customModel.gameSessionListener?.remove()

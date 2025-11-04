@@ -93,7 +93,12 @@ struct HomeView: View {
                                     )
                                     
                                     ModeCard(title: "custom lobby", iconName: "arcade.stick", backgroundColor: Color("pastelGray"), shadowColor: Color("darkPastelGray"), action: {
-                                        appModel.path.append(CustomLobbyInfoModel())
+                                        if authInfo.authState != .AUTHORIZED {
+                                            showNoAccountAlert = true
+                                        }
+                                        else {
+                                            appModel.path.append(CustomLobbyInfoModel())
+                                        }
                                     })
                                 } //: HStack
                                 

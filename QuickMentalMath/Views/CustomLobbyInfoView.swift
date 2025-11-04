@@ -119,10 +119,6 @@ struct CustomLobbyInfoView: View {
                     .fontWeight(.heavy)
                 }
                 .padding(device.valueByDevice(small: 15, normal: 20, ipad: 30))
-            } else if authInfo.user == nil {
-                // Sign-in prompt
-                SignInNeededView()
-
             } else {
                 // Main content
                 VStack(spacing: device.valueByDevice(small: 30, normal: 40, ipad: 60)) {
