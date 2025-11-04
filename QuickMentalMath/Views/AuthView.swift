@@ -88,13 +88,13 @@ struct AuthView: View {
                 Task {
                     let res = await authInfo.login(email: email, password: password)
                     if res == "INVALID_CREDS"  {
-                        errorTitle = "Invalid credentials"
-                        errorMsg = "The email and password you entered were incorrect. Please try again!"
+                        errorTitle = "invalid credentials"
+                        errorMsg = "the email and password you entered were incorrect. please try again!"
                         authViewState = .ERROR
                     }
                     else if res == "ERROR_DECODING" || res == "UNKNOWN_ERROR" {
-                        errorTitle = "Error signing in"
-                        errorMsg = "Something went wrong on our end. Please try again!"
+                        errorTitle = "error signing in"
+                        errorMsg = "something went wrong on our end. please try again!"
                         authViewState = .ERROR
                     }
                     else {
@@ -120,8 +120,8 @@ struct AuthView: View {
                 }
             }
             else {
-                errorTitle = "Invalid email"
-                errorMsg = "Please enter a valid email."
+                errorTitle = "invalid email"
+                errorMsg = "please enter a valid email."
                 authViewState = .ERROR
             }
         }
@@ -129,25 +129,25 @@ struct AuthView: View {
             if validateEmail(email: email) {
                 Task {
                     let res = await authInfo.signUp(email: email, username: usernameText, password: password)
-                    
+
                     if res == "EMAIL_TAKEN" {
-                        errorTitle = "Error signing up"
-                        errorMsg = "The email you entered is already taken. Please use another one!"
+                        errorTitle = "error signing up"
+                        errorMsg = "the email you entered is already taken. please use another one!"
                         authViewState = .ERROR
                     }
                     else if res == "USERNAME_TAKEN" {
-                        errorTitle = "Error signing up"
-                        errorMsg = "The username you entered is already taken. Please use another one!"
+                        errorTitle = "error signing up"
+                        errorMsg = "the username you entered is already taken. please use another one!"
                         authViewState = .ERROR
                     }
                     else if res == "INVALID_PASSWORD" {
-                        errorTitle = "Error signing up"
-                        errorMsg = "The password you entered is too short. Passwords must be at least 6 characters long."
+                        errorTitle = "error signing up"
+                        errorMsg = "the password you entered is too short. passwords must be at least 6 characters long."
                         authViewState = .ERROR
                     }
                     else if res == "UNKNOWN_ERROR" {
-                        errorTitle = "Error signing up"
-                        errorMsg = "Something went wrong on our end. Please try again!"
+                        errorTitle = "error signing up"
+                        errorMsg = "something went wrong on our end. please try again!"
                         authViewState = .ERROR
                     }
                     else {
@@ -173,8 +173,8 @@ struct AuthView: View {
                 }
             }
             else {
-                errorTitle = "Invalid email"
-                errorMsg = "Please enter a valid email."
+                errorTitle = "invalid email"
+                errorMsg = "please enter a valid email."
                 authViewState = .ERROR
             }
         }
@@ -402,7 +402,7 @@ struct AuthView: View {
                 Button(role: .cancel, action: {
                     authViewState = .DEFAULT
                 }, label: {
-                    Text("Ok")
+                    Text("ok")
                 })
             }, message: {
                 if !errorMsg.isEmpty {

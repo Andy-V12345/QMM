@@ -49,16 +49,16 @@ struct ForgotPasswordView: View {
                 }
                 else {
                     viewState = .ERROR
-                    errorTitle = "Invalid email"
-                    errorMsg = "We couldn't find a user with that email!"
+                    errorTitle = "invalid email"
+                    errorMsg = "we couldn't find a user with that email!"
                 }
             }
             
         }
         else {
             viewState = .ERROR
-            errorTitle = "Invalid email"
-            errorMsg = "Please enter a valid email."
+            errorTitle = "invalid email"
+            errorMsg = "please enter a valid email."
         }
     }
     
@@ -74,8 +74,8 @@ struct ForgotPasswordView: View {
             }
             else {
                 viewState = .ERROR
-                errorTitle = "Invalid token"
-                errorMsg = "The token you entered is not valid. Please double-check it."
+                errorTitle = "invalid token"
+                errorMsg = "the token you entered is not valid. please double-check it."
             }
         }
     }
@@ -92,13 +92,13 @@ struct ForgotPasswordView: View {
             }
             else if result == "INVALID_PASSWORD_LENGTH" {
                 viewState = .ERROR
-                errorTitle = "Invalid password"
-                errorMsg = "The password you entered is too short. It must be at least 6 characters."
+                errorTitle = "invalid password"
+                errorMsg = "the password you entered is too short. it must be at least 6 characters."
             }
             else {
                 viewState = .ERROR
-                errorTitle = "Error"
-                errorMsg = "Something went wrong with resetting your password! Please try again."
+                errorTitle = "error"
+                errorMsg = "something went wrong with resetting your password! please try again."
             }
         }
     }
@@ -322,21 +322,21 @@ struct ForgotPasswordView: View {
                 Button(role: .cancel, action: {
                     viewState = .DEFAULT
                 }, label: {
-                    Text("Ok")
+                    Text("ok")
                 })
             }, message: {
                 if !errorMsg.isEmpty {
                     Text(errorMsg)
                 }
             })
-            .alert("Done", isPresented: $showDoneAlert, actions: {
+            .alert("done", isPresented: $showDoneAlert, actions: {
                 Button(role: .cancel, action: {
                     dismiss()
                 }, label: {
-                    Text("Ok")
+                    Text("ok")
                 })
             }, message: {
-                Text("Your password has been reset!")
+                Text("your password has been reset!")
             })
         } //: ZStack
         .dynamicTypeSize(.large ... .xxLarge)

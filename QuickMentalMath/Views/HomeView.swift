@@ -184,7 +184,7 @@ struct HomeView: View {
         .onAppear {
             lastGame = UserDefaults.standard.loadLastGame()
         }
-        .alert("No Account", isPresented: $showNoAccountAlert, actions: {
+        .alert("no account", isPresented: $showNoAccountAlert, actions: {
             Button(role: .none, action: {
                 authInfo.user = nil
                 authInfo.authState = .UNAUTHORIZED
@@ -194,16 +194,16 @@ struct HomeView: View {
                 authState = authInfo.authState
                 appModel.path.removeLast()
             }, label: {
-                Text("Sign in")
+                Text("sign in")
             })
-            
+
             Button(role: .cancel, action: {
-                
+
             }, label: {
-                Text("Cancel")
+                Text("cancel")
             })
         }, message: {
-            Text("You're not signed in! Create an account or sign in to your QMM account.")
+            Text("you're not signed in! create an account or sign in to your QMM account.")
         })
 
     } // body

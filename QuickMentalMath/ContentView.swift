@@ -206,7 +206,7 @@ struct ContentView: View {
 
                         // Show error and navigate to CustomLobbyInfoView
                         await MainActor.run {
-                            deepLinkErrorMessage = "Failed to join lobby: \(error.localizedDescription)"
+                            deepLinkErrorMessage = "failed to join lobby: \(error.localizedDescription)"
                             showDeepLinkError = true
                         }
                     }
@@ -222,7 +222,7 @@ struct ContentView: View {
 
         case .invalid:
             // Invalid deep link format
-            deepLinkErrorMessage = "Invalid lobby link format"
+            deepLinkErrorMessage = "invalid lobby link format"
             showDeepLinkError = true
         }
     }

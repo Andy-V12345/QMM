@@ -128,7 +128,7 @@ struct TimeTrialView: View {
         .fullScreenCover(isPresented: $appModel.showLeaderboard, content: {
             LeaderboardView()
         })
-        .alert("No Account", isPresented: $showNoAccountAlert, actions: {
+        .alert("no account", isPresented: $showNoAccountAlert, actions: {
             Button(role: .none, action: {
                 authInfo.user = nil
                 authInfo.authState = .UNAUTHORIZED
@@ -139,16 +139,16 @@ struct TimeTrialView: View {
                 appModel.path.removeLast()
                 appModel.path.removeLast()
             }, label: {
-                Text("Sign in")
+                Text("sign in")
             })
-            
+
             Button(role: .cancel, action: {
-                
+
             }, label: {
-                Text("Cancel")
+                Text("cancel")
             })
         }, message: {
-            Text("Sign in to your QMM account to view the leaderboard!")
+            Text("sign in to your QMM account to view the leaderboard!")
         })
     }
 }

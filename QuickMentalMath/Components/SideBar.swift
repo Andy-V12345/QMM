@@ -171,10 +171,19 @@ struct SideBar: View {
             }
             
             if isLoading {
-                Color.black.opacity(0.6)
-                    .ignoresSafeArea()
-                
-                LoadingSpinner(size: 25, color: Color("lightPurple"), width: 5)
+                ZStack {
+                    Color.black.opacity(0.6)
+                        .ignoresSafeArea()
+
+                    VStack(spacing: 20) {
+                        BouncingDotsLoader(dotSize: 10)
+
+                        Text("deleting account...")
+                            .font(.title2)
+                            .fontWeight(.semibold)
+                            .foregroundStyle(.white)
+                    }
+                }
             }
         }
         .ignoresSafeArea(edges: .all)
@@ -189,19 +198,19 @@ struct SideBar: View {
             Button(role: .cancel) {
                 usernameText = ""
             } label: {
-                Text("Cancel")
+                Text("cancel")
             }
-            
+
             Button(role: .destructive) {
                 isDeleteAlert = true
             } label: {
-                Text("Try Again")
+                Text("try again")
             }
             
         } message: {
             Text(errorMsg)
         }
-        .alert("Are You Sure?", isPresented: $isDeleteAlert) {
+        .alert("are you sure?", isPresented: $isDeleteAlert) {
             Button(role: .destructive) {
                 if usernameText.trimmingCharacters(in: .whitespacesAndNewlines) != "" && usernameText == authInfo.user?.username {
                     isLoading = true
@@ -221,36 +230,36 @@ struct SideBar: View {
                             appModel.path.removeLast()
                         }
                         else {
-                            errorTitle = "Error"
-                            errorMsg = "Something went wrong! Please try again."
+                            errorTitle = "error"
+                            errorMsg = "something went wrong! please try again."
                             deleteError = true
                         }
                     }
                 }
                 else {
-                    errorTitle = "Error"
-                    errorMsg = "The username you entered is not valid."
+                    errorTitle = "error"
+                    errorMsg = "the username you entered is not valid."
                     deleteError = true
                 }
             } label: {
-                Text("Delete")
+                Text("delete")
             }
             .disabled(usernameText.trimmingCharacters(in: .whitespacesAndNewlines) == "")
             .opacity(usernameText.trimmingCharacters(in: .whitespacesAndNewlines) == "" ? 0.4 : 1)
-            
+
             Button(role: .cancel) {
-                
+
             } label: {
-                Text("Cancel")
+                Text("cancel")
             }
             
             TextField("Enter your username", text: $usernameText)
                 .font(.subheadline)
             
         } message: {
-            
-            Text("This will permanently delete your account and all of your data! Please enter your username to confirm the deletion of your account.")
-            
+
+            Text("this will permanently delete your account and all of your data! please enter your username to confirm the deletion of your account.")
+
         }
         
     }

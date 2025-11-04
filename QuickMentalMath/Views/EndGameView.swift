@@ -356,7 +356,7 @@ struct EndGameView: View {
                     Color.white.ignoresSafeArea()
 
                     VStack(spacing: 20) {
-                        LoadingSpinner(size: 25, color: Color("lightPurple"), width: 6)
+                        BouncingDotsLoader(dotSize: 10)
 
                         Text("finalizing results...")
                             .font(device.valueByDevice(small: .title3, normal: .title2, ipad: .title))

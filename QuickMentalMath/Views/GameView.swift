@@ -397,22 +397,22 @@ struct GameView: View {
                 appModel.path.append(EndGameModel(game: gameModel))
             }
         }
-        .alert("Are You Sure?", isPresented: $showAreYouSure, actions: {
+        .alert("are you sure?", isPresented: $showAreYouSure, actions: {
             Button(role: .none, action: {
                 timer.upstream.connect().cancel()
                 appModel.path.removeLast()
                 appModel.path.removeLast()
             }, label: {
-                Text("Yes")
+                Text("yes")
             })
-            
+
             Button(role: .cancel, action: {
                 isTimerPaused.toggle()
             }, label: {
-                Text("Cancel")
+                Text("cancel")
             })
         }, message: {
-            Text("You'll lose your current progress!")
+            Text("you'll lose your current progress!")
         })
         
     } // body

@@ -138,7 +138,14 @@ struct LeaderboardView: View {
                     else if viewState == .LOADING {
                         Spacer()
 
-                        LoadingSpinner(size: 25, color: Color("lightPurple"), width: 5)
+                        VStack(spacing: 15) {
+                            BouncingDotsLoader(dotSize: 10)
+
+                            Text("loading leaderboard...")
+                                .font(device.valueByDevice(small: .body, normal: .body, ipad: .title3))
+                                .fontWeight(.semibold)
+                                .foregroundStyle(Color("darkPurple"))
+                        }
 
                         Spacer()
                     }
