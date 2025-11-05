@@ -195,7 +195,14 @@ struct GameView: View {
             }
             else {
                 HapticManager.shared.trigger(.heavy, count: 2, interval: 0.05)
-                missedQuestions.append(MissedQuestion(question: "\(String(format: "%.2f", num1)) \(mode == .TIME ? tmpMode : mode.rawValue) \(String(format: "%.2f", num2))", userAns: "\(input)", correctAns: "\(String(format: "%.2f", answer))"))
+                
+                if difficulty == .DECIMALS {
+                    missedQuestions.append(MissedQuestion(question: "\(String(format: "%.2f", num1)) \(mode == .TIME ? tmpMode : mode.rawValue) \(String(format: "%.2f", num2))", userAns: "\(input)", correctAns: "\(String(format: "%.2f", answer))"))
+                }
+                else {
+                    missedQuestions.append(MissedQuestion(question: "\(Int(num1)) \(mode == .TIME ? tmpMode : mode.rawValue) \(Int(num2))", userAns: "\(input)", correctAns: "\(Int(answer))"))
+                }
+                
                 numIncorrect += 1
             }
 
