@@ -485,7 +485,7 @@ struct MultiplayerGameView: View {
                                 .cornerRadius(5)
                             
                             Text(input)
-                                .font(.system(size: min(device.screen!.size.width * numSize, 65), weight: .bold, design: .rounded))
+                                .font(.system(size: min(device.screen!.size.width * numSize, 55), weight: .bold, design: .rounded))
                                 .bold()
                                 .foregroundColor(Color("darkPurple"))
                                 .opacity(input == "f" ? 0 : 1)

@@ -180,9 +180,7 @@ struct CustomLobbyInfoView: View {
                     
                     Spacer()
 
-                    VStack(spacing: device.valueByDevice(small: 25, normal: 30, ipad: 40)) {
-                        
-
+                    VStack(spacing: device.valueByDevice(small: 35, normal: 35, ipad: 40)) {
                         // Mode cards
                         VStack(spacing: device.valueByDevice(small: 20, normal: 20, ipad: 25)) {
                             // Create Lobby Card
@@ -207,16 +205,13 @@ struct CustomLobbyInfoView: View {
                                 }
                             )
                         }
-                    }
-
-                    // Bottom actions
-                    VStack(spacing: 35) {
+                        
                         Button(action: {
                             appModel.path.removeLast()
                         }) {
                             Text("back to home")
                                 .foregroundStyle(Color("darkPurple"))
-                                .font(.headline)
+                                .font(device.valueByDevice(small: .headline, normal: .headline, ipad: .title3))
                                 .fontWeight(.heavy)
                         }
                     }
