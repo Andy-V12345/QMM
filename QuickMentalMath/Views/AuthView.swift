@@ -44,6 +44,7 @@ struct AuthView: View {
     
     @EnvironmentObject var authInfo: AuthInfoModel
     @EnvironmentObject var appModel: AppModel
+    @EnvironmentObject var device: DeviceModel
     
     @Namespace var namespace
     
@@ -52,6 +53,33 @@ struct AuthView: View {
     @AppStorage("username") var username = ""
     @AppStorage("id") var id = 0
     
+    private func joinPendingLobby(code: String) async {
+        guard let user = authInfo.user else { return }
+
+        let result = await MultiplayerService.joinLobby(
+            code: code,
+            userId: user.id,
+            username: user.username,
+            jwtToken: user.jwtToken
+        )
+
+        // Clear pending code
+        authInfo.clearPendingLobbyCode()
+
+        switch result {
+        case .success(let lobbyResponse):
+            // Navigate to lobby view with full navigation stack
+            await MainActor.run {
+                // Dismiss any open sheets before navigation
+                appModel.dismissAllSheets()
+                appModel.path = NavigationPath([AuthState.UNAUTHORIZED, AuthState.AUTHORIZED])
+                appModel.path.append(CustomLobbyInfoModel())
+                appModel.path.append(lobbyResponse)
+            }
+        default: break
+        }
+    }
+
     private func handleButtonClick() {
         authViewState = .LOADING
         
@@ -60,13 +88,13 @@ struct AuthView: View {
                 Task {
                     let res = await authInfo.login(email: email, password: password)
                     if res == "INVALID_CREDS"  {
-                        errorTitle = "Invalid credentials"
-                        errorMsg = "The email and password you entered were incorrect. Please try again!"
+                        errorTitle = "invalid credentials"
+                        errorMsg = "the email and password you entered were incorrect. please try again!"
                         authViewState = .ERROR
                     }
                     else if res == "ERROR_DECODING" || res == "UNKNOWN_ERROR" {
-                        errorTitle = "Error signing in"
-                        errorMsg = "Something went wrong on our end. Please try again!"
+                        errorTitle = "error signing in"
+                        errorMsg = "something went wrong on our end. please try again!"
                         authViewState = .ERROR
                     }
                     else {
@@ -75,18 +103,25 @@ struct AuthView: View {
                         id = authInfo.user!.id
                         authState = .AUTHORIZED
                         authViewState = .DEFAULT
-                        
+
                         email = ""
                         password = ""
                         usernameText = ""
-                        
+
                         appModel.path.append(authState)
+
+                        // Handle pending lobby code if exists
+                        if let pendingCode = authInfo.pendingLobbyCode {
+                            Task {
+                                await joinPendingLobby(code: pendingCode)
+                            }
+                        }
                     }
                 }
             }
             else {
-                errorTitle = "Invalid email"
-                errorMsg = "Please enter a valid email."
+                errorTitle = "invalid email"
+                errorMsg = "please enter a valid email."
                 authViewState = .ERROR
             }
         }
@@ -94,25 +129,25 @@ struct AuthView: View {
             if validateEmail(email: email) {
                 Task {
                     let res = await authInfo.signUp(email: email, username: usernameText, password: password)
-                    
+
                     if res == "EMAIL_TAKEN" {
-                        errorTitle = "Error signing up"
-                        errorMsg = "The email you entered is already taken. Please use another one!"
+                        errorTitle = "error signing up"
+                        errorMsg = "the email you entered is already taken. please use another one!"
                         authViewState = .ERROR
                     }
                     else if res == "USERNAME_TAKEN" {
-                        errorTitle = "Error signing up"
-                        errorMsg = "The username you entered is already taken. Please use another one!"
+                        errorTitle = "error signing up"
+                        errorMsg = "the username you entered is already taken. please use another one!"
                         authViewState = .ERROR
                     }
                     else if res == "INVALID_PASSWORD" {
-                        errorTitle = "Error signing up"
-                        errorMsg = "The password you entered is too short. Passwords must be at least 6 characters long."
+                        errorTitle = "error signing up"
+                        errorMsg = "the password you entered is too short. passwords must be at least 6 characters long."
                         authViewState = .ERROR
                     }
                     else if res == "UNKNOWN_ERROR" {
-                        errorTitle = "Error signing up"
-                        errorMsg = "Something went wrong on our end. Please try again!"
+                        errorTitle = "error signing up"
+                        errorMsg = "something went wrong on our end. please try again!"
                         authViewState = .ERROR
                     }
                     else {
@@ -121,18 +156,25 @@ struct AuthView: View {
                         id = authInfo.user!.id
                         authState = .AUTHORIZED
                         authViewState = .DEFAULT
-                        
+
                         email = ""
                         password = ""
                         usernameText = ""
-                        
+
                         appModel.path.append(authState)
+
+                        // Handle pending lobby code if exists
+                        if let pendingCode = authInfo.pendingLobbyCode {
+                            Task {
+                                await joinPendingLobby(code: pendingCode)
+                            }
+                        }
                     }
                 }
             }
             else {
-                errorTitle = "Invalid email"
-                errorMsg = "Please enter a valid email."
+                errorTitle = "invalid email"
+                errorMsg = "please enter a valid email."
                 authViewState = .ERROR
             }
         }
@@ -268,7 +310,7 @@ struct AuthView: View {
                         .foregroundStyle(Color("darkPurple"))
                         .frame(height: 55)
                         .frame(maxWidth: .infinity)
-                        .raisedButton(cornerRadius: 20, backgroundColor: Color("lighterPurple"), shadowColor: Color("lightPurple"), shadowOffset: 9, action: {
+                        .raisedButton(cornerRadius: device.valueByDevice(small: 18, normal: 20, ipad: 20), backgroundColor: Color("lighterPurple"), shadowColor: Color("lightPurple"), shadowOffset: 9, action: {
                             handleButtonClick()
                         })
                         .disabled(authViewState == .LOADING || ((authMode == .SIGNUP && usernameText.isEmpty) || email.isEmpty || password.isEmpty))
@@ -322,7 +364,10 @@ struct AuthView: View {
                         Button(action: {
                             authInfo.authState = .NO_ACCOUNT
                             authState = .NO_ACCOUNT
-                            
+
+                            // Clear pending lobby code for guest users
+                            authInfo.clearPendingLobbyCode()
+
                             appModel.path.append(authState)
                         }, label: {
                             HStack {
@@ -345,19 +390,19 @@ struct AuthView: View {
                 
             } //: ZStack
             .disabled(authViewState == .LOADING)
-            .onChange(of: authViewState, perform: { value in
+            .onChange(of: authViewState) { _, value in
                 if value == .ERROR {
                     showError = true
                 }
                 else {
                     showError = false
                 }
-            })
+            }
             .alert(errorTitle, isPresented: $showError, actions: {
                 Button(role: .cancel, action: {
                     authViewState = .DEFAULT
                 }, label: {
-                    Text("Ok")
+                    Text("ok")
                 })
             }, message: {
                 if !errorMsg.isEmpty {
@@ -373,7 +418,8 @@ struct AuthView: View {
     
 }
 
-#Preview {
-    AuthView()
-        .environmentObject(AuthInfoModel())
-}
+//#Preview {
+//    AuthView()
+//        .environmentObject(AuthInfoModel())
+//        .environmentObject(AppModel(path: NavigationPath()))
+//}

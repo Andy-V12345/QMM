@@ -104,6 +104,9 @@ struct ExtraOptionsView: View {
                 .roundedCorner(20, corners: .allCorners)
                 .clipped()
                 .shadow(radius: 2)
+                .onChange(of: numQuestions) {
+                    HapticManager.shared.trigger(.soft)
+                }
                 
                 HStack(spacing: device.valueByDevice(small: 15, normal: 20, ipad: 30)) {
                     DifficultySelector(difficulty: $difficulty, isTimeTrial: false)
@@ -126,7 +129,7 @@ struct ExtraOptionsView: View {
                     })
                     .padding(device.valueByDevice(small: 12, normal: 15, ipad: 15))
                     .frame(maxWidth: .infinity)
-                    .raisedButton(impactStrength: .heavy, cornerRadius: 20, backgroundColor: Color("lighterPurple"), shadowColor: Color("lightPurple"), shadowOffset: device.valueByDevice(small: 11, normal: 11, ipad: 13),
+                    .raisedButton(impactStrength: .heavy, cornerRadius: device.valueByDevice(small: 18, normal: 20, ipad: 20), backgroundColor: Color("lighterPurple"), shadowColor: Color("lightPurple"), shadowOffset: device.valueByDevice(small: 8, normal: 8, ipad: 12),
                                   action: {
                         handleStart()
                     })

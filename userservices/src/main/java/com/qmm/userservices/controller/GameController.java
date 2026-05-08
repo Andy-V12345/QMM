@@ -124,4 +124,41 @@ public class GameController {
                     .body("Unexpected error: " + e.getMessage());
         }
     }
+
+    /**
+     * POST /api/v1/games/{gameId}/playAgainReady
+     * Set player's ready status for playing again (custom lobby games only)
+     */
+    @PostMapping("/{gameId}/playAgainReady")
+    public ResponseEntity<?> setPlayAgainReady(
+            @PathVariable String gameId,
+            @RequestBody SetPlayAgainReadyRequest request) {
+        try {
+            SetPlayAgainReadyResponse response = gameService.setPlayAgainReady(
+                    gameId,
+                    request.getUserId(),
+                    request.getReady()
+            );
+            return ResponseEntity.ok(response);
+
+        } catch (ResponseStatusException e) {
+            return ResponseEntity.status(e.getStatusCode()).body(e.getReason());
+
+        } catch (ExecutionException e) {
+            System.err.println("Firestore error: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to set play again ready: " + e.getMessage());
+
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            System.err.println("Thread interrupted: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+                    .body("Service interrupted");
+
+        } catch (Exception e) {
+            System.err.println("Unexpected error: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Unexpected error: " + e.getMessage());
+        }
+    }
 }

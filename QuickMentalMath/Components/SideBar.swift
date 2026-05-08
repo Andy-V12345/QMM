@@ -17,12 +17,9 @@ struct SideBar: View {
     @State var errorMsg = ""
     @State var errorTitle = ""
     @State var isLoading = false
-    
+
     @State var usernameText = ""
-    
-    @State var displayStats = false
-    @State var displayLeaderboard = false
-    
+
     @EnvironmentObject var authInfo: AuthInfoModel
     @EnvironmentObject var appModel: AppModel
     
@@ -95,7 +92,7 @@ struct SideBar: View {
                             .padding(.horizontal, 10)
                             .frame(maxWidth: .infinity)
                             .raisedButton(cornerRadius: 20, backgroundColor: Color("offWhite"), shadowColor: Color("lightGray"), shadowOffset: 4, action: {
-                                displayStats = true
+                                appModel.showStats = true
                             })
                             
                             Button(action: {}, label: {
@@ -113,7 +110,7 @@ struct SideBar: View {
                             .padding(.horizontal, 10)
                             .frame(maxWidth: .infinity)
                             .raisedButton(cornerRadius: 20, backgroundColor: Color("offWhite"), shadowColor: Color("lightGray"), shadowOffset: 4, action: {
-                                displayLeaderboard = true
+                                appModel.showLeaderboard = true
                             })
                             
                             Spacer()
@@ -135,6 +132,7 @@ struct SideBar: View {
                             .raisedButton(cornerRadius: 20, backgroundColor: Color("offWhite"), shadowColor: Color("lightGray"), shadowOffset: 4, action: {
                                 authInfo.user = nil
                                 authInfo.authState = .UNAUTHORIZED
+                                UserDefaults.standard.clearLastGame()
                                 jwtToken = ""
                                 username = ""
                                 id = 0
@@ -173,37 +171,46 @@ struct SideBar: View {
             }
             
             if isLoading {
-                Color.black.opacity(0.6)
-                    .ignoresSafeArea()
-                
-                LoadingSpinner(size: 25, color: Color("lightPurple"), width: 5)
+                ZStack {
+                    Color.black.opacity(0.6)
+                        .ignoresSafeArea()
+
+                    VStack(spacing: 20) {
+                        BouncingDotsLoader(dotSize: 10)
+
+                        Text("deleting account...")
+                            .font(.title2)
+                            .fontWeight(.semibold)
+                            .foregroundStyle(.white)
+                    }
+                }
             }
         }
         .ignoresSafeArea(edges: .all)
         .preferredColorScheme(.light)
-        .fullScreenCover(isPresented: $displayStats, content: {
+        .fullScreenCover(isPresented: $appModel.showStats, content: {
             StatsView()
         })
-        .fullScreenCover(isPresented: $displayLeaderboard, content: {
+        .fullScreenCover(isPresented: $appModel.showLeaderboard, content: {
             LeaderboardView()
         })
         .alert(errorTitle, isPresented: $deleteError) {
             Button(role: .cancel) {
                 usernameText = ""
             } label: {
-                Text("Cancel")
+                Text("cancel")
             }
-            
+
             Button(role: .destructive) {
                 isDeleteAlert = true
             } label: {
-                Text("Try Again")
+                Text("try again")
             }
             
         } message: {
             Text(errorMsg)
         }
-        .alert("Are You Sure?", isPresented: $isDeleteAlert) {
+        .alert("are you sure?", isPresented: $isDeleteAlert) {
             Button(role: .destructive) {
                 if usernameText.trimmingCharacters(in: .whitespacesAndNewlines) != "" && usernameText == authInfo.user?.username {
                     isLoading = true
@@ -223,36 +230,36 @@ struct SideBar: View {
                             appModel.path.removeLast()
                         }
                         else {
-                            errorTitle = "Error"
-                            errorMsg = "Something went wrong! Please try again."
+                            errorTitle = "error"
+                            errorMsg = "something went wrong! please try again."
                             deleteError = true
                         }
                     }
                 }
                 else {
-                    errorTitle = "Error"
-                    errorMsg = "The username you entered is not valid."
+                    errorTitle = "error"
+                    errorMsg = "the username you entered is not valid."
                     deleteError = true
                 }
             } label: {
-                Text("Delete")
+                Text("delete")
             }
             .disabled(usernameText.trimmingCharacters(in: .whitespacesAndNewlines) == "")
             .opacity(usernameText.trimmingCharacters(in: .whitespacesAndNewlines) == "" ? 0.4 : 1)
-            
+
             Button(role: .cancel) {
-                
+
             } label: {
-                Text("Cancel")
+                Text("cancel")
             }
             
             TextField("Enter your username", text: $usernameText)
                 .font(.subheadline)
             
         } message: {
-            
-            Text("This will permanently delete your account and all of your data! Please enter your username to confirm the deletion of your account.")
-            
+
+            Text("this will permanently delete your account and all of your data! please enter your username to confirm the deletion of your account.")
+
         }
         
     }

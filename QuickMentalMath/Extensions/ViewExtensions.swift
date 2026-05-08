@@ -19,6 +19,7 @@ struct RoundedCorner: Shape {
 
 struct RaisedButtonStyle: ViewModifier {
     @State private var isPressed = false
+    @State private var isAnimating = false
     let impactStrength: UIImpactFeedbackGenerator.FeedbackStyle
     let cornerRadius: CGFloat
     let backgroundColor: Color
@@ -26,6 +27,7 @@ struct RaisedButtonStyle: ViewModifier {
     let toggleColor: Color?
     let isToggled: Bool?
     let shadowOffset: CGFloat
+    let allowsDoubleTap: Bool
     let action: () -> Void
     
     @Environment(\.isEnabled) var isEnabled
@@ -40,30 +42,36 @@ struct RaisedButtonStyle: ViewModifier {
                 TapGesture()
                     .onEnded {
                         Task {
+                            if !allowsDoubleTap {
+                                isAnimating = true
+                            }
+                            
                             if isEnabled {
                                 withAnimation(.easeOut(duration: 0.1)) {
                                     isPressed = true
                                 }
-                                
-                                UIImpactFeedbackGenerator(style: impactStrength).impactOccurred()
-                                
+
+                                HapticManager.shared.trigger(impactStrength)
+
                                 try? await Task.sleep(nanoseconds: 100_000_000)
-                                
+
                                 withAnimation(.easeOut(duration: 0.15)) {
                                     isPressed = false
                                 }
-                                    
+
                                 action()
                             }
+                            isAnimating = false
                         }
                     }
             )
+            .allowsHitTesting(!isAnimating)
             .onAppear {
                 if !isEnabled {
                     isPressed = true
                 }
             }
-            .onChange(of: isEnabled, perform: { newValue in
+            .onChange(of: isEnabled) { _, newValue in
                 if newValue {
                     withAnimation(.easeOut(duration: 0.15)) {
                         isPressed = false
@@ -74,7 +82,7 @@ struct RaisedButtonStyle: ViewModifier {
                         isPressed = true
                     }
                 }
-            })
+            }
     }
 }
 
@@ -82,7 +90,7 @@ extension View {
     func roundedCorner(_ radius: CGFloat, corners: UIRectCorner) -> some View {
         clipShape(RoundedCorner(radius: radius, corners: corners) )
     }
-    
+
     func raisedButton(
         impactStrength: UIImpactFeedbackGenerator.FeedbackStyle = .medium,
         cornerRadius: CGFloat = 10,
@@ -90,7 +98,8 @@ extension View {
         shadowColor: Color = Color("lightPurple"),
         toggleColor: Color? = nil,
         isToggled: Bool? = nil,
-        shadowOffset: CGFloat = 10,
+        shadowOffset: CGFloat = 8,
+        allowsDoubleTap: Bool = false,
         action: @escaping () -> Void
     ) -> some View {
         self.modifier(
@@ -102,6 +111,7 @@ extension View {
                 toggleColor: toggleColor,
                 isToggled: isToggled,
                 shadowOffset: shadowOffset,
+                allowsDoubleTap: allowsDoubleTap,
                 action: action
             )
         )

@@ -16,8 +16,7 @@ struct TimeTrialView: View {
     @State var difficulty: GameDifficulty
     @State var timeLimit: TimeLimit
     @State var mode: GameMode
-    
-    @State var displayLeaderboard = false
+
     @State var showNoAccountAlert = false
     
     @AppStorage("authState") var authState: AuthState = .UNAUTHORIZED
@@ -55,11 +54,11 @@ struct TimeTrialView: View {
                         
                         HStack(spacing: 15) {
                             Text("time trial")
-                                .font(.largeTitle)
+                                .font(device.valueByDevice(small: .title, normal: .largeTitle, ipad: .largeTitle))
                                 .fontWeight(.heavy)
                             
                             Image(systemName: "timer")
-                                .font(.title)
+                                .font(device.valueByDevice(small: .title, normal: .largeTitle, ipad: .largeTitle))
                                 .bold()
                             
                             Spacer()
@@ -78,7 +77,7 @@ struct TimeTrialView: View {
                     .frame(width: device.valueByDevice(small: 32, normal: 37, ipad: 40), height: device.valueByDevice(small: 30, normal: 35, ipad: 38))
                     .raisedButton(cornerRadius: 40, shadowOffset: 2, action: {
                         if authInfo.authState == .AUTHORIZED {
-                            displayLeaderboard = true
+                            appModel.showLeaderboard = true
                         }
                         else {
                             showNoAccountAlert = true
@@ -108,7 +107,7 @@ struct TimeTrialView: View {
                     })
                     .padding(device.valueByDevice(small: 12, normal: 15, ipad: 15))
                     .frame(maxWidth: .infinity)
-                    .raisedButton(impactStrength: .heavy, cornerRadius: 20, backgroundColor: Color("lighterPurple"), shadowColor: Color("lightPurple"), shadowOffset: device.valueByDevice(small: 11, normal: 11, ipad: 13),
+                    .raisedButton(impactStrength: .heavy, cornerRadius: device.valueByDevice(small: 18, normal: 20, ipad: 20), backgroundColor: Color("lighterPurple"), shadowColor: Color("lightPurple"), shadowOffset: device.valueByDevice(small: 8, normal: 8, ipad: 12),
                                   action: {
                         handleStart()
                     })
@@ -126,10 +125,10 @@ struct TimeTrialView: View {
             } //: VStack
             .padding(device.valueByDevice(small: 15, normal: 20, ipad: 30))
         } //: ZStack
-        .fullScreenCover(isPresented: $displayLeaderboard, content: {
+        .fullScreenCover(isPresented: $appModel.showLeaderboard, content: {
             LeaderboardView()
         })
-        .alert("No Account", isPresented: $showNoAccountAlert, actions: {
+        .alert("no account", isPresented: $showNoAccountAlert, actions: {
             Button(role: .none, action: {
                 authInfo.user = nil
                 authInfo.authState = .UNAUTHORIZED
@@ -140,24 +139,25 @@ struct TimeTrialView: View {
                 appModel.path.removeLast()
                 appModel.path.removeLast()
             }, label: {
-                Text("Sign in")
+                Text("sign in")
             })
-            
+
             Button(role: .cancel, action: {
-                
+
             }, label: {
-                Text("Cancel")
+                Text("cancel")
             })
         }, message: {
-            Text("Sign in to your QMM account to view the leaderboard!")
+            Text("sign in to your QMM account to view the leaderboard!")
         })
     }
 }
 
-//#Preview {
-//    GeometryReader { screen in
-//        TimeTrialView()
-//            .environmentObject(AppModel(path: NavigationPath()))
-//            .environmentObject(DeviceModel(screen: screen))
-//    }
-//}
+#Preview {
+    GeometryReader { screen in
+        TimeTrialView(gameConfigsModel: GameConfigsModel(mode: .MULTIPLICATION, difficulty: .MEDIUM, timeLimit: .ONE_MIN, numQuestions: 10))
+            .environmentObject(AppModel(path: NavigationPath()))
+            .environmentObject(DeviceModel(screen: screen))
+            .environmentObject(AuthInfoModel())
+    }
+}
